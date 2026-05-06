@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LanguageXplainr Pro — XplainrHub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f0ece3; --surface: #ffffff; --border: #c8c0b0; --border-strong: #a09880;
+    --text: #161612; --text-muted: #524e45; --text-faint: #8a8478;
+    --accent: #0d9488; --accent-dark: #0f766e; --accent-light: #f0fdfa; --accent-border: #5eead4;
+    --subject: #14b8a6; --btn-bg: #1a1a16; --btn-text: #ffffff;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  .hub-nav { background: linear-gradient(135deg, #dc2626 0%, #3b82f6 100%); padding: 0 2rem; display: flex; align-items: center; gap: 16px; height: 46px; }
+  .hub-nav a { color: rgba(255,255,255,0.85); text-decoration: none; font-size: 13px; font-weight: 500; font-family: 'DM Sans', sans-serif; }
+  .hub-nav a:hover { color: white; }
+  .hub-nav .sep { color: rgba(255,255,255,0.35); font-size: 12px; }
+  .hub-nav .current { color: white; font-weight: 600; font-size: 13px; font-family: 'DM Sans', sans-serif; }
+  .hub-nav .pro-pill { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.35); border-radius: 99px; padding: 2px 9px; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: white; margin-left: 2px; }
+  header { background: var(--surface); border-bottom: 1.5px solid var(--border); padding: 1rem 2.5rem; display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .logo { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 500; letter-spacing: -0.5px; color: var(--text); }
+  .logo em { color: var(--subject); font-style: italic; }
+  .logo .subject-tag { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: var(--text-faint); font-style: normal; margin-left: 10px; vertical-align: middle; }
+  .header-right { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; color: var(--text-faint); }
+  main { max-width: 840px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
+  .tagline { font-family: 'Playfair Display', serif; font-style: italic; font-size: 17px; color: var(--text-muted); text-align: center; margin-bottom: 2rem; line-height: 1.6; }
+
+  /* Direction toggle */
+  .direction-row { display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 1.75rem; background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 6px; max-width: 500px; margin-left: auto; margin-right: auto; }
+  .dir-btn { flex: 1; padding: 10px 16px; border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.15s; background: transparent; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .dir-btn.active { background: var(--accent); color: white; font-weight: 600; }
+  .dir-btn:not(.active):hover { background: var(--bg); color: var(--text); }
+  .dir-arrow { font-family: 'DM Mono', monospace; font-size: 16px; color: var(--text-faint); padding: 0 8px; flex-shrink: 0; }
+
+  .key-section { background: var(--accent-light); border: 1.5px solid var(--accent-border); border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .key-label { font-size: 11px; font-weight: 500; color: var(--accent-dark); white-space: nowrap; font-family: 'DM Mono', monospace; letter-spacing: 0.06em; }
+  #api-key-input { flex: 1; min-width: 200px; padding: 6px 10px; border: 1.5px solid var(--accent-border); border-radius: 6px; font-family: 'DM Mono', monospace; font-size: 12px; background: white; color: var(--text); outline: none; }
+  #api-key-input:focus { border-color: var(--accent); }
+  .key-hint { font-size: 11px; color: var(--accent-dark); width: 100%; margin-top: -4px; }
+  .card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.25rem; }
+  .section-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: var(--text-faint); text-transform: uppercase; margin-bottom: 0.75rem; }
+  .sample-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 0.85rem; }
+  .sample-btn { padding: 8px 14px; border: none; border-radius: 8px; background: #1a237e; font-family: 'DM Sans', sans-serif; font-size: 13px; color: #ffffff; cursor: pointer; transition: all 0.12s; }
+  .sample-btn:hover { background: #283593; }
+  textarea { width: 100%; min-height: 185px; resize: vertical; border: 1.5px solid var(--border); border-radius: 8px; padding: 0.9rem 1rem; font-family: 'Playfair Display', serif; font-size: 14px; line-height: 1.75; color: var(--text); background: var(--bg); outline: none; transition: border-color 0.15s; }
+  textarea:focus { border-color: var(--accent); }
+  textarea::placeholder { color: var(--text-faint); font-style: italic; }
+  .controls { display: flex; align-items: center; gap: 12px; margin-top: 1rem; flex-wrap: wrap; }
+  .depth-group { display: flex; align-items: center; gap: 8px; }
+  .depth-label { font-size: 11px; font-family: 'DM Mono', monospace; letter-spacing: 0.07em; color: var(--text-faint); text-transform: uppercase; }
+  select { padding: 8px 12px; border: 1.5px solid var(--border-strong); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text); background: var(--surface); outline: none; cursor: pointer; }
+  select:focus { border-color: var(--accent); }
+  .go-btn { padding: 10px 26px; background: var(--btn-bg); color: var(--btn-text); border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: opacity 0.15s, transform 0.1s; margin-left: auto; }
+  .go-btn:hover { opacity: 0.82; } .go-btn:active { transform: scale(0.98); } .go-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .download-group { position: relative; display: inline-block; }
+  .dl-btn { padding: 10px 22px; background: var(--btn-bg); color: var(--btn-text); border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; }
+  .dl-btn:hover { opacity: 0.82; }
+  .download-menu { display: none; position: absolute; top: calc(100% + 6px); right: 0; background: var(--surface); border: 1.5px solid var(--border-strong); border-radius: 8px; overflow: hidden; z-index: 100; min-width: 200px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+  .download-menu.open { display: block; }
+  .download-item { padding: 10px 18px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text-muted); cursor: pointer; border: none; background: none; width: 100%; text-align: left; }
+  .download-item:hover { background: var(--bg); color: var(--text); }
+  .error-msg { display: none; margin-top: 0.75rem; padding: 0.75rem 1rem; background: #fdf0ef; border: 1.5px solid #e8a09a; border-radius: 8px; font-size: 13px; color: #b02a1e; }
+  .error-msg.visible { display: block; }
+  .loading { display: none; align-items: center; gap: 12px; padding: 1.25rem 0; color: var(--text-muted); font-size: 13px; font-style: italic; }
+  .loading.visible { display: flex; }
+  .dots span { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin: 0 2px; animation: pulse 1.3s infinite ease-in-out; }
+  .dots span:nth-child(2) { animation-delay: 0.2s; } .dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes pulse { 0%,80%,100%{transform:scale(0.5);opacity:0.3} 40%{transform:scale(1);opacity:1} }
+  .output-wrap { display: none; } .output-wrap.visible { display: block; }
+  hr { border: none; border-top: 1.5px solid var(--border); margin: 1.5rem 0; }
+  .output-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 8px; }
+  .output-actions { display: flex; gap: 8px; }
+  .copy-btn { padding: 8px 16px; border: 1.5px solid var(--border); border-radius: 6px; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text-muted); cursor: pointer; }
+  .copy-btn:hover { background: var(--bg); color: var(--text); }
+  .output-body { font-family: 'Playfair Display', serif; font-size: 15px; line-height: 1.9; color: var(--text); }
+  .output-body p { margin-bottom: 1.1em; }
+  .output-body h1,.output-body h2 { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 500; margin: 1.5em 0 0.5em; }
+  .output-body h3 { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint); margin: 1.5em 0 0.4em; }
+  .output-body strong { font-weight: 600; }
+  .output-body em { font-style: italic; color: var(--accent-dark); }
+  .output-body ul { padding-left: 1.4em; margin-bottom: 1.1em; } .output-body li { margin-bottom: 0.45em; }
+  .output-body blockquote { background: var(--accent-light); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 0.8rem 1.1rem; margin: 0.4em 0; font-family: 'DM Sans', sans-serif; font-size: 13.5px; line-height: 1.75; color: var(--text-muted); }
+  hr.notes-divider { border: none; border-top: 1.5px solid var(--border); margin: 1.75rem 0 1.25rem; }
+  footer { text-align: center; font-size: 11px; font-family: 'DM Mono', monospace; letter-spacing: 0.08em; color: var(--text-faint); margin-top: 3rem; }
+  @media print {
+    .hub-nav,header,.tagline,.direction-row,.key-section,.card:has(textarea),.loading,footer,.output-header,.section-label { display: none !important; }
+    body { background: white !important; } main { padding: 0 !important; max-width: 100% !important; }
+    .output-wrap { display: block !important; } .card { border: none !important; padding: 0 !important; } hr { display: none !important; }
+    #lang-medical-disclaimer, #lang-medical-disclaimer-es { display: block !important; }
+  }
+
+  .mic-btn { position: absolute; right: 10px; bottom: 10px; background: none; border: none; cursor: pointer; padding: 6px; border-radius: 50%; color: var(--text-faint); transition: all 0.15s; font-size: 18px; line-height: 1; }
+  .mic-btn:hover { color: var(--accent); background: var(--accent-light); }
+  .mic-btn.listening { color: #dc2626; animation: pulse 1s infinite; }
+  .textarea-wrap { position: relative; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+  .upload-btn { padding: 8px 14px; border: 1.5px dashed var(--border-strong); border-radius: 8px; background: var(--surface); font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--accent-dark); cursor: pointer; transition: all 0.12s; }
+  .upload-btn:hover { background: var(--accent-light); border-color: var(--accent); }
+  #file-input { display: none; }
+  .upload-status { font-size: 12px; color: var(--text-faint); font-style: italic; margin-left: 4px; }
+
+  .textarea-wrap.dragover { outline: 2px dashed var(--accent); outline-offset: 2px; background: var(--accent-light); }
+</style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body>
+
+<nav class="hub-nav">
+  <a href="../../index.html">← XplainrHub</a>
+  <span class="sep">/</span>
+  <span class="current">LanguageXplainr <span class="pro-pill">PRO</span></span>
+</nav>
+
+<header>
+  <div class="logo">LanguageXplainr <span style="font-style:italic;color:var(--text);font-weight:500;">Pro</span><span class="subject-tag">ENGLISH · MEXICAN SPANISH</span></div>
+  <div class="header-right">PRO &nbsp;·&nbsp; POWERED BY CLAUDE</div>
+</header>
+
+<main>
+  <p class="tagline">Spanish to English or English to Spanish — pronunciations, idioms,<br>Mexican usage, and cultural context explained at your level.<br><span style="font-size:0.85em;color:var(--text-faint);font-style:italic;">Español a inglés o inglés a español — pronunciaciones, modismos, uso mexicano y contexto cultural explicados a su nivel.</span></p>
+
+  <div class="direction-row">
+    <button class="dir-btn active" id="btn-es-en" onclick="setDirection('es-en')">
+      🇲🇽 Spanish &rarr; English
+    </button>
+    <span class="dir-arrow">&harr;</span>
+    <button class="dir-btn" id="btn-en-es" onclick="setDirection('en-es')">
+      English &rarr; Spanish 🇲🇽
+    </button>
+  </div>
+
+  <div class="key-section">
+    <span class="key-label">COMMUNITY PASSWORD / CONTRASEÑA DE LA COMUNIDAD</span>
+    <input type="password" id="api-key-input" placeholder="Enter your AI Health Plus Paid members password… / Ingrese su contraseña de miembro de pago…" autocomplete="off" />
+    <span class="key-hint">Enter the password from your AI Health Plus Paid members area. It stays in this browser tab only.<br><em>Ingrese la contraseña del área de miembros de pago de AI Health Plus. Solo permanece en esta pestaña del navegador.</em></span>
+  </div>
+
+  <div class="card">
+    <div class="section-label" id="input-label">Your Spanish text</div>
+
+    <div class="sample-btns" id="sample-btns-es-en">
+      <button class="sample-btn" onclick="loadSample('letter')" style="display:flex;flex-direction:column;align-items:center;line-height:1.3;">
+        <span>See Sample Spanish Letter</span>
+        <em style="font-size:11px;font-weight:400;">Ver Carta de Muestra en Español</em>
+      </button>
+      <button class="sample-btn" onclick="loadSample('mixed')" style="display:flex;flex-direction:column;align-items:center;line-height:1.3;">
+        <span>See Mixed English/Spanish Sample</span>
+        <em style="font-size:11px;font-weight:400;">Ver Muestra Mixta Inglés/Español</em>
+      </button>
+      <button class="sample-btn" onclick="clearInput()" style="display:flex;flex-direction:column;align-items:center;line-height:1.3;">
+        <span>Clear</span>
+        <em style="font-size:11px;font-weight:400;">Borrar</em>
+      </button>
+      <button class="upload-btn" onclick="triggerUpload()">&#128206; Upload PDF or TXT</button>
+      <input type="file" id="file-input" accept=".pdf,.txt,.rtf" onchange="handleFileUpload(this)">
+      <span class="upload-status" id="upload-status"></span>
+      <p style="font-size:13px;color:#161612;margin:6px 0 0;font-weight:500;">Anthropic Corp., the AI company that processes this information, does not use your data for AI training.<br><em style="font-weight:400;color:#524e45;">Anthropic Corp. no usa sus datos para entrenar IA.</em></p>
+    </div>
+    <div class="sample-btns" id="sample-btns-en-es" style="display:none;">
+      <button class="sample-btn" onclick="loadSample('travel')" style="display:flex;flex-direction:column;align-items:center;line-height:1.3;">
+        <span>See Sample Travel Phrases</span>
+        <em style="font-size:11px;font-weight:400;">Ver Frases de Viaje de Muestra</em>
+      </button>
+      <button class="sample-btn" onclick="loadSample('workplace')" style="display:flex;flex-direction:column;align-items:center;line-height:1.3;">
+        <span>See Sample Workplace Scenario</span>
+        <em style="font-size:11px;font-weight:400;">Ver Escenario Laboral de Muestra</em>
+      </button>
+      <button class="sample-btn" onclick="clearInput()" style="display:flex;flex-direction:column;align-items:center;line-height:1.3;">
+        <span>Clear</span>
+        <em style="font-size:11px;font-weight:400;">Borrar</em>
+      </button>
+      <button class="upload-btn" onclick="triggerUpload()">&#128206; Upload PDF or TXT</button>
+      <input type="file" id="file-input" accept=".pdf,.txt,.rtf" onchange="handleFileUpload(this)">
+      <span class="upload-status" id="upload-status"></span>
+      <p style="font-size:13px;color:#161612;margin:6px 0 0;font-weight:500;">Anthropic Corp., the AI company that processes this information, does not use your data for AI training.<br><em style="font-weight:400;color:#524e45;">Anthropic Corp. no usa sus datos para entrenar IA.</em></p>
+    </div>
+
+    <textarea id="input-area" placeholder="Paste Spanish text, or mixed English/Spanish, to get it explained in plain English… / Pegue texto en español, o inglés mezclado con español, para obtener una explicación en inglés sencillo…"></textarea>
+    <p style="font-size:12px;color:#8a8478;margin:4px 0 0;font-style:italic;">You can also drag and drop a PDF or TXT file directly onto the text area above. / También puede arrastrar y soltar un archivo PDF o TXT directamente sobre el área de texto.</p>
+
+    <div class="controls">
+      <div class="depth-group">
+        <span class="depth-label">My Level / <em style="font-weight:400;font-style:italic;">Mi Nivel</em></span>
+        <select id="depth-select-es-en">
+          <option value="beginner">Beginner — translate and explain everything / Principiante — traduzca y explique todo</option>
+          <option value="intermediate" selected>Intermediate — explain nuance and idioms / Intermedio — explique matices y modismos</option>
+          <option value="advanced">Advanced — only idioms and cultural context / Avanzado — solo modismos y contexto cultural</option>
+        </select>
+        <select id="depth-select-en-es" style="display:none;">
+          <option value="traveler">Traveler — give me the phrase and pronunciation / Viajero — dame la frase y pronunciación</option>
+          <option value="learner" selected>Learner — explain grammar and usage too / Estudiante — explica gramática y uso también</option>
+          <option value="fluency">Fluency-building — nuance, register, natural phrasing / Fluidez — matices, registro, frases naturales</option>
+        </select>
+      </div>
+      <button class="go-btn" id="go-btn" onclick="runXplainr()">Explain it</button>
+      <div class="download-group">
+        <button class="dl-btn" onclick="toggleDownloadMenu()">Download &#9662;</button>
+        <div class="download-menu" id="download-menu">
+          <button class="download-item" onclick="downloadAs('txt')">Plain text (.txt)</button>
+          <button class="download-item" onclick="downloadAs('html')">Formatted page (.html)</button>
+          <button class="download-item" onclick="window.print()">Print / Save as PDF</button>
+          <button class="download-item" onclick="downloadAs('rtf')">Editable document (.rtf)</button>
+          <button class="download-item" onclick="downloadAs('docx')">Word document (.docx)</button>
+        </div>
+      </div>
+    </div>
+    <div class="error-msg" id="error-msg"></div>
+  </div>
+
+  <div class="loading" id="loading">
+    <div class="dots"><span></span><span></span><span></span></div>
+    Annotating your text…
+  </div>
+
+  <div class="output-wrap" id="output-wrap">
+    <hr>
+    <div class="output-header">
+      <div class="section-label">Annotated result</div>
+      <div class="output-actions">
+        <button class="copy-btn" onclick="clearConversation()" style="color:#dc2626;border-color:#fca5a5;">New conversation</button>
+        <button class="copy-btn" onclick="copyOriginal(event)">Copy original</button>
+        <button class="copy-btn" onclick="copyOutput(event)">Copy result</button>
+        <button class="copy-btn" id="share-btn" onclick="shareResult()">Share</button>
+        <button class="copy-btn" id="summary-btn" onclick="runSummary()" style="background:var(--accent-light);border-color:var(--accent-border);color:var(--accent-dark);font-weight:500;">+ Summarize</button>
+      </div>
+    </div>
+    
+
+    <div id="lang-medical-disclaimer" style="display:none;margin-bottom:1rem;padding:0.875rem 1rem;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;font-size:13px;color:#7c2d12;line-height:1.5;">
+      <strong>Asking about Medical Issues? Please Read:</strong><br><br>
+      <strong>This tool provides medical information and definitions only -- not medical advice.</strong> This tool only explains and defines medical terms to help you understand medical documents and to try to answer your questions. However, it does not and cannot provide any diagnosis, treatment recommendations, personal medical guidance or advice. Always consult your doctor or healthcare provider before making any medical decision, no matter how small it may seem.<br><br>
+      I can only provide answers to non-personal inquiries about health issues. If you ask about your personal medical issues or their causes, or what your symptoms might mean, I may not be able to provide information. It could be harmful. Please talk to your doctor; only he or she should address such questions about your personal situation.
+    </div>
+    <div id="lang-medical-disclaimer-es" style="display:none;margin-bottom:1rem;padding:0.875rem 1rem;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;font-size:13px;color:#7c2d12;line-height:1.5;">
+      <strong>¿Preguntas sobre temas medicos? Por favor lea esto:</strong><br><br>
+      <strong>Esta herramienta proporciona informacion y definiciones medicas solamente -- no es un consejo medico.</strong> Esta herramienta solo explica y define terminos medicos para ayudarle a comprender documentos medicos. Sin embargo, no puede proporcionar ningun diagnostico, recomendaciones de tratamiento, orientacion medica personal ni consejo medico. Consulte siempre a su medico antes de tomar cualquier decision medica, por pequena que parezca.<br><br>
+      Solo puedo responder preguntas generales sobre temas de salud. Si pregunta sobre sus problemas medicos personales o sus sintomas, es posible que no pueda proporcionar informacion. Podria ser danino. Por favor hable con su medico; solo el o ella debe responder tales preguntas sobre su situacion personal.
+    </div>
+    <div id="summary-loading" class="loading" style="margin-top:0.5rem;display:none;">
+      <div class="dots"><span></span><span></span><span></span></div>
+      Generating summary…
+    </div>
+    <div id="summary-wrap" style="display:none;margin-top:1rem;margin-bottom:1rem;">
+      <div class="output-header">
+        <div class="section-label">Summary</div>
+        <div class="output-actions">
+          <button class="copy-btn" onclick="copySummary(event)">Copy summary</button>
+        </div>
+      </div>
+      <div class="card" style="border-left:3px solid var(--accent);border-radius:0 12px 12px 0;">
+        <div class="output-body" id="summary-body"></div>
+      </div>
+    </div>
+
+    <div class="card"><div class="output-body" id="output-body"></div></div>
+
+  </div>
+
+  <div style="margin-top:1.5rem;padding:0.75rem 1rem;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;font-size:14px;color:#0c4a6e;line-height:1.6;text-align:center;">
+    This app is from <strong>AI Health Plus</strong> — a free English/Spanish health community on Skool.com.
+    <br><a href="https://www.skool.com/ai-done-for-you-7410/about" target="_blank" rel="noopener" style="color:#2525C9;font-weight:700;text-decoration:underline;">Click here to join</a>
+    <br><em style="font-size:13px;color:#0369a1;">Esta app es de <strong>AI Health Plus</strong> — una comunidad de salud en inglés y español en Skool.com. <a href="https://www.skool.com/ai-done-for-you-7410/about" target="_blank" rel="noopener" style="color:#2525C9;font-weight:700;text-decoration:underline;">Haz clic aquí para unirte.</a></em>
+  </div>
+
+  <footer>LanguageXplainr Pro &nbsp;&middot;&nbsp; XplainrHub &nbsp;&middot;&nbsp; powered by Claude</footer>
+</main>
+
+<script>
+let currentDirection = 'es-en';
+
+const SAMPLES = {
+  letter: `Querida mama,\n\nTe escribo desde la Ciudad de Mexico donde llevo ya tres semanas. La ciudad me tiene enamorado - cada colonia tiene su propio sabor. Ayer me perdi por las callejuelas de Coyoacan y me tope con un tianguis precioso lleno de artesanias.\n\nHe conocido a unos cuates muy majos que me han ensenado expresiones que no vienen en ningun libro de texto. Por ejemplo, dicen "esta padrisimo" cuando algo les gusta muchisimo, o "Que chido!" para decir que algo es genial. Tambien usan mucho "guey" entre amigos, aunque hay que tener cuidado con quien lo usas.\n\nUn abrazo fuerte,\nCarlos`,
+  mixed: `Hola, te escribo porque recibi un email del doctor que no entiendo bien. Dice que mis "lab results" salieron con algunos valores "out of range" y que necesito hacer un "follow-up appointment" lo antes posible. Tambien menciona algo de mi "insurance coverage" y que debo llamar al "billing department."\n\nMi jefa tambien me mando un mensaje diciendo que el proyecto tiene un nuevo "deadline" y que necesitamos una "conference call" el viernes. No se si puedo ir porque tengo que llevar a mi mama al "specialist" ese dia.\n\nPor favor ayudame a entender estas palabras en ingles -- no estoy segura de lo que significan en este contexto.`,
+  travel: `I need to ask for directions to the nearest pharmacy. I also want to order food at a restaurant - ask what the daily special is, say I have a shellfish allergy, and ask for the check when I'm done. I also need to apologize politely if I bump into someone on the street, and ask someone to please speak more slowly because I'm still learning Spanish.`,
+  workplace: `I need to navigate my first week at a new job in Mexico City. I need to introduce myself professionally to my new team, ask my manager for clarification on a project deadline, politely decline an invitation to drinks after work without offending anyone, and write a brief professional email saying I will be five minutes late to a meeting.`
+};
+
+function loadSample(type) { document.getElementById('input-area').value = SAMPLES[type] || ''; }
+function clearInput() { document.getElementById('input-area').value = ''; document.getElementById('output-wrap').classList.remove('visible'); document.getElementById('error-msg').classList.remove('visible'); const st = document.getElementById('upload-status'); if (st) st.textContent = ''; const ob = document.getElementById('output-body'); if (ob) ob.innerHTML = ''; const sb = document.getElementById('summary-body'); if (sb) sb.innerHTML = ''; const sw = document.getElementById('summary-wrap'); if (sw) sw.style.display = 'none'; const discEn = document.getElementById('lang-medical-disclaimer'); if (discEn) discEn.style.display = 'none'; const discEs = document.getElementById('lang-medical-disclaimer-es'); if (discEs) discEs.style.display = 'none'; }
+
+// UI text for each direction
+const UI_TEXT = {
+  'es-en': {
+    inputLabel:     'Su texto en espanol',
+    goBtn:          'Explicar',
+    clearBtn:       'Borrar',
+    sampleLetter:   'Probar una carta en espanol',
+    sampleMixed:    'Probar ingles y espanol mezclado',
+    levels: {
+      beginner:     'Principiante -- traducir y explicar todo',
+      intermediate: 'Intermedio -- explicar matices y modismos',
+      advanced:     'Avanzado -- solo modismos y contexto cultural',
+    },
+    uploadBtn:      '&#128206; Subir PDF o TXT',
+    depthLabel:     'Mi nivel',
+    newConv:        'Nueva conversacion',
+    copyOrig:       'Copiar original',
+    copyResult:     'Copiar resultado',
+    share:          'Compartir',
+    summarize:      '+ Resumir',
+    resultLabel:    'Resultado anotado',
+    summaryLabel:   'Resumen',
+    copySummary:    'Copiar resumen',
+    downloadBtn:    'Descargar &#9662;',
+    dlTxt:          'Texto simple (.txt)',
+    dlHtml:         'Pagina con formato (.html)',
+    dlPdf:          'Imprimir / Guardar como PDF',
+    dlRtf:          'Documento editable (.rtf)',
+    dlDocx:         'Documento Word (.docx)',
+    loading:        'Procesando su texto...',
+    loadingSummary: 'Generando resumen...',
+    privacyNote:    'Anthropic Corp., la empresa de IA que procesa esta informacion, no usa sus datos para entrenar la IA.',
+    uploadStatus:   '',
+  },
+  'en-es': {
+    inputLabel:     'Your English text',
+    goBtn:          'Explain it',
+    clearBtn:       'Clear',
+    sampleLetter:   'Try a Spanish letter',
+    sampleMixed:    'Try mixed English/Spanish',
+    levels: null,
+    uploadBtn:      '&#128206; Upload PDF or TXT',
+    depthLabel:     'My Level',
+    newConv:        'New conversation',
+    copyOrig:       'Copy original',
+    copyResult:     'Copy result',
+    share:          'Share',
+    summarize:      '+ Summarize',
+    resultLabel:    'Annotated result',
+    summaryLabel:   'Summary',
+    copySummary:    'Copy summary',
+    downloadBtn:    'Download &#9662;',
+    dlTxt:          'Plain text (.txt)',
+    dlHtml:         'Formatted page (.html)',
+    dlPdf:          'Print / Save as PDF',
+    dlRtf:          'Editable document (.rtf)',
+    dlDocx:         'Word document (.docx)',
+    loading:        'Annotating your text...',
+    loadingSummary: 'Generating summary...',
+    privacyNote:    'Anthropic Corp., the AI company that processes this information, does not use your data for AI training.',
+    uploadStatus:   '',
+  }
+};
+
+function setUILanguage(dir) {
+  const t = UI_TEXT[dir];
+  const set = (id, prop, val) => { const el = document.getElementById(id); if (el) el[prop] = val; };
+  const setHTML = (id, val) => { const el = document.getElementById(id); if (el) el.innerHTML = val; };
+  const setAll = (sel, prop, val) => { document.querySelectorAll(sel).forEach(el => el[prop] = val); };
+
+  set('input-label', 'textContent', t.inputLabel);
+  set('go-btn', 'textContent', t.goBtn);
+  set('loading', 'innerHTML', '<div class="dots"><span></span><span></span><span></span></div>' + t.loading);
+
+  // Depth label
+  document.querySelectorAll('.depth-label').forEach(el => el.textContent = t.depthLabel);
+
+  // Output header buttons
+  const btnMap = {
+    'New conversation': t.newConv,
+    'Nueva conversacion': t.newConv,
+    'Copy original': t.copyOrig,
+    'Copiar original': t.copyOrig,
+    'Copy result': t.copyResult,
+    'Copiar resultado': t.copyResult,
+    'Share': t.share,
+    'Compartir': t.share,
+  };
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    const match = btnMap[btn.textContent.trim()];
+    if (match) btn.textContent = match;
+  });
+
+  // Summary button
+  const summaryBtn = document.getElementById('summary-btn');
+  if (summaryBtn && (summaryBtn.textContent === '+ Summarize' || summaryBtn.textContent === '+ Resumir')) {
+    summaryBtn.textContent = t.summarize;
+  }
+
+  // Section labels
+  document.querySelectorAll('.section-label').forEach(el => {
+    if (el.textContent.trim() === 'Annotated result' || el.textContent.trim() === 'Resultado anotado')
+      el.textContent = t.resultLabel;
+    if (el.textContent.trim() === 'Summary' || el.textContent.trim() === 'Resumen')
+      el.textContent = t.summaryLabel;
+  });
+
+  // Copy summary button
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    if (btn.textContent === 'Copy summary' || btn.textContent === 'Copiar resumen')
+      btn.textContent = t.copySummary;
+  });
+
+  // Download menu
+  const dlBtn = document.querySelector('.dl-btn');
+  if (dlBtn) dlBtn.innerHTML = t.downloadBtn;
+  document.querySelectorAll('.download-item').forEach(btn => {
+    const txt = btn.textContent.trim();
+    if (txt.includes('.txt')) btn.textContent = t.dlTxt;
+    else if (txt.includes('.html')) btn.textContent = t.dlHtml;
+    else if (txt.includes('PDF') || txt.includes('PDF')) btn.textContent = t.dlPdf;
+    else if (txt.includes('.rtf')) btn.textContent = t.dlRtf;
+    else if (txt.includes('.docx') || txt.includes('.doc')) btn.textContent = t.dlDocx;
+  });
+
+  // Upload buttons
+  document.querySelectorAll('.upload-btn').forEach(btn => btn.innerHTML = t.uploadBtn);
+
+  // Privacy notes
+  document.querySelectorAll('p').forEach(p => {
+    if (p.textContent.includes('Anthropic Corp')) {
+      p.textContent = t.privacyNote;
+    }
+  });
+
+  // Direction button labels
+  const btnEsEn = document.getElementById('btn-es-en');
+  const btnEnEs = document.getElementById('btn-en-es');
+  if (btnEsEn) btnEsEn.innerHTML = dir === 'es-en'
+    ? '&#127474;&#127485; Espa&ntilde;ol &rarr; Ingl&eacute;s'
+    : '&#127474;&#127485; Spanish &rarr; English';
+  if (btnEnEs) btnEnEs.innerHTML = dir === 'es-en'
+    ? 'Ingl&eacute;s &rarr; Espa&ntilde;ol &#127474;&#127485;'
+    : 'English &rarr; Spanish &#127474;&#127485;';
+
+  // Clear buttons and sample buttons in sample-btns
+  document.querySelectorAll('.sample-btn').forEach(btn => {
+    const txt = btn.textContent.trim();
+    if (txt === 'Clear' || txt === 'Borrar') btn.textContent = t.clearBtn;
+    if (txt === 'Try a Spanish letter' || txt === 'Probar una carta en espanol') btn.textContent = t.sampleLetter;
+    if (txt === 'Try mixed English/Spanish' || txt === 'Probar ingles y espanol mezclado') btn.textContent = t.sampleMixed;
+  });
+
+  // Translate ES-EN select options
+  const selEsEn = document.getElementById('depth-select-es-en');
+  if (selEsEn && t.levels) {
+    Array.from(selEsEn.options).forEach(opt => {
+      if (t.levels[opt.value]) opt.text = t.levels[opt.value];
+    });
+  }
+
+  // Summary loading text
+  const sumLoading = document.getElementById('summary-loading');
+  if (sumLoading) {
+    const txt = sumLoading.querySelector('div + *') || sumLoading.lastChild;
+    if (sumLoading.innerHTML.includes('summary') || sumLoading.innerHTML.includes('resumen')) {
+      sumLoading.innerHTML = '<div class="dots"><span></span><span></span><span></span></div>' + t.loadingSummary;
+    }
+  }
+
+  // API key label
+  const keyLabel = document.querySelector('.key-label');
+  if (keyLabel) keyLabel.textContent = dir === 'es-en' ? 'CLAVE API DE ANTHROPIC' : 'ANTHROPIC API KEY';
+  const keyNote = document.querySelector('.key-note');
+  if (keyNote) keyNote.textContent = dir === 'es-en' 
+    ? 'Su clave permanece solo en esta pestana del navegador -- nunca se almacena, nunca se envia a ningun lugar excepto a la API de Anthropic.'
+    : "Your key stays in this browser tab only -- never stored, never sent anywhere except Anthropic's API.";
+}
+
+function setDirection(dir) {
+  currentDirection = dir;
+  const isEsEn = dir === 'es-en';
+  document.getElementById('btn-es-en').classList.toggle('active', isEsEn);
+  document.getElementById('btn-en-es').classList.toggle('active', !isEsEn);
+  document.getElementById('sample-btns-es-en').style.display = isEsEn ? 'flex' : 'none';
+  document.getElementById('sample-btns-en-es').style.display = isEsEn ? 'none' : 'flex';
+  document.getElementById('depth-select-es-en').style.display = isEsEn ? '' : 'none';
+  document.getElementById('depth-select-en-es').style.display = isEsEn ? 'none' : '';
+  document.getElementById('input-label').textContent = isEsEn ? 'Su texto en espanol' : 'Your English text';
+  const ta = document.getElementById('input-area');
+  ta.value = '';
+  ta.placeholder = isEsEn
+    ? 'Pegue su texto en espanol, o ingles mezclado con espanol, para obtener una explicacion en ingles...'
+    : 'Describe what you need to say, or paste English text to translate into natural Mexican Spanish...';
+  document.getElementById('output-wrap').classList.remove('visible');
+  document.getElementById('error-msg').classList.remove('visible');
+  setUILanguage(dir);
+}
+
+function copyOriginal(event) {
+  const text = document.getElementById('input-area').value;
+  if (!text.trim()) return;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = event.target; btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy original', 1800);
+  });
+}
+
+function copyOutput(event) {
+  navigator.clipboard.writeText(document.getElementById('output-body').innerText).then(() => {
+    const btn = event.target; btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy result', 1800);
+  });
+}
+
+function copySummary(event) {
+  navigator.clipboard.writeText(document.getElementById('summary-body').innerText).then(() => {
+    const btn = event.target; btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy summary', 1800);
+  });
+}
+
+async function runSummary() {
+  const apiKey = document.getElementById('api-key-input').value.trim();
+  const inputText = document.getElementById('input-area').value.trim();
+  if (!apiKey || !inputText) return;
+
+  const summaryBtn = document.getElementById('summary-btn');
+  const loadingEl = document.getElementById('summary-loading');
+  const summaryWrap = document.getElementById('summary-wrap');
+  const summaryBody = document.getElementById('summary-body');
+
+  summaryBtn.disabled = true;
+  loadingEl.style.display = 'flex';
+  summaryWrap.style.display = 'none';
+  summaryBody.innerHTML = '';
+
+  const wordCount = inputText.trim().split(/\s+/).length;
+  let lengthGuide, maxTokens;
+  if (wordCount < 300) {
+    lengthGuide = 'Write 2-3 sentences. The source is short so keep the summary tight.';
+    maxTokens = 300;
+  } else if (wordCount < 800) {
+    lengthGuide = 'Write one short paragraph of 4-6 sentences covering the main point, key details, and takeaway.';
+    maxTokens = 500;
+  } else if (wordCount < 2500) {
+    lengthGuide = 'Write 2-3 paragraphs. Cover the main argument or topic, key supporting points, and the conclusion or takeaway.';
+    maxTokens = 900;
+  } else {
+    lengthGuide = 'Write 4-6 paragraphs. This is a long piece  --  give a thorough summary covering the main thesis, each major section or argument, key evidence or examples, and the overall conclusion. Use a short header for each paragraph if helpful.';
+    maxTokens = 1800;
+  }
+
+  const isEsEn = currentDirection === 'es-en';
+  const systemPrompt = isEsEn
+    ? `You are LanguageXplainr Pro. The user has submitted a Spanish text. Write a clear summary in English of what the text is about  --  its type, main points, tone, and key takeaways. Write in plain English. Do not translate word-for-word; summarize the meaning and purpose of the piece. Start directly  --  no preamble.\n\n${lengthGuide}`
+    : `You are LanguageXplainr Pro. The user has submitted an English text or scenario they want help expressing in Mexican Spanish. Write a clear summary in English of what they are trying to accomplish  --  the communication goal, the context, and the key things they need to be able to say. Start directly  --  no preamble.\n\n${lengthGuide}`;
+
+  try {
+    const response = await fetch('/api/proxy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        password: apiKey,
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: maxTokens,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: inputText }]
+      })
+    });
+    const data = await response.json();
+    if (data.error) throw new Error(data.error.message || 'API error');
+    const result = (data.content || []).map(b => b.text || '').join('');
+    summaryBody.innerHTML = renderMarkdown(result);
+    summaryWrap.style.display = 'block';
+    summaryWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    summaryBtn.textContent = 'Summarized';
+  } catch (err) {
+    summaryBody.innerHTML = '<p style="color:#b02a1e">Summary failed: ' + err.message + '</p>';
+    summaryWrap.style.display = 'block';
+  } finally {
+    summaryBtn.disabled = false;
+    loadingEl.style.display = 'none';
+  }
+}
+
+function toggleDownloadMenu() { document.getElementById('download-menu').classList.toggle('open'); }
+document.addEventListener('click', e => { if (!e.target.closest('.download-group')) document.getElementById('download-menu').classList.remove('open'); });
+
+
+function htmlToRtf(html, title, dateStr) {
+  // RTF header
+  let rtf = '{\\rtf1\\ansi\\deff0\n';
+  rtf += '{\\fonttbl{\\f0\\froman\\fcharset0 Times New Roman;}{\\f1\\fswiss\\fcharset0 Arial;}}\n';
+  rtf += '{\\colortbl;\\red16\\green16\\blue18;\\red4\\green120\\blue87;}\n';
+  rtf += '\\widowctrl\\hyphauto\n';
+  rtf += '\\margl1800\\margr1800\\margt1440\\margb1440\n';
+
+  // Title
+  rtf += '{\\f1\\fs28\\b ' + escRtf(title) + '}\\line\n';
+  rtf += '{\\f1\\fs18\\i ' + escRtf(dateStr) + '}\\par\n';
+  rtf += '\\f1\\fs20\n';
+
+  // Convert HTML to RTF
+  let text = html;
+  // Bold
+  text = text.replace(/<strong>(.*?)<\/strong>/gi, '{\\b $1}');
+  // Italic (green annotations)
+  text = text.replace(/<em>(.*?)<\/em>/gi, '{\\i\\cf2 $1}');
+  // Headings
+  text = text.replace(/<h[123][^>]*>(.*?)<\/h[123]>/gi, '\\par{\\f1\\fs24\\b $1}\\par\n');
+  // Blockquotes (notes)
+  text = text.replace(/<blockquote>(.*?)<\/blockquote>/gi, '\\par{\\li360\\ri360\\f1\\fs18\\i $1}\\par\n');
+  // HR
+  text = text.replace(/<hr[^>]*>/gi, '\\par{\\brdrb\\brdrs\\brdrw10 \\par}\n');
+  // List items
+  text = text.replace(/<li>(.*?)<\/li>/gi, '\\par{\\li360 - $1}\n');
+  // Paragraphs
+  text = text.replace(/<p>(.*?)<\/p>/gi, '\\par $1\\par\n');
+  // Line breaks
+  text = text.replace(/<br\s*\/?>/gi, '\\line\n');
+  // Strip remaining tags
+  text = text.replace(/<[^>]+>/g, '');
+  // Unescape HTML entities
+  text = text.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'");
+
+  rtf += text;
+  rtf += '\n}';
+  return rtf;
+}
+
+function escRtf(str) {
+  return str.replace(/\\/g,'\\\\').replace(/\{/g,'\\{').replace(/\}/g,'\\}').replace(/[^\x00-\x7F]/g, c => '\\u' + c.charCodeAt(0) + '?');
+}
+
+function downloadAs(format) {
+  const outputEl = document.getElementById('output-body');
+  const plainText = outputEl.innerText; const renderedHTML = outputEl.innerHTML;
+  const originalText = document.getElementById('input-area').value;
+  const dateStr = new Date().toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
+  const dirLabel = currentDirection === 'es-en' ? 'Spanish to English' : 'English to Spanish';
+  // Capture disclaimer text if present
+  // Include BOTH disclaimer languages in downloads to cover all readers
+  const discEnEl = document.getElementById('lang-medical-disclaimer');
+  const discEsEl = document.getElementById('lang-medical-disclaimer-es');
+  const discEnText = discEnEl ? discEnEl.innerText.trim() : '';
+  const discEsText = discEsEl ? discEsEl.innerText.trim() : '';
+  const disclaimerText = [discEnText, discEsText].filter(Boolean).join('\n\n');
+  const disclaimerHTML = (discEnEl || discEsEl) ? 
+    '<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:0.875rem 1rem;margin-bottom:1rem;font-size:13px;color:#7c2d12;line-height:1.5;">' + 
+    (discEnEl ? discEnEl.innerHTML : '') + '</div>' +
+    '<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:0.875rem 1rem;margin-bottom:1.5rem;font-size:13px;color:#7c2d12;line-height:1.5;">' + 
+    (discEsEl ? discEsEl.innerHTML : '') + '</div>' : '';
+  const summaryWrap = document.getElementById('summary-wrap');
+  const summaryEl = document.getElementById('summary-body');
+  const hasSummary = summaryWrap && summaryWrap.style.display !== 'none' && summaryEl && summaryEl.innerText.trim();
+  const summaryText = hasSummary ? summaryEl.innerText.trim() : '';
+  const summaryHTML = hasSummary ? summaryEl.innerHTML : '';
+  let blob, filename;
+  if (format === 'txt') {
+    blob = new Blob([`LANGUAGEXPLAINR PRO  --  ANNOTATED RESULT\nGenerated: ${dateStr}\n${'-'.repeat(52)}\n\n${disclaimerText ? 'IMPORTANT NOTICE\n' + '-'.repeat(52) + '\n' + disclaimerText + '\n\n' + '-'.repeat(52) + '\n\n' : ''}${summaryText ? 'SUMMARY\n' + '-'.repeat(52) + '\n' + summaryText + '\n\n' + '-'.repeat(52) + '\n\nANNOTATED RESULT\n' + '-'.repeat(52) + '\n\n' : ''}${plainText.replace(/\n{3,}/g,'\n\n').trim()}\n\n${'-'.repeat(52)}\nLanguageXplainr Pro * XplainrHub * powered by Claude`], {type:'text/plain'});
+    filename = 'languagexplainr-result.txt';
+  } else if (format === 'rtf') {
+    const rtfContent = htmlToRtf((disclaimerHTML || '') + (summaryHTML ? '<h2>Summary</h2>' + summaryHTML + '<hr>' : '') + renderedHTML, 'LanguageXplainr Pro -- Annotated Result', dateStr);
+    blob = new Blob([rtfContent], {type:'application/rtf'});
+    filename = 'languagexplainr-result.rtf';
+  } else if (format === 'docx') {
+    // Generate RTF content compatible with Word
+    const rtfContent = htmlToRtf((disclaimerHTML || '') + (summaryHTML ? '<h2>Summary</h2>' + summaryHTML + '<hr>' : '') + renderedHTML, 'LanguageXplainr Pro -- Annotated Result', dateStr);
+    blob = new Blob([rtfContent], {type:'application/msword'});
+    filename = 'languagexplainr-result.doc';
+  } else {
+    const h = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>LanguageXplainr Pro</title><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet"><style>body{font-family:'DM Sans',sans-serif;background:#f0ece3;color:#161612;max-width:760px;margin:3rem auto;padding:0 1.5rem 5rem}.xp-header{display:flex;align-items:baseline;justify-content:space-between;border-bottom:1.5px solid #c8c0b0;padding-bottom:1rem;margin-bottom:2rem}.logo{font-family:'Playfair Display',serif;font-size:28px;font-weight:500}.logo em{color:#14b8a6;font-style:italic}.meta{font-family:'DM Mono',monospace;font-size:11px;color:#8a8478}details{margin-bottom:2rem}summary{font-family:'DM Mono',monospace;font-size:11px;text-transform:uppercase;color:#8a8478;cursor:pointer}.original-box{background:#fff;border:1.5px solid #c8c0b0;border-radius:8px;padding:1rem 1.25rem;font-family:'Playfair Display',serif;font-size:13px;line-height:1.75;color:#524e45;white-space:pre-wrap;margin-top:0.6rem}.result-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#8a8478;margin-bottom:.75rem}.result-card{background:#fff;border:1.5px solid #c8c0b0;border-radius:12px;padding:1.75rem 2rem}.output-body{font-family:'Playfair Display',serif;font-size:15px;line-height:1.9;color:#161612}.output-body p{margin-bottom:1.1em}.output-body strong{font-weight:600}.output-body em{font-style:italic;color:#0f766e}.output-body ul{padding-left:1.4em;margin-bottom:1.1em}.output-body li{margin-bottom:.45em}.output-body blockquote{background:#f0fdfa;border-left:3px solid #0d9488;border-radius:0 8px 8px 0;padding:.8rem 1.1rem;margin:.4em 0;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#524e45}hr.notes-divider{border:none;border-top:1.5px solid #c8c0b0;margin:1.75rem 0 1.25rem}.xp-footer{margin-top:2.5rem;text-align:center;font-family:'DM Mono',monospace;font-size:11px;color:#8a8478}</style>
+</head><body><div class="xp-header"><div class="logo">LanguageXplain<em>r</em> Pro</div><div class="meta">${dirLabel.toUpperCase()} - ${dateStr}</div></div><details><summary>Show original text</summary><div class="original-box">${originalText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div></details>${disclaimerHTML}${summaryHTML ? '<div style="margin-bottom:1.5rem;"><div style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:#8a8478;margin-bottom:0.5rem;">Summary</div><div style="background:#fff;border:1.5px solid #c8c0b0;border-left:3px solid #0d9488;border-radius:0 12px 12px 0;padding:1.75rem 2rem;">' + summaryHTML + '</div></div>' : ''}<div class="result-label">Annotated result</div><div class="result-card"><div class="output-body">${renderedHTML}</div></div><div class="xp-footer">LanguageXplainr Pro - XplainrHub - powered by Claude - anthropic.com</div></body></html>`;
+    blob = new Blob([h], {type:'text/html'}); filename = 'languagexplainr-result.html';
+  }
+  const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+  document.getElementById('download-menu').classList.remove('open');
+}
+
+const TODAY = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+
+const PROMPTS_ES_EN = {
+  beginner: `You are LanguageXplainr Pro from XplainrHub. Annotate Spanish text for a complete beginner. Use MEXICAN SPANISH references throughout  --  not Castilian/Spain Spanish. Today: ${TODAY}.\n\nYour response MUST follow this exact structure  --  three sections in this order:\n\nSECTION 1  --  WHAT THIS IS ABOUT:\nStart with a single line beginning with "📄 " that tells the reader in plain English what this text is  --  its type, topic, and context. Keep it to one or two sentences. Example: "📄 This is a personal letter from someone named Carlos to his mother, describing his first few weeks living in Mexico City and the new slang expressions he's been learning."\n\nSECTION 2  --  FULL ENGLISH TRANSLATION:\nImmediately after the context line, provide the complete text translated into natural, flowing English as a single clean paragraph or block  --  preserving the original tone and meaning. Label it with: **Full translation:**\n\nSECTION 3  --  ANNOTATED TEXT:\nNow reproduce the original Spanish text with inline annotations. Translate every Spanish word or phrase inline immediately after it appears. Give simple phonetic pronunciation guides an English speaker can read (e.g. "koh-MAH-dre" not IPA). Explain idioms with literal AND actual meaning.\n\nRULE 1: Every Spanish word/phrase gets inline translation and pronunciation.\nExamples:\n"tianguis *(tee-AHN-gees  --  open-air market selling handmade goods; very Mexican, from Nahuatl)*"\n"cuates *(KWA-tes  --  close buddies; distinctly Mexican, from Nahuatl 'coatl' meaning twin)*"\n"esta padrisimo *(es-TAH pah-DREE-see-moh  --  it's super awesome; 'padre' in Mexico means cool, not father)*"\n\nRULE 2: Idioms get literal meaning AND actual meaning.\nExample: "sin lana *(literally 'without wool'  --  Mexican slang for broke; 'lana' = wool but also = money in Mexico)*"\n\nRULE 3: Note Nahuatl-origin words  --  they're distinctly Mexican and fascinating.\n\nRULE 4: MARKDOWN  --  **bold** Spanish terms, *italics* for explanations, > blockquotes for Notes, --- to separate the three sections.\n\nTone: warm, encouraging  --  like a friend who lived in Mexico City for years.`,
+
+  intermediate: `You are LanguageXplainr Pro from XplainrHub. Annotate Spanish text for an intermediate learner who knows basics but wants help with Mexican idioms, slang, and cultural context. Always reference MEXICAN SPANISH  --  not Spain. Today: ${TODAY}.\n\nYour response MUST follow this exact structure  --  three sections in this order:\n\nSECTION 1  --  WHAT THIS IS ABOUT:\nStart with a single line beginning with "📄 " that tells the reader in plain English what this text is  --  its type, topic, and context. One or two sentences maximum.\n\nSECTION 2  --  FULL ENGLISH TRANSLATION:\nProvide the complete text in natural, flowing English. Label it: **Full translation:**\n\nSECTION 3  --  ANNOTATED TEXT:\nReproduce the original with annotations. Skip common vocabulary. Focus on Mexican-specific slang, idioms, false cognates, regional expressions, cultural references.\n\nRULE 1: Mexican slang and idioms get inline explanations with literal + actual meaning and regional note.\nExamples:\n"guey/wey *(GWEY  --  evolved from 'castrated bull' to 'dude/buddy'; ubiquitous in Mexico among friends; avoid with elders or in formal settings)*"\n"Que gacho! *(KEH GAH-choh  --  How awful/terrible!; 'gacho' means bad/ugly in Mexican slang  --  not used in Spain)*"\n"codo *(KOH-doh  --  literally 'elbow' but Mexican slang for cheap/stingy)*"\n\nRULE 2: Note when Mexican usage differs from Spain or other Latin American countries.\nRULE 3: Flag Nahuatl-origin words.\nRULE 4: MARKDOWN  --  **bold** key terms, *italics* for explanations, > blockquotes for Notes, --- to separate the three sections.\n\nTone: knowledgeable friend who has spent real time in Mexico.`,
+
+  advanced: `You are LanguageXplainr Pro from XplainrHub. Annotate Spanish text for an advanced speaker wanting help only with very regional Mexican expressions, Nahuatl-derived terms, generational slang, or subtle cultural nuance. MEXICAN SPANISH only. Today: ${TODAY}.\n\nYour response MUST follow this exact structure  --  three sections in this order:\n\nSECTION 1  --  WHAT THIS IS ABOUT:\nStart with a single line beginning with "📄 " that briefly characterizes the text  --  register, region, genre, any notable linguistic features worth flagging up front.\n\nSECTION 2  --  FULL ENGLISH TRANSLATION:\nClean, idiomatic translation of the complete text. Label it: **Full translation:**\n\nSECTION 3  --  ANNOTATED TEXT:\nOriginal text with annotations. Skip anything a B2+ learner knows. Only annotate: highly regional Mexican expressions, generational slang, Nahuatl roots, register distinctions, insider cultural references.\n\nRULE 1: Only annotate what an advanced learner genuinely would not know.\nRULE 2: Note geographic specificity within Mexico when relevant (chilango, norteno, etc.).\nRULE 3: Nahuatl etymology gets brief notes where culturally significant.\nRULE 4: MARKDOWN  --  **bold** key terms, *italics* for annotations, > blockquotes for Notes, --- to separate the three sections.\n\nTone: peer linguist. Precise and concise.`
+};
+
+const PROMPTS_EN_ES = {
+  traveler: `You are LanguageXplainr Pro from XplainrHub. Help an English speaker get practical MEXICAN SPANISH phrases for travel or daily life. Always use Mexican vocabulary  --  not Castilian. Today: ${TODAY}.\n\nYour response MUST follow this exact structure  --  four sections in this order:\n\nSECTION 1  --  WHAT YOU'RE ASKING FOR:\nStart with a single line beginning with "📄 " that briefly restates in English what the user needs  --  the situation and communication goal. Example: "📄 You need phrases for navigating a Mexican restaurant  --  ordering food, flagging an allergy, and asking for the check."\n\nSECTION 2  --  COMPLETE SPANISH VERSION:\nProvide a complete, natural Mexican Spanish version of everything the user needs to say  --  written out as a full note, message, or conversation they could copy and send or speak directly. Label it: **Complete Spanish version:**\n\nSECTION 3  --  QUICK REFERENCE (all phrases together):\nProvide all the key Mexican Spanish phrases in a clean, numbered list with pronunciation  --  no explanations yet, just the phrases so the user can see them at a glance. Label it: **Quick reference:**\n\nSECTION 4  --  FULL BREAKDOWN:\nFor each phrase, provide: Spanish * Pronunciation * Cultural tip * Mexican alternative if one exists.\n\nKey Mexican vocabulary:\n- "carro" not "coche" for car\n- "camion" for bus\n- "lana" for money (informal)\n- Explain "ahorita" carefully  --  famously ambiguous in Mexico\n- Never use "vosotros"\n\nRULE 1: Flag FORMAL (usted) vs INFORMAL (tu) where it matters.\nRULE 2: Note Mexican alternatives to textbook Spanish.\nRULE 3: MARKDOWN  --  **bold** Spanish phrases, *italics* for pronunciation, > blockquotes for cultural tips, --- between sections.\n\nTone: friendly, practical travel guide who knows Mexico well.`,
+
+  learner: `You are LanguageXplainr Pro from XplainrHub. Help an English speaker learning MEXICAN SPANISH who wants translations plus grammar and usage explanations. Always use Mexican vocabulary. Today: ${TODAY}.\n\nYour response MUST follow this exact structure  --  four sections in this order:\n\nSECTION 1  --  WHAT YOU'RE WORKING ON:\nStart with a single line beginning with "📄 " that briefly describes the communication scenario and what skills it will build. Example: "📄 This covers professional introductions and workplace communication in Mexican Spanish  --  you'll learn formal register, common polite expressions, and how to soften requests naturally."\n\nSECTION 2  --  COMPLETE SPANISH VERSION:\nProvide a complete, natural Mexican Spanish version of what the user wants to say  --  written as a full message, note, or script they could copy and send or use directly. Label it: **Complete Spanish version:**\n\nSECTION 3  --  QUICK REFERENCE (all phrases together):\nAll the key Mexican Spanish phrases in a clean numbered list with pronunciation  --  the complete answers at a glance, before the explanations. Label it: **Quick reference:**\n\nSECTION 4  --  FULL BREAKDOWN:\nFor each phrase: translation, pronunciation, grammar explanation, usage notes, common mistakes, Mexican-specific vocabulary choices.\n\nExplain "ahorita" in detail when it comes up.\n\nRULE 1: Connect grammar to English equivalents where helpful.\nRULE 2: Flag Mexican-specific choices vs general Spanish.\nRULE 3: MARKDOWN  --  **bold** Spanish phrases, *italics* for grammar terms, > blockquotes for tips, --- between sections.\n\nTone: patient, encouraging language teacher who loves Mexican culture.`,
+
+  fluency: `You are LanguageXplainr Pro from XplainrHub. Help an advanced English speaker sound genuinely natural in MEXICAN SPANISH  --  authentically Mexican, not textbook-correct. Today: ${TODAY}.\n\nYour response MUST follow this exact structure  --  four sections in this order:\n\nSECTION 1  --  WHAT YOU'RE WORKING ON:\nStart with a single line beginning with "📄 " that frames the communication challenge and what authentic fluency looks like in this context. Example: "📄 This covers declining social invitations in Mexican professional settings  --  the goal is sounding warm and culturally fluent, not just grammatically correct."\n\nSECTION 2  --  COMPLETE SPANISH VERSION:\nProvide a complete, fluent, authentically Mexican Spanish version of everything the user wants to say  --  written out in full so they can copy and send it or speak it directly. This should sound like a native Mexican speaker, not a textbook. Label it: **Complete Spanish version:**\n\nSECTION 3  --  THE NATURAL MEXICAN VERSIONS (all phrases together):\nAll the most natural, authentically Mexican ways to handle each situation  --  a clean list showing the real-life versions before the analysis. Label it: **Natural Mexican Spanish:**\n\nSECTION 4  --  FULL BREAKDOWN:\nFor each: technically correct version, how a Mexican would actually say it, register options (formal/informal/casual), nuance, and what to avoid.\n\nRULE 1: Explain the cultural logic behind language choices.\nRULE 2: Note when something is chilango, norteno, or pan-Mexican.\nRULE 3: MARKDOWN  --  **bold** Spanish phrases, *italics* for nuance notes, > blockquotes for cultural insight, --- between sections.\n\nTone: sophisticated language mentor who thinks deeply about how language carries culture.`
+};
+
+function renderMarkdown(text) {
+  let html = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  html = html.replace(/^### (.+)$/gm,'<h3>$1</h3>').replace(/^## (.+)$/gm,'<h2>$1</h2>').replace(/^# (.+)$/gm,'<h1>$1</h1>');
+  html = html.replace(/^---$/gm,'<hr class="notes-divider">');
+  html = html.replace(/^&gt; (.+)$/gm,'<blockquote>$1</blockquote>').replace(/<\/blockquote>\n<blockquote>/g,'\n');
+  html = html.replace(/\*\*\*(.+?)\*\*\*/g,'<strong><em>$1</em></strong>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*([^*\n]+?)\*/g,'<em>$1</em>');
+  html = html.replace(/^[*-] (.+)$/gm,'<li>$1</li>').replace(/(<li>.*<\/li>\n?)+/gs,'<ul>$&</ul>');
+  html = html.split(/\n{2,}/).map(b => { b=b.trim(); if(!b)return''; if(/^<(h[1-3]|ul|blockquote|hr)/.test(b))return b; return `<p>${b.replace(/\n/g,'<br>')}</p>`; }).join('\n');
+  return html;
+}
+
+// Conversation history
+let conversationHistory = [];
+const MAX_HISTORY_TURNS = 10;
+
+async function clearConversation() {
+  conversationHistory = [];
+  document.getElementById('output-wrap').classList.remove('visible');
+  document.getElementById('output-body').innerHTML = '';
+  document.getElementById('input-area').value = '';
+}
+
+async function runXplainr() {
+  const apiKey = document.getElementById('api-key-input').value.trim();
+  const inputText = document.getElementById('input-area').value.trim();
+  const isEsEn = currentDirection === 'es-en';
+  const depth = document.getElementById(isEsEn ? 'depth-select-es-en' : 'depth-select-en-es').value;
+  const prompts = isEsEn ? PROMPTS_ES_EN : PROMPTS_EN_ES;
+  const userMsg = isEsEn ? `Please annotate this Spanish text:\n\n${inputText}` : `Please help me with this English to Mexican Spanish request:\n\n${inputText}`;
+
+  const errorEl = document.getElementById('error-msg');
+  const loadingEl = document.getElementById('loading');
+  const outputWrap = document.getElementById('output-wrap');
+  const outputBody = document.getElementById('output-body');
+  const goBtn = document.getElementById('go-btn');
+
+  errorEl.classList.remove('visible');
+  if (!apiKey) { errorEl.textContent = 'Please enter your AI Health Plus Paid community password above. / Por favor ingrese su contraseña de la comunidad de pago de AI Health Plus.'; errorEl.classList.add('visible'); return; }
+  if (!inputText) { errorEl.textContent = 'Please paste some text first, or click a sample above. / Por favor pegue texto primero, o haga clic en una muestra.'; errorEl.classList.add('visible'); return; }
+
+  goBtn.disabled = true; loadingEl.classList.add('visible'); outputWrap.classList.remove('visible'); outputBody.innerHTML = '';
+
+  try {
+    const response = await fetch('/api/proxy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: apiKey, model: 'claude-sonnet-4-20250514', max_tokens: 4000, system: prompts[depth] + '\n\nBegin your response directly. No preamble.', messages: (() => {
+          conversationHistory.push({ role: 'user', content: userMsg });
+          if (conversationHistory.length > MAX_HISTORY_TURNS * 2)
+            conversationHistory = conversationHistory.slice(-MAX_HISTORY_TURNS * 2);
+          return conversationHistory;
+        })() })
+    });
+    const data = await response.json();
+    if (data.error) throw new Error(data.error.message || 'API error');
+    const resultText = (data.content||[]).map(b=>b.text||'').join('');
+    outputBody.innerHTML = renderMarkdown(resultText);
+    outputWrap.classList.add('visible');
+    const isEsEnDir = currentDirection === 'es-en';
+    const discEn = document.getElementById('lang-medical-disclaimer');
+    const discEs = document.getElementById('lang-medical-disclaimer-es');
+    // Only show medical disclaimer if content appears medical
+    const medicalKeywords = /\b(medical|doctor|hospital|medication|diagnosis|symptom|treatment|surgery|prescription|pregnancy|diabetes|cancer|pain|illness|disease|condition|patient|clinic|nurse|blood|dose|therapy|enfermedad|medico|doctor|hospital|medicamento|embarazo|dolor|tratamiento|cirugia|receta|diagnostico|sintoma|pastilla|farmacia)\b/i;
+    const inputText2 = document.getElementById('input-area').value;
+    const isMedical = medicalKeywords.test(inputText2) || medicalKeywords.test(resultText);
+    // ES->EN user is Spanish speaker -> show Spanish disclaimer
+    // EN->ES user is English speaker -> show English disclaimer
+    if (discEn) discEn.style.display = (isMedical && !isEsEnDir) ? 'block' : 'none';
+    if (discEs) discEs.style.display = (isMedical && isEsEnDir) ? 'block' : 'none';
+    outputWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (err) {
+    errorEl.textContent = 'Something went wrong: ' + err.message;
+    errorEl.classList.add('visible');
+  } finally {
+    goBtn.disabled = false; loadingEl.classList.remove('visible');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('input-area').addEventListener('keydown', e => {
+    if ((e.ctrlKey||e.metaKey) && e.key === 'Enter') runXplainr();
+  });
+  // Apply correct UI language on initial load
+  setUILanguage('es-en');
+
+  // Drag-and-drop onto textarea
+  const textarea = document.getElementById('input-area');
+  textarea.addEventListener('dragover', (e) => { e.preventDefault(); textarea.style.borderColor = '#0d9488'; });
+  textarea.addEventListener('dragleave', () => { textarea.style.borderColor = ''; });
+  textarea.addEventListener('drop', async (e) => {
+    e.preventDefault();
+    textarea.style.borderColor = '';
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+    const fakeInput = { files: [file] };
+    await handleFileUpload(fakeInput);
+  });
+});
+
+// --- Microphone / Speech Recognition ---
+let recognition = null;
+let isListening = false;
+
+function toggleMic() {
+  const micBtn = document.getElementById('mic-btn');
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  
+  if (!SpeechRecognition) {
+    alert('Speech recognition is not supported in this browser. Try Chrome or Safari.');
+    return;
+  }
+  
+  if (isListening) {
+    recognition.stop();
+    return;
+  }
+  
+  recognition = new SpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+  
+  recognition.onstart = () => {
+    isListening = true;
+    micBtn.classList.add('listening');
+    micBtn.title = 'Listening... click to stop';
+  };
+  
+  recognition.onresult = (e) => {
+    const transcript = e.results[0][0].transcript;
+    const textarea = document.getElementById('input-area');
+    textarea.value = (textarea.value ? textarea.value + ' ' : '') + transcript;
+  };
+  
+  recognition.onerror = (e) => {
+    if (e.error !== 'aborted') alert('Microphone error: ' + e.error);
+  };
+  
+  recognition.onend = () => {
+    isListening = false;
+    micBtn.classList.remove('listening');
+    micBtn.title = 'Click to speak';
+  };
+  
+  recognition.start();
+}
+
+// --- Share ---
+async function shareResult() {
+  const outputEl = document.getElementById('output-body');
+  if (!outputEl || !outputEl.innerText.trim()) return;
+  
+  const text = outputEl.innerText.trim();
+  const title = document.title;
+  
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: title, text: text });
+    } catch(e) {
+      if (e.name !== 'AbortError') {
+        // Fall back to clipboard
+        copyToClipboard(text);
+      }
+    }
+  } else {
+    // Desktop fallback - copy to clipboard
+    copyToClipboard(text);
+  }
+}
+
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('share-btn');
+    if (btn) { btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Share', 1500); }
+  });
+}
+
+
+// File upload handler
+function triggerUpload() {
+  document.getElementById('file-input').click();
+}
+
+async function handleFileUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  const statusEl = document.getElementById('upload-status');
+  const textarea = document.getElementById('input-area');
+
+  statusEl.textContent = 'Reading file...';
+
+  try {
+    if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+      // PDF extraction using PDF.js
+      if (!window.pdfjsLib) {
+        statusEl.textContent = 'PDF library not loaded. Check your internet connection.';
+        return;
+      }
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      let fullText = '';
+      const numPages = pdf.numPages;
+      statusEl.textContent = `Extracting text from ${numPages} page${numPages > 1 ? 's' : ''}...`;
+
+      for (let i = 1; i <= numPages; i++) {
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        const pageText = content.items.map(item => item.str).join(' ');
+        fullText += pageText + '\n\n';
+      }
+
+      if (fullText.trim().length < 50) {
+        statusEl.textContent = 'Could not extract text. This may be a scanned PDF (image-only). Try copying and pasting the text instead.';
+        return;
+      }
+
+      textarea.value = fullText.trim();
+      statusEl.textContent = `Loaded: ${file.name} (${numPages} page${numPages > 1 ? 's' : ''})`;
+
+    } else if (file.type === 'text/plain' || file.name.endsWith('.txt') || file.name.endsWith('.rtf')) {
+      // Plain text
+      const text = await file.text();
+      textarea.value = text;
+      statusEl.textContent = `Loaded: ${file.name}`;
+
+    } else {
+      statusEl.textContent = 'Unsupported file type. Please use PDF or TXT files.';
+      return;
+    }
+
+    // Clear the input so the same file can be re-uploaded if needed
+    input.value = '';
+
+  } catch (err) {
+    statusEl.textContent = 'Error reading file: ' + err.message;
+    console.error('File upload error:', err);
+  }
+}
+
+
+// Drag and drop support
+(function() {
+  const textarea = document.getElementById('input-area');
+  const wrap = textarea ? textarea.closest('.textarea-wrap') || textarea.parentElement : null;
+  if (!wrap) return;
+
+  wrap.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    wrap.classList.add('dragover');
+  });
+
+  wrap.addEventListener('dragleave', () => {
+    wrap.classList.remove('dragover');
+  });
+
+  wrap.addEventListener('drop', async (e) => {
+    e.preventDefault();
+    wrap.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+    // Reuse the existing file handler
+    const fakeInput = { files: [file] };
+    await handleFileUpload(fakeInput);
+  });
+})();
+
+</script>
+</body>
+</html>
