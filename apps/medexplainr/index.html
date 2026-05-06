@@ -1,0 +1,2638 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MedeXplainr v4</title>
+    <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#10b981" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <style>
+/* Medical-themed styling for readability and trust */
+:root {
+  --ink: #1f2937;
+  --paper: #ffffff;
+  --muted: #6b7280;
+  --accent: #2525C9; /* High-contrast blue */
+  --border: #e5e7eb;
+  --panel: #f0f9ff; /* Light medical blue */
+  --medical-green: #059669; /* For positive/safe terms */
+  --medical-orange: #ea580c; /* For warning/caution terms */
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+  line-height: 1.5;
+}
+
+header, footer {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+footer { 
+  border-top: 1px solid var(--border); 
+  border-bottom: none; 
+  background-color: #f8f9fa;
+}
+
+.footer-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.medical-disclaimer {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 0.375rem;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #856404;
+}
+
+.medical-disclaimer strong {
+  color: #664d03;
+}
+
+main {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.controls { display: flex; gap: .5rem; flex-wrap: wrap; }
+button {
+  background: var(--accent);
+  color: white;
+  border: 0;
+  border-radius: .375rem;
+  padding: .5rem .75rem;
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+button:hover { filter: brightness(0.95); }
+
+.editor, .output, .explanation { display: grid; gap: .5rem; }
+label { color: var(--muted); font-weight: 600; }
+
+#medical-input {
+  width: 100%;
+  min-height: 200px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  border: 1px solid var(--border);
+  border-radius: .375rem;
+  padding: .75rem;
+  line-height: 1.6;
+}
+
+.panel {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: .375rem;
+  padding: .75rem;
+  min-height: 100px;
+  overflow: auto;
+  line-height: 1.6;
+}
+
+.term {
+  background: #ecfdf5; /* Light medical green background */
+  border-bottom: 2px solid var(--medical-green);
+  cursor: pointer;
+  padding: 0 2px;
+  border-radius: 2px;
+  transition: background-color 0.2s;
+}
+.term:hover { 
+  background: #d1fae5; /* Slightly darker green on hover */
+}
+.term-unknown {
+  background: #f3e8ff;
+  border-bottom: 2px solid #7c3aed;
+  cursor: pointer;
+  padding: 0 2px;
+  border-radius: 2px;
+  transition: background-color 0.2s;
+}
+.term-unknown:hover {
+  background: #ede9fe;
+}
+
+/* Different highlighting for different term types */
+.term.medication {
+  background: #ecfdf5;
+  border-bottom-color: var(--medical-green);
+}
+.term.condition {
+  background: #ecfdf5;
+  border-bottom-color: var(--medical-green);
+}
+.term.procedure {
+  background: #ecfdf5;
+  border-bottom-color: var(--medical-green);
+}
+
+.explain-title { 
+  font-weight: 700; 
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+.explain-body { 
+  margin-top: .25rem; 
+  font-size: 16px;
+}
+.explain-usage { 
+  margin-top: .75rem; 
+  padding-top: .5rem;
+  border-top: 1px solid var(--border);
+  font-style: italic; 
+  color: #4b5563;
+}
+.explain-analogy { 
+  margin-top: .75rem; 
+  padding: .75rem;
+  background: #f9fafb;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 .375rem .375rem 0;
+  color: #374151; 
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  header, footer, main {
+    padding: 0.75rem;
+  }
+  
+  .controls {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  button {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 16px;
+  }
+  
+  #medical-input {
+    min-height: 150px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  .panel {
+    min-height: 80px;
+    padding: 0.5rem;
+  }
+  
+  .footer-content {
+    padding: 0;
+  }
+  
+  .medical-disclaimer {
+    font-size: 13px;
+    padding: 0.5rem;
+  }
+  
+  .explain-title {
+    font-size: 18px;
+  }
+  
+  .explain-body {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  header h1 {
+    font-size: 1.5rem;
+  }
+  
+  header p {
+    font-size: 14px;
+  }
+  
+  button {
+    padding: 0.6rem;
+    font-size: 15px;
+  }
+  
+  #medical-input {
+    min-height: 120px;
+  }
+  
+  .medical-disclaimer {
+    font-size: 12px;
+  }
+}
+
+/* Improved touch targets for mobile */
+@media (hover: none) and (pointer: coarse) {
+  .term {
+    padding: 4px 6px;
+    margin: 1px;
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  button {
+    min-height: 44px;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <header style="padding-top:0.6rem;padding-bottom:0.6rem;">
+    <h1>MedeXplainr <span style="font-weight:700;font-style:italic;color:#2525C9;margin-left:4px;">Lite</span></h1>
+    
+  </header>
+
+  <main>
+    <section class="disclaimer-section" style="padding:0;margin-bottom:0.5rem;"><div style="padding:0.6rem 0.875rem;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;font-size:12px;color:#7c2d12;line-height:1.5;">
+  <strong>Medical information only — not medical advice.</strong> This tool defines medical terms. Always consult your healthcare provider before making any medical decisions.
+  <br><em style="font-size:11px;">Solo información médica — no es consejo médico. Esta herramienta define términos médicos. Consulte siempre a su médico antes de tomar decisiones de salud.</em>
+</div></section>
+    <section class="controls">
+      <button id="load-medication-example" type="button" style="display:flex;flex-direction:column;align-items:center;line-height:1.3;">
+        <span>See Sample Medication List</span>
+        <em style="font-size:12px;font-weight:400;">Ver Lista de Medicamentos de Muestra</em>
+      </button>
+      <button id="load-procedure-example" type="button" style="display:flex;flex-direction:column;align-items:center;line-height:1.3;">
+        <span>See Sample Procedure Note</span>
+        <em style="font-size:12px;font-weight:400;">Ver Nota de Procedimiento de Muestra</em>
+      </button>
+      <button id="clear" type="button" style="display:flex;flex-direction:column;align-items:center;line-height:1.3;">
+        <span>Clear</span>
+        <em style="font-size:12px;font-weight:400;">Borrar</em>
+      </button>
+    </section>
+
+
+    <section class="editor">
+      <p style="font-size:15px;font-weight:600;color:#111;margin-bottom:0.25rem;">Paste or enter text. After entering, click a highlighted term for its definition and explanation.</p>
+      <p style="font-size:13px;font-style:italic;color:#6b7280;margin-bottom:0.75rem;">Pegue o escriba texto. Después, haga clic en un término resaltado para ver su definición y explicación.</p>
+      <textarea id="medical-input" spellcheck="false" placeholder="Type or paste medical text, discharge notes, medication lists, or health information here... / Escriba o pegue texto médico, notas de alta, listas de medicamentos o información de salud aquí..."></textarea>
+    </section>
+
+    <section class="output">
+      <label style="font-size:16px;font-weight:700;color:#111;">Clickable view / <em style="font-weight:400;font-style:italic;color:#6b7280;">Vista interactiva</em></label>
+      <p style="font-size:15px;font-weight:600;color:#111;margin:4px 0 2px;">Green terms are in our glossary — click for a plain-English explanation. Purple terms aren't in Lite — try Pro apps for full detail.</p>
+      <p style="font-size:13px;font-style:italic;color:#6b7280;margin:0 0 8px;">Los términos verdes están en nuestro glosario — haga clic para ver la explicación. Los términos morados no están en Lite — pruebe las apps Pro.</p>
+      <div id="clickable-view" class="panel" aria-live="polite"></div>
+    </section>
+
+    <section class="explanation">
+      <label>Explanation / <em style="font-weight:400;font-style:italic;color:#6b7280;">Explicación</em></label>
+      <div id="explanation" class="panel" aria-live="polite"></div>
+    </section>
+
+    <section style="margin-top:0.5rem;">
+      <div style="padding:0.75rem 1rem;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;font-size:14px;color:#0c4a6e;line-height:1.6;text-align:center;">
+        This app is free from <strong>AI Health Plus</strong> — a free English/Spanish health community on Skool.com.
+        <br><a href="https://www.skool.com/ai-done-for-you-7410/about" target="_blank" rel="noopener" style="color:#2525C9;font-weight:700;text-decoration:underline;">Click here to join</a>
+        <br><em style="font-size:13px;color:#0369a1;">Esta app es gratuita de <strong>AI Health Plus</strong> — una comunidad de salud en inglés y español. <a href="https://www.skool.com/ai-done-for-you-7410/about" target="_blank" rel="noopener" style="color:#2525C9;font-weight:700;text-decoration:underline;">Haz clic aquí para unirte.</a></em>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-content">
+      <small>Made to help understand medical information.</small>
+      <div class="medical-disclaimer">
+        <strong>Medical Disclaimer:</strong> This application is for educational purposes only and is not intended to be a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+/*
+  App logic for MedeXplainr
+  - Tokenizes pasted medical text by splitting on word boundaries
+  - Wraps known medical terms with <span class="term" data-term="...">...</span>
+  - On click, shows a simple, no-jargon explanation with analogies
+*/
+
+(function () {
+  const input = document.getElementById('medical-input');
+  const clickable = document.getElementById('clickable-view');
+  const explanation = document.getElementById('explanation');
+  const btnMedication = document.getElementById('load-medication-example');
+  const btnProcedure = document.getElementById('load-procedure-example');
+  const btnClear = document.getElementById('clear');
+
+  // Plain-English medical glossary, no medical jargon, no circular definitions.
+  // Keep it short, friendly, and accessible to patients and caregivers.
+  const TERMS = {
+    // Basic anatomy and body systems
+    "cardiovascular": {
+      title: "cardiovascular",
+      body: "Related to your heart and blood vessels.",
+      usage: "Describes conditions, procedures, or medications that affect your heart and circulation.",
+      analogy: "Your body's plumbing system - heart is the pump, blood vessels are the pipes."
+    },
+    "pulmonary": {
+      title: "pulmonary",
+      body: "Related to your lungs and breathing.",
+      usage: "Used to describe lung conditions, breathing problems, or treatments.",
+      analogy: "Your body's air conditioning system."
+    },
+    "respiratory": {
+      title: "respiratory",
+      body: "Having to do with breathing and your lungs.",
+      usage: "Describes breathing problems, lung diseases, or breathing treatments.",
+      analogy: "Everything involved in getting air in and out of your body."
+    },
+    "gastrointestinal": {
+      title: "gastrointestinal (GI)",
+      body: "Related to your stomach, intestines, and digestive system.",
+      usage: "Describes stomach problems, digestion issues, or treatments for the gut.",
+      analogy: "Your body's food processing factory."
+    },
+    "neurological": {
+      title: "neurological",
+      body: "Related to your brain, spinal cord, and nerves.",
+      usage: "Describes brain conditions, nerve problems, or treatments affecting the nervous system.",
+      analogy: "Your body's electrical wiring and control center."
+    },
+
+    // Common medical conditions
+    "hypertension": {
+      title: "hypertension",
+      body: "High blood pressure. Your blood pushes too hard against your blood vessel walls.",
+      usage: "A common condition that doctors monitor and help patients manage.",
+      analogy: "Like a garden hose with too much water pressure - it can damage the hose over time.",
+      category: "condition"
+    },
+    "diabetes": {
+      title: "diabetes",
+      body: "A condition where your body can't properly control blood sugar levels.",
+      usage: "A common condition that requires ongoing medical management.",
+      analogy: "Like a broken thermostat that can't regulate the temperature in your house.",
+      category: "condition"
+    },
+    "pneumonia": {
+      title: "pneumonia",
+      body: "An infection in your lungs that makes tiny air sacs fill with fluid or pus.",
+      usage: "A serious condition that requires medical attention.",
+      analogy: "Like having water in the tiny balloons in your lungs that are supposed to be filled with air.",
+      category: "condition"
+    },
+    "asthma": {
+      title: "asthma",
+      body: "A condition where your airways get narrow and swollen, making it hard to breathe.",
+      usage: "A chronic condition that doctors help patients manage.",
+      analogy: "Like having drinking straws that keep getting squeezed smaller.",
+      category: "condition"
+    },
+    "arthritis": {
+      title: "arthritis",
+      body: "Swelling and pain in your joints.",
+      usage: "A condition affecting joint movement and comfort.",
+      analogy: "Like having rusty hinges that are stiff and painful to move.",
+      category: "condition"
+    },
+    "sepsis": {
+      title: "sepsis",
+      body: "A serious condition where your body's response to an infection damages your own tissues and organs.",
+      usage: "A life-threatening emergency that requires immediate medical care.",
+      analogy: "Like your body's alarm system going haywire and attacking itself while trying to fight germs.",
+      category: "condition"
+    },
+    "neuralgia": {
+      title: "neuralgia",
+      body: "Sharp, shooting pain that follows the path of a nerve.",
+      usage: "A type of nerve pain that doctors can help manage.",
+      analogy: "Like an electrical wire that's sparking and sending painful jolts.",
+      category: "condition"
+    },
+    "neuropathy": {
+      title: "neuropathy",
+      body: "Damage to nerves that causes numbness, tingling, or pain, often in hands and feet.",
+      usage: "A condition affecting nerve function, often associated with diabetes.",
+      analogy: "Like phone lines with bad connections - signals don't get through properly.",
+      category: "condition"
+    },
+    "pancreatitis": {
+      title: "pancreatitis",
+      body: "Inflammation of the pancreas, the organ that makes digestive enzymes and insulin.",
+      usage: "A painful condition affecting digestion and blood sugar regulation.",
+      analogy: "Like a factory that gets inflamed and can't do its job of making important chemicals.",
+      category: "condition"
+    },
+    "benign prostatic hyperplasia": {
+      title: "benign prostatic hyperplasia (BPH)",
+      body: "Non-cancerous enlargement of the prostate gland in men that can block urine flow.",
+      usage: "Treated with medications or procedures to shrink the prostate or improve urine flow.",
+      analogy: "Like a donut that gets bigger and squeezes the straw going through the middle.",
+      category: "condition"
+    },
+    "BPH": {
+      title: "BPH (Benign Prostatic Hyperplasia)",
+      body: "Non-cancerous enlargement of the prostate gland in men that can block urine flow.",
+      usage: "Common in older men; treated with medications or minimally invasive procedures.",
+      analogy: "Like a donut that gets bigger and squeezes the straw going through the middle.",
+      category: "condition"
+    },
+    "dyspnea": {
+      title: "dyspnea",
+      body: "Shortness of breath or difficulty breathing.",
+      usage: "A common symptom that can indicate heart, lung, or other problems.",
+      analogy: "Like trying to breathe through a straw - you can't get enough air.",
+      category: "symptom"
+    },
+    "tachycardia": {
+      title: "tachycardia",
+      body: "A fast heartbeat, usually over 100 beats per minute while resting.",
+      usage: "Can be caused by stress, fever, medication, or heart problems.",
+      analogy: "Like your engine running too fast when the car is parked.",
+      category: "symptom"
+    },
+    "bilateral": {
+      title: "bilateral",
+      body: "Affecting both sides of the body.",
+      usage: "Doctors use this to describe symptoms or conditions on both left and right sides.",
+      analogy: "Like having the same thing happen in both your left and right shoes.",
+      category: "term"
+    },
+    "crackles": {
+      title: "crackles",
+      body: "Small popping or crackling sounds heard in the lungs when breathing, often indicating fluid.",
+      usage: "Doctors listen for these with a stethoscope to check lung health.",
+      analogy: "Like the sound of Rice Krispies when you add milk - means there's fluid where there should be air.",
+      category: "finding"
+    },
+    "auscultation": {
+      title: "auscultation",
+      body: "Listening to sounds inside your body using a stethoscope.",
+      usage: "Doctors do this to hear your heart, lungs, and intestines.",
+      analogy: "Like a mechanic listening to your car engine to check if it's running right.",
+      category: "procedure"
+    },
+    "edema": {
+      title: "edema",
+      body: "Swelling caused by fluid trapped in your body's tissues.",
+      usage: "Common in legs, ankles, and feet; can indicate heart, kidney, or circulation problems.",
+      analogy: "Like a sponge that's holding too much water and puffing up.",
+      category: "symptom"
+    },
+    "troponin": {
+      title: "troponin",
+      body: "A protein released into the blood when heart muscle is damaged.",
+      usage: "Doctors test for this to diagnose heart attacks.",
+      analogy: "Like a leak detector - when heart cells break, this chemical spills out and shows up in blood tests.",
+      category: "lab test"
+    },
+    "BNP": {
+      title: "BNP (B-type Natriuretic Peptide)",
+      body: "A hormone your heart releases when it's working too hard or under stress.",
+      usage: "Doctors test for this to check for heart failure.",
+      analogy: "Like a distress signal your heart sends out when it's struggling to pump blood.",
+      category: "lab test"
+    },
+    "ECG": {
+      title: "ECG (Electrocardiogram)",
+      body: "A test that records the electrical signals that make your heart beat.",
+      usage: "Used to detect heart problems, irregular rhythms, and heart attacks.",
+      analogy: "Like recording a song - it captures the rhythm and pattern of your heartbeat.",
+      category: "test"
+    },
+    "atrial fibrillation": {
+      title: "atrial fibrillation (AFib)",
+      body: "An irregular, often rapid heart rhythm that can lead to blood clots in the heart.",
+      usage: "A common heart rhythm problem that increases stroke risk.",
+      analogy: "Like your heart's upper chambers are quivering like jello instead of beating in a steady rhythm.",
+      category: "condition"
+    },
+    "ventricular": {
+      title: "ventricular",
+      body: "Related to the ventricles - the two lower chambers of your heart that pump blood out to your body and lungs.",
+      usage: "Doctors use this when talking about the main pumping chambers of your heart.",
+      analogy: "The heavy-duty pumps at the bottom of your heart that do the real work of pushing blood around.",
+      category: "anatomy"
+    },
+    "pulmonary congestion": {
+      title: "pulmonary congestion",
+      body: "Fluid buildup in your lungs that makes it hard to breathe.",
+      usage: "Often a sign of heart failure or other serious conditions.",
+      analogy: "Like trying to breathe in a steamy shower room - your lungs have extra moisture blocking the air.",
+      category: "condition"
+    },
+    "diuretic": {
+      title: "diuretic",
+      body: "A medication that helps your body get rid of extra water and salt through urine (also called a 'water pill').",
+      usage: "Used to treat high blood pressure, heart failure, and swelling.",
+      analogy: "Like a drain opener for your body - helps flush out excess fluid.",
+      category: "medication"
+    },
+    "ACE inhibitor": {
+      title: "ACE inhibitor",
+      body: "A blood pressure medication that relaxes blood vessels by blocking a chemical that tightens them.",
+      usage: "Used to treat high blood pressure and heart failure; helps protect kidneys too.",
+      analogy: "Like loosening a tight belt - helps your blood vessels relax and widen.",
+      category: "medication"
+    },
+    "beta-blocker": {
+      title: "beta-blocker",
+      body: "A heart medication that slows your heart rate and reduces blood pressure.",
+      usage: "Used to treat high blood pressure, irregular heartbeat, and chest pain.",
+      analogy: "Like putting your car in a lower gear - slows things down and reduces strain on the engine.",
+      category: "medication"
+    },
+    "ejection fraction": {
+      title: "ejection fraction",
+      body: "The percentage of blood your heart pumps out with each beat (normal is 50-70%).",
+      usage: "Doctors measure this to see how well your heart is pumping.",
+      analogy: "Like checking how much water a pump moves with each squeeze - shows if your heart is weak or strong.",
+      category: "measurement"
+    },
+    "valvular": {
+      title: "valvular",
+      body: "Related to the heart valves - the flaps that control blood flow through your heart.",
+      usage: "Describes problems with the doors inside your heart that keep blood flowing in the right direction.",
+      analogy: "Your heart has four one-way doors that keep blood moving forward - 'valvular' means about those doors.",
+      category: "anatomy"
+    },
+    "COPD": {
+      title: "COPD (Chronic Obstructive Pulmonary Disease)",
+      body: "A lung disease that makes it hard to breathe, usually from smoking damage.",
+      usage: "Managed with inhalers, oxygen therapy, and lifestyle changes like quitting smoking.",
+      analogy: "Like trying to breathe through damaged straws that keep getting more blocked.",
+      category: "condition"
+    },
+    "angina": {
+      title: "angina",
+      body: "Chest pain caused when your heart muscle doesn't get enough oxygen-rich blood.",
+      usage: "Warning sign of heart disease; treated with medications and lifestyle changes.",
+      analogy: "Like your heart sending an SOS signal when it's not getting enough fuel.",
+      category: "condition"
+    },
+    "arrhythmia": {
+      title: "arrhythmia",
+      body: "When your heart beats irregularly - too fast, too slow, or with an uneven rhythm.",
+      usage: "Treated with medications, devices like pacemakers, or procedures to correct rhythm.",
+      analogy: "Like a drummer playing off-beat instead of keeping steady time.",
+      category: "condition"
+    },
+    "atrial fibrillation": {
+      title: "atrial fibrillation (AFib)",
+      body: "A type of irregular heartbeat that can increase risk of stroke and blood clots.",
+      usage: "Treated with blood thinners, heart rate medications, or procedures to restore rhythm.",
+      analogy: "Like the top chambers of your heart quivering instead of beating properly.",
+      category: "condition"
+    },
+    "AFib": {
+      title: "AFib (Atrial Fibrillation)",
+      body: "A type of irregular heartbeat that can increase risk of stroke and blood clots.",
+      usage: "Treated with blood thinners and medications to control heart rate or rhythm.",
+      analogy: "Like the top chambers of your heart quivering instead of beating properly.",
+      category: "condition"
+    },
+    "gastritis": {
+      title: "gastritis",
+      body: "Inflammation of the stomach lining that can cause pain, nausea, and indigestion.",
+      usage: "Treated with acid-reducing medications and avoiding irritating foods or medications.",
+      analogy: "Like the inside of your stomach getting red and irritated, like a sunburn.",
+      category: "condition"
+    },
+    "GERD": {
+      title: "GERD (Gastroesophageal Reflux Disease)",
+      body: "When stomach acid frequently flows back into your esophagus, causing heartburn.",
+      usage: "Treated with acid-reducing medications, diet changes, and sometimes surgery.",
+      analogy: "Like a one-way valve that's not working properly, letting acid go the wrong direction.",
+      category: "condition"
+    },
+    "osteoporosis": {
+      title: "osteoporosis",
+      body: "A condition where bones become weak and brittle, making them more likely to break.",
+      usage: "Treated with calcium, vitamin D, bone-strengthening medications, and weight-bearing exercise.",
+      analogy: "Like a honeycomb getting more holes and becoming fragile.",
+      category: "condition"
+    },
+    "fibromyalgia": {
+      title: "fibromyalgia",
+      body: "A condition causing widespread muscle pain, fatigue, and tender points throughout the body.",
+      usage: "Managed with medications, gentle exercise, stress management, and good sleep habits.",
+      analogy: "Like your pain volume control is stuck on high, making everything hurt more.",
+      category: "condition"
+    },
+    "migraine": {
+      title: "migraine",
+      body: "Severe headaches often with nausea, light sensitivity, and visual disturbances.",
+      usage: "Treated with specific migraine medications, preventive drugs, and trigger avoidance.",
+      analogy: "Like a thunderstorm in your head with lightning, thunder, and heavy rain.",
+      category: "condition"
+    },
+    "epilepsy": {
+      title: "epilepsy",
+      body: "A brain disorder that causes repeated seizures due to abnormal electrical activity.",
+      usage: "Managed with anti-seizure medications and sometimes surgery or devices.",
+      analogy: "Like electrical storms in the brain that cause temporary short circuits.",
+      category: "condition"
+    },
+    "thyroiditis": {
+      title: "thyroiditis",
+      body: "Inflammation of the thyroid gland that can cause it to produce too much or too little hormone.",
+      usage: "Treatment depends on the type - may include medications or just monitoring.",
+      analogy: "Like your body's thermostat getting inflamed and not working properly.",
+      category: "condition"
+    },
+    "hypothyroidism": {
+      title: "hypothyroidism",
+      body: "When your thyroid gland doesn't make enough thyroid hormone, slowing down your metabolism.",
+      usage: "Treated with daily thyroid hormone replacement medication like levothyroxine.",
+      analogy: "Like your body's engine running too slowly because it's not getting enough fuel.",
+      category: "condition"
+    },
+    "hyperthyroidism": {
+      title: "hyperthyroidism",
+      body: "When your thyroid gland makes too much thyroid hormone, speeding up your metabolism.",
+      usage: "Treated with medications, radioactive iodine, or surgery to reduce hormone production.",
+      analogy: "Like your body's engine running too fast because it's getting too much fuel.",
+      category: "condition"
+    },
+
+    // Common medications
+    "antibiotic": {
+      title: "antibiotic",
+      body: "Medicine that kills bacteria or stops them from growing.",
+      usage: "A type of medication doctors prescribe for bacterial infections.",
+      analogy: "Like sending in soldiers to fight off invading bacteria in your body.",
+      category: "medication"
+    },
+    "ibuprofen": {
+      title: "ibuprofen",
+      body: "A pain reliever that also reduces swelling and fever. Brand names include Advil and Motrin.",
+      usage: "An over-the-counter medication for pain, inflammation, and fever.",
+      analogy: "Like a firefighter that puts out the fire of pain and swelling.",
+      category: "medication"
+    },
+    "acetaminophen": {
+      title: "acetaminophen",
+      body: "A pain reliever and fever reducer. Brand name is Tylenol.",
+      usage: "An over-the-counter medication for pain and fever relief.",
+      analogy: "Like a thermostat that turns down your body's pain and fever settings.",
+      category: "medication"
+    },
+
+    "sodium": {
+      title: "Sodium",
+      body: "An essential mineral (electrolyte) that regulates fluid balance, blood pressure, and nerve and muscle function. It is the main salt in your blood.",
+      usage: "Measured in blood to check kidney function, hydration, and blood pressure balance.",
+      analogy: "Like the salt in ocean water -- your body needs just the right amount to keep everything working.",
+      category: "condition"
+    },
+    "calcium": {
+      title: "Calcium",
+      body: "A mineral essential for strong bones and teeth, muscle contraction, nerve signaling, and blood clotting. Most calcium is stored in bones.",
+      usage: "Blood calcium levels reflect how well your bones, kidneys, and parathyroid glands are working.",
+      analogy: "The building block of your skeleton -- but it also plays a key role in making your heart beat and muscles move.",
+      category: "condition"
+    },
+    "bilirubin": {
+      title: "Bilirubin",
+      body: "A yellow pigment produced when old red blood cells are broken down. The liver processes bilirubin and passes it into bile. High levels cause jaundice (yellowing of skin or eyes).",
+      usage: "Measured to assess liver function and red blood cell breakdown.",
+      analogy: "Like the yellow color in a bruise -- it is a byproduct of your body recycling old blood cells.",
+      category: "condition"
+    },
+    "alkaline phosphatase": {
+      title: "Alkaline Phosphatase (ALP)",
+      body: "An enzyme found mainly in the liver and bones. Elevated levels can indicate liver disease, bile duct blockage, or bone disorders.",
+      usage: "Part of a liver function panel. Also rises when bones are very active, such as during growth or healing.",
+      analogy: "A warning light for your liver and bones -- when it is too high, something may be irritating or damaging those tissues.",
+      category: "condition"
+    },
+    "alanine aminotransferase": {
+      title: "Alanine Aminotransferase (ALT)",
+      body: "An enzyme found mostly in liver cells. When liver cells are damaged or inflamed, ALT leaks into the blood. It is one of the most specific markers of liver injury.",
+      usage: "Elevated ALT often indicates hepatitis, fatty liver, alcohol damage, or medication side effects on the liver.",
+      analogy: "Like a leak detector -- when your liver is damaged, ALT spills into the bloodstream as a signal something is wrong.",
+      category: "condition"
+    },
+    "alt": {
+      title: "ALT (Alanine Aminotransferase)",
+      body: "A liver enzyme that leaks into the blood when liver cells are damaged. One of the most important markers of liver health.",
+      usage: "Elevated ALT suggests liver inflammation or injury. Normal range is typically under 50 U/L.",
+      analogy: "A liver alarm -- high levels mean liver cells are stressed or damaged.",
+      category: "condition"
+    },
+    "aspartate aminotransferase": {
+      title: "Aspartate Aminotransferase (AST)",
+      body: "An enzyme found in the liver, heart, and muscles. Elevated AST can indicate liver disease, heart attack, or muscle damage. Less specific to the liver than ALT.",
+      usage: "Often measured alongside ALT. A high AST-to-ALT ratio can help diagnose alcohol-related liver disease.",
+      analogy: "A broader damage signal -- it rises when the liver, heart, or muscles are under stress.",
+      category: "condition"
+    },
+    "ast": {
+      title: "AST (Aspartate Aminotransferase)",
+      body: "An enzyme from the liver, heart, and muscles. Elevated when any of these organs are damaged.",
+      usage: "Measured alongside ALT to assess liver and heart health. Normal range is typically 15-46 U/L.",
+      analogy: "A general distress signal from multiple organs -- liver, heart, or muscles.",
+      category: "condition"
+    },
+    "protein total": {
+      title: "Total Protein",
+      body: "Measures all proteins in the blood, mainly albumin and globulins. Proteins carry nutrients, fight infection, and maintain fluid balance.",
+      usage: "Low total protein can indicate malnutrition, liver disease, or kidney problems. High levels may suggest dehydration or certain immune conditions.",
+      analogy: "Like a census count of all the workers in your bloodstream -- proteins do most of the essential jobs.",
+      category: "condition"
+    },
+    "albumin": {
+      title: "Albumin",
+      body: "The most abundant protein in blood, made by the liver. It carries hormones, vitamins, and drugs through the blood, and keeps fluid inside blood vessels.",
+      usage: "Low albumin can indicate liver disease, malnutrition, or kidney disease. It is a key marker of overall nutrition and liver function.",
+      analogy: "Like the delivery trucks of your bloodstream -- albumin carries substances through your body and keeps fluid from leaking out of blood vessels.",
+      category: "condition"
+    },
+    "potassium": {
+      title: "Potassium",
+      body: "An essential electrolyte (mineral) that regulates heart rhythm, muscle contractions, and nerve signals. The kidneys control potassium levels.",
+      usage: "Abnormal potassium -- too high (hyperkalemia) or too low (hypokalemia) -- can cause dangerous heart rhythm problems.",
+      analogy: "Like the conductor of your heart's electrical system -- too much or too little throws the whole rhythm off.",
+      category: "condition"
+    },
+    "chloride": {
+      title: "Chloride",
+      body: "An electrolyte that works with sodium to maintain fluid balance and proper acid-base balance in the blood. Mostly comes from table salt (sodium chloride).",
+      usage: "Abnormal chloride levels are often linked to kidney problems, vomiting, or acid-base disorders.",
+      analogy: "The partner to sodium -- together they regulate the saltiness and fluid balance of your blood.",
+      category: "condition"
+    },
+    "carbon dioxide": {
+      title: "Carbon Dioxide (CO2 / Bicarbonate)",
+      body: "Measures the bicarbonate level in blood, which reflects the body's acid-base balance. The lungs and kidneys work together to keep this balanced.",
+      usage: "Low CO2 can indicate acidosis (blood too acidic). High CO2 can indicate alkalosis (blood too basic). Often abnormal in kidney or lung disease.",
+      analogy: "Like a pH balancer for your blood -- bicarbonate neutralizes acids to keep your body chemistry stable.",
+      category: "condition"
+    },
+    "anion gap": {
+      title: "Anion Gap",
+      body: "A calculated value that helps identify certain types of acid buildup in the blood. It measures the difference between positively and negatively charged particles (ions) in the blood.",
+      usage: "A high anion gap suggests the presence of abnormal acids, which can occur in diabetic ketoacidosis, kidney failure, or poisoning.",
+      analogy: "Like an accounting check -- if the numbers do not balance, it suggests something abnormal is present in the blood.",
+      category: "condition"
+    },
+    "glucose": {
+      title: "Glucose",
+      body: "Blood sugar -- the main source of energy for your body's cells. Insulin helps move glucose from the blood into cells.",
+      usage: "High glucose (hyperglycemia) may indicate diabetes or prediabetes. Low glucose (hypoglycemia) can cause shakiness, confusion, or fainting.",
+      analogy: "Like the fuel in your gas tank -- your cells need glucose to run, but too much sitting unused in the blood causes damage over time.",
+      category: "condition"
+    },
+    "blood urea nitrogen": {
+      title: "Blood Urea Nitrogen (BUN)",
+      body: "A waste product formed when the liver breaks down protein. The kidneys filter BUN out of the blood. Elevated BUN suggests the kidneys are not filtering well.",
+      usage: "High BUN with high creatinine often confirms kidney disease. Can also rise with dehydration or high protein intake.",
+      analogy: "Like the exhaust from your body's protein-burning engine -- healthy kidneys clear it out; damaged kidneys let it build up.",
+      category: "condition"
+    },
+    "bun": {
+      title: "BUN (Blood Urea Nitrogen)",
+      body: "A waste product from protein breakdown, filtered by the kidneys. High levels suggest kidney problems or dehydration.",
+      usage: "Measured alongside creatinine to assess kidney function. Normal range is 7-20 mg/dL.",
+      analogy: "Protein waste that healthy kidneys flush away -- when it builds up, the kidneys may be struggling.",
+      category: "condition"
+    },
+    "estimated gfr": {
+      title: "Estimated GFR (eGFR)",
+      body: "Estimated Glomerular Filtration Rate -- a calculation that estimates how well the kidneys are filtering waste from the blood each minute. It is the best overall measure of kidney function.",
+      usage: "eGFR below 60 suggests chronic kidney disease. Below 15 indicates kidney failure requiring dialysis or transplant.",
+      analogy: "Like a speedometer for your kidneys -- it tells you how fast they are cleaning your blood. Normal is above 60.",
+      category: "condition"
+    },
+    "gfr": {
+      title: "GFR (Glomerular Filtration Rate)",
+      body: "A measure of how well the kidneys filter waste from the blood. eGFR is an estimate calculated from creatinine, age, and sex.",
+      usage: "The most reliable measure of kidney function. A declining GFR over time indicates progressive kidney disease.",
+      analogy: "Your kidneys speed rating -- the higher the number, the better they are working.",
+      category: "condition"
+    },
+    "metabolic panel": {
+      title: "Metabolic Panel (CMP/BMP)",
+      body: "A group of blood tests that measure kidney function, liver function, electrolytes, blood sugar, and protein levels all at once. A Comprehensive Metabolic Panel (CMP) includes 14 tests; a Basic Metabolic Panel (BMP) includes 8.",
+      usage: "One of the most common routine blood tests ordered during physicals or hospital visits.",
+      analogy: "Like a full dashboard check of your body's major systems -- all at once from one blood draw.",
+      category: "condition"
+    },
+    "cmp": {
+      title: "CMP (Comprehensive Metabolic Panel)",
+      body: "A group of 14 blood tests measuring kidney function, liver function, blood sugar, electrolytes, and proteins.",
+      usage: "Routinely ordered during annual physicals or when evaluating overall health.",
+      analogy: "A full health dashboard -- one blood draw that checks your liver, kidneys, blood sugar, and chemical balance.",
+      category: "condition"
+    },
+    "bmp": {
+      title: "BMP (Basic Metabolic Panel)",
+      body: "A group of 8 blood tests measuring kidney function, blood sugar, and electrolytes. A simpler version of the CMP.",
+      usage: "Often ordered in emergency settings or to monitor specific conditions.",
+      analogy: "A quick health snapshot focusing on kidney function and body chemistry.",
+      category: "condition"
+    },
+    "electrolyte": {
+      title: "Electrolyte",
+      body: "Minerals in the blood that carry an electrical charge and control fluid balance, muscle contractions, and nerve signals. Sodium, potassium, chloride, and bicarbonate are the main electrolytes.",
+      usage: "Electrolytes are measured in blood panels to check hydration, kidney function, and heart health.",
+      analogy: "Like the battery charge in your body -- electrolytes power your nerves and muscles and keep fluids in the right places.",
+      category: "condition"
+    },
+    "serum": {
+      title: "Serum",
+      body: "The liquid part of blood after the blood cells and clotting proteins have been removed. Most routine blood tests measure substances in serum.",
+      usage: "When a test is labeled 'serum,' it means the result was measured from the clear liquid portion of your blood sample.",
+      analogy: "Like the broth after straining a soup -- serum is the clear liquid left after removing the solid blood cells.",
+      category: "condition"
+    },
+    "plasma": {
+      title: "Plasma",
+      body: "The liquid portion of blood that contains blood cells, proteins, hormones, and nutrients. Unlike serum, plasma still contains clotting proteins.",
+      usage: "Many lab tests can use either serum or plasma. The label 'serum/plasma' means either can be used.",
+      analogy: "The river that carries everything -- plasma is the liquid transport system of your blood.",
+      category: "condition"
+    },
+    "mmol": {
+      title: "mmol/L (Millimoles per Liter)",
+      body: "A unit of measurement used for electrolytes and other small molecules in blood tests. It measures the number of particles of a substance per liter of blood.",
+      usage: "Used for sodium, potassium, chloride, carbon dioxide, and other electrolytes on lab reports.",
+      analogy: "Like counting individual grains of salt per cup of water -- it measures precise amounts of substances in your blood.",
+      category: "condition"
+    },
+    "mg/dl": {
+      title: "mg/dL (Milligrams per Deciliter)",
+      body: "A unit of measurement used in blood tests. It measures the weight of a substance in milligrams per one-tenth of a liter of blood.",
+      usage: "Used for glucose, cholesterol, creatinine, calcium, and many other lab values.",
+      analogy: "Like measuring how many milligrams of sugar are dissolved in a small cup of blood.",
+      category: "condition"
+    },
+    "u/l": {
+      title: "U/L (Units per Liter)",
+      body: "A measurement unit used for enzymes like ALT, AST, and alkaline phosphatase. It measures how active the enzyme is in the blood.",
+      usage: "Used for liver enzymes and other enzyme tests. Higher U/L values for liver enzymes usually indicate organ stress or damage.",
+      analogy: "Like measuring how fast a machine is running -- U/L tells you how active an enzyme is in your blood.",
+      category: "condition"
+    },
+    "normal range": {
+      title: "Normal Range / Reference Range",
+      body: "The range of values considered healthy for most people. Values outside the normal range may be flagged as HIGH or LOW on your lab report.",
+      usage: "Normal ranges are based on results from large groups of healthy people. A slightly abnormal result may not always be medically significant -- your doctor interprets results in context.",
+      analogy: "Like the speed limit on a road -- staying within the range is healthy, but your doctor decides if going slightly over or under matters for you specifically.",
+      category: "condition"
+    },
+
+
+    "amoxicillin": {
+      title: "amoxicillin",
+      body: "A common antibiotic used to treat bacterial infections like ear infections, strep throat, pneumonia, and urinary tract infections.",
+      usage: "One of the most prescribed antibiotics. Usually taken 2-3 times daily for 7-10 days.",
+      analogy: "Like sending in specialized soldiers to fight specific types of bacterial invaders.",
+      category: "medication"
+    },
+    "azithromycin": {
+      title: "azithromycin",
+      body: "An antibiotic (often called a Z-pack) used to treat respiratory infections, ear infections, and some STIs.",
+      usage: "Often prescribed as a 5-day course. Brand name is Zithromax.",
+      analogy: "A quick-strike antibiotic — a short course that keeps working in your body for days after you finish.",
+      category: "medication"
+    },
+    "amoxicillin clavulanate": {
+      title: "amoxicillin-clavulanate (Augmentin)",
+      body: "A stronger combination antibiotic that fights bacteria resistant to regular amoxicillin.",
+      usage: "Used for sinus infections, ear infections, and skin infections. Brand name is Augmentin.",
+      analogy: "Like amoxicillin with a shield — the clavulanate protects it from bacteria that would normally destroy it.",
+      category: "medication"
+    },
+    "augmentin": {
+      title: "Augmentin (amoxicillin-clavulanate)",
+      body: "A combination antibiotic that fights a wider range of bacterial infections than plain amoxicillin.",
+      usage: "Common brand name for amoxicillin-clavulanate. Used for sinus, ear, and skin infections.",
+      analogy: "A stronger version of amoxicillin that can fight bacteria that have learned to resist regular amoxicillin.",
+      category: "medication"
+    },
+    "budesonide": {
+      title: "budesonide",
+      body: "A steroid medication that reduces inflammation. Used as an inhaler for asthma, as a nasal spray for allergies, or orally for bowel conditions.",
+      usage: "Brand names include Pulmicort (inhaler), Rhinocort (nasal), and Entocort (capsule).",
+      analogy: "Like a fire extinguisher aimed at inflammation in your airways or gut.",
+      category: "medication"
+    },
+    "metoprolol": {
+      title: "metoprolol",
+      body: "A beta-blocker medication that slows your heart rate and reduces blood pressure. Treats high blood pressure, heart failure, and angina.",
+      usage: "Comes in two forms: metoprolol tartrate (taken twice daily) and metoprolol succinate (once daily). Brand names include Lopressor and Toprol-XL.",
+      analogy: "Like putting a governor on a car engine — it prevents your heart from racing too fast.",
+      category: "medication"
+    },
+    "metoprolol tartrate": {
+      title: "metoprolol tartrate",
+      body: "A shorter-acting form of metoprolol beta-blocker, taken twice daily to treat high blood pressure and heart conditions.",
+      usage: "Brand name is Lopressor. Taken with or right after a meal.",
+      analogy: "Like a brake on your heart — slows it down and reduces the force it pumps with.",
+      category: "medication"
+    },
+    "metoprolol succinate": {
+      title: "metoprolol succinate",
+      body: "A long-acting form of metoprolol beta-blocker, taken once daily. Treats high blood pressure, heart failure, and angina.",
+      usage: "Brand name is Toprol-XL. Extended-release — works slowly over 24 hours.",
+      analogy: "A slow-release brake for your heart that works all day with one pill.",
+      category: "medication"
+    },
+    "losartan": {
+      title: "losartan",
+      body: "A blood pressure medication that relaxes blood vessels. Also protects the kidneys in people with diabetes.",
+      usage: "Brand name is Cozaar. Taken once or twice daily. Common alternative to ACE inhibitors for people who get a cough.",
+      analogy: "Like widening a narrow pipe — makes it easier for blood to flow through.",
+      category: "medication"
+    },
+    "gabapentin": {
+      title: "gabapentin",
+      body: "A medication originally for seizures, now commonly used for nerve pain, shingles pain, and sometimes anxiety or sleep.",
+      usage: "Brand name is Neurontin. Taken 1-3 times daily. Does not work like regular pain relievers.",
+      analogy: "Like turning down the volume on overactive nerve signals that are causing pain.",
+      category: "medication"
+    },
+    "omeprazole": {
+      title: "omeprazole",
+      body: "A proton pump inhibitor (PPI) that reduces stomach acid. Treats acid reflux, heartburn, and stomach ulcers.",
+      usage: "Brand name is Prilosec. Usually taken once daily before a meal. Available over-the-counter.",
+      analogy: "Like turning off one of the faucets that fills your stomach with acid.",
+      category: "medication"
+    },
+    "pantoprazole": {
+      title: "pantoprazole",
+      body: "A proton pump inhibitor (PPI) that reduces stomach acid. Treats acid reflux, GERD, and stomach ulcers.",
+      usage: "Brand name is Protonix. Usually taken once daily, 30 minutes before a meal.",
+      analogy: "Shuts off acid-producing pumps in your stomach lining to give it a chance to heal.",
+      category: "medication"
+    },
+    "atorvastatin": {
+      title: "atorvastatin",
+      body: "A statin medication that lowers bad cholesterol (LDL) and triglycerides to reduce heart disease risk.",
+      usage: "Brand name is Lipitor. Usually taken once daily, often at bedtime. One of the most prescribed drugs in the US.",
+      analogy: "Like a factory regulator — tells your liver to produce less cholesterol.",
+      category: "medication"
+    },
+    "rosuvastatin": {
+      title: "rosuvastatin",
+      body: "A potent statin medication that significantly lowers bad cholesterol (LDL) and reduces heart disease risk.",
+      usage: "Brand name is Crestor. Taken once daily. Often used when atorvastatin isn't enough.",
+      analogy: "A stronger version of the cholesterol-lowering factory regulator.",
+      category: "medication"
+    },
+    "levothyroxine": {
+      title: "levothyroxine",
+      body: "A synthetic thyroid hormone used to treat an underactive thyroid (hypothyroidism).",
+      usage: "Brand names include Synthroid and Levoxyl. Taken once daily on an empty stomach, usually in the morning.",
+      analogy: "Like replacing a battery in a device that's running too slowly — restores your body's normal energy and metabolism.",
+      category: "medication"
+    },
+    "lisinopril": {
+      title: "lisinopril",
+      body: "An ACE inhibitor that lowers blood pressure and protects the heart and kidneys.",
+      usage: "Brand names include Zestril and Prinivil. Taken once daily. May cause a dry cough in some people.",
+      analogy: "Like loosening a tight valve in your circulatory system to let blood flow more easily.",
+      category: "medication"
+    },
+    "amlodipine": {
+      title: "amlodipine",
+      body: "A calcium channel blocker that lowers blood pressure and treats chest pain (angina) by relaxing blood vessels.",
+      usage: "Brand name is Norvasc. Taken once daily. Often combined with other blood pressure medications.",
+      analogy: "Like relaxing the muscles around your blood vessels so they open wider.",
+      category: "medication"
+    },
+    "metformin": {
+      title: "metformin",
+      body: "The most common first-line medication for type 2 diabetes. Lowers blood sugar by reducing glucose production in the liver.",
+      usage: "Brand name is Glucophage. Taken with meals. Does not cause weight gain like some diabetes drugs.",
+      analogy: "Like turning down the volume on your liver's sugar factory.",
+      category: "medication"
+    },
+    "furosemide": {
+      title: "furosemide",
+      body: "A powerful diuretic (water pill) that helps your kidneys remove excess fluid. Used for heart failure, high blood pressure, and swelling.",
+      usage: "Brand name is Lasix. Often taken in the morning to avoid nighttime urination.",
+      analogy: "Like opening a drain to remove excess fluid buildup in your body.",
+      category: "medication"
+    },
+    "apixaban": {
+      title: "apixaban",
+      body: "A blood thinner (anticoagulant) that prevents dangerous blood clots. Used for atrial fibrillation, DVT, and pulmonary embolism.",
+      usage: "Brand name is Eliquis. Taken twice daily. Does not require regular blood tests like warfarin.",
+      analogy: "Like adding anti-freeze to your blood — prevents it from clumping into dangerous clots.",
+      category: "medication"
+    },
+    "eliquis": {
+      title: "Eliquis (apixaban)",
+      body: "A blood thinner that prevents dangerous clots. Used for atrial fibrillation, deep vein thrombosis, and pulmonary embolism.",
+      usage: "Generic name is apixaban. Taken twice daily with or without food.",
+      analogy: "Prevents your blood from clotting in places it shouldn't — like your heart or leg veins.",
+      category: "medication"
+    },
+    "clopidogrel": {
+      title: "clopidogrel",
+      body: "A blood thinner that prevents platelets from sticking together and forming clots. Used after heart attacks and strokes.",
+      usage: "Brand name is Plavix. Taken once daily. Often prescribed alongside aspirin.",
+      analogy: "Like a traffic cop that prevents blood cells from piling up and forming dangerous blockages.",
+      category: "medication"
+    },
+    "albuterol": {
+      title: "albuterol",
+      body: "A fast-acting bronchodilator inhaler that quickly opens up narrowed airways during asthma attacks or breathing emergencies.",
+      usage: "Brand names include ProAir and Ventolin. Called a 'rescue inhaler.' Works within minutes.",
+      analogy: "Like a fire hose that quickly opens up your airways when they're getting too narrow.",
+      category: "medication"
+    },
+    "fluticasone": {
+      title: "fluticasone",
+      body: "A corticosteroid used as a nasal spray for allergy symptoms or as an inhaler for asthma and COPD.",
+      usage: "Brand names include Flonase (nasal) and Flovent (inhaler). Used daily as a preventive, not for immediate relief.",
+      analogy: "A daily maintenance treatment that calms down the inflammation causing your allergy or breathing symptoms.",
+      category: "medication"
+    },
+    "sertraline": {
+      title: "sertraline",
+      body: "An SSRI antidepressant used to treat depression, anxiety, OCD, PTSD, and panic disorder.",
+      usage: "Brand name is Zoloft. Taken once daily. Takes 4-6 weeks to reach full effect.",
+      analogy: "Like adjusting the serotonin thermostat in your brain to a healthier setting.",
+      category: "medication"
+    },
+    "escitalopram": {
+      title: "escitalopram",
+      body: "An SSRI antidepressant used to treat depression and generalized anxiety disorder.",
+      usage: "Brand name is Lexapro. Taken once daily. Generally well tolerated with fewer side effects than older antidepressants.",
+      analogy: "Gently increases serotonin levels in the brain to improve mood and reduce anxiety.",
+      category: "medication"
+    },
+    "duloxetine": {
+      title: "duloxetine",
+      body: "An SNRI antidepressant used for depression, anxiety, nerve pain, and fibromyalgia.",
+      usage: "Brand name is Cymbalta. Taken once daily. Also helps with chronic pain conditions.",
+      analogy: "Works on two brain chemicals at once — serotonin and norepinephrine — for both mood and pain relief.",
+      category: "medication"
+    },
+    "hydrochlorothiazide": {
+      title: "hydrochlorothiazide",
+      body: "A thiazide diuretic (water pill) used to treat high blood pressure and fluid retention.",
+      usage: "Often abbreviated as HCTZ. Usually combined with other blood pressure medications.",
+      analogy: "Like opening a gentle release valve to remove some of the excess fluid pushing against your blood vessel walls.",
+      category: "medication"
+    },
+    "meloxicam": {
+      title: "meloxicam",
+      body: "An anti-inflammatory pain reliever (NSAID) used for arthritis, joint pain, and inflammation.",
+      usage: "Brand name is Mobic. Taken once daily. Gentler on the stomach than ibuprofen.",
+      analogy: "Like a targeted fire extinguisher for inflamed joints — reduces swelling and pain.",
+      category: "medication"
+    },
+    "gabapentin": {
+      title: "gabapentin",
+      body: "A medication for nerve pain, seizures, and sometimes anxiety or sleep problems.",
+      usage: "Brand name is Neurontin. Taken 1-3 times daily depending on condition.",
+      analogy: "Turns down the volume on overactive nerve signals that cause pain or seizures.",
+      category: "medication"
+    },
+    "montelukast": {
+      title: "montelukast",
+      body: "A leukotriene inhibitor that prevents asthma attacks and treats allergies by blocking the chemicals that cause airway swelling.",
+      usage: "Brand name is Singulair. Taken once daily, usually in the evening.",
+      analogy: "Like a bouncer that blocks the chemicals telling your airways to swell up.",
+      category: "medication"
+    },
+    "ciprofloxacin": {
+      title: "ciprofloxacin",
+      body: "A broad-spectrum antibiotic (fluoroquinolone) used for urinary tract infections, respiratory infections, and certain other serious infections.",
+      usage: "Brand name is Cipro. Usually taken twice daily. Not recommended for routine minor infections.",
+      analogy: "A powerful antibiotic with broad reach — like calling in the special forces against a wide range of bacteria.",
+      category: "medication"
+    },
+    "doxycycline": {
+      title: "doxycycline",
+      body: "An antibiotic used for respiratory infections, Lyme disease, acne, malaria prevention, and many other infections.",
+      usage: "Taken with a full glass of water. Should not be taken lying down. Avoid in children under 8.",
+      analogy: "A versatile antibiotic that fights many different types of bacteria and some parasites.",
+      category: "medication"
+    },
+
+    
+    "midazolam": {
+      title: "midazolam",
+      body: "A sedative medication used to cause drowsiness, reduce anxiety, and produce short-term memory loss during medical procedures.",
+      usage: "Commonly used before endoscopies, colonoscopies, and minor surgeries. Brand name is Versed.",
+      analogy: "Like a temporary off switch for anxiety and awareness — you stay calm and won't remember the procedure.",
+      category: "medication"
+    },
+    "fentanyl": {
+      title: "fentanyl",
+      body: "A powerful opioid pain medication used in hospitals during procedures and surgeries. Much stronger than morphine.",
+      usage: "Given by IV in controlled hospital settings for procedural pain. Very different from the illegally manufactured fentanyl in street drugs.",
+      analogy: "A fast-acting, powerful pain blocker used carefully by medical professionals during procedures.",
+      category: "medication"
+    },
+    "versed": {
+      title: "Versed (midazolam)",
+      body: "The brand name for midazolam, a sedative given before procedures to reduce anxiety and cause relaxation.",
+      usage: "Commonly used before colonoscopies and endoscopies. Causes short-term memory loss of the procedure.",
+      analogy: "The medication that makes you feel calm and later unable to remember the procedure.",
+      category: "medication"
+    },
+    "morphine": {
+      title: "morphine",
+      body: "A strong opioid pain medication used in hospitals for severe pain, post-surgery recovery, and cancer pain.",
+      usage: "Given by IV, injection, or orally. One of the oldest and most effective pain medications for severe pain.",
+      analogy: "A powerful pain signal blocker — essentially turns down the volume on severe pain.",
+      category: "medication"
+    },
+    "oxycodone": {
+      title: "oxycodone",
+      body: "A strong opioid pain medication for moderate to severe pain. Available alone or combined with acetaminophen.",
+      usage: "Brand names include OxyContin (extended-release) and Percocet (with acetaminophen). Has high potential for dependence.",
+      analogy: "A strong pain blocker that works on opioid receptors in your brain and spinal cord.",
+      category: "medication"
+    },
+    "hydrocodone": {
+      title: "hydrocodone",
+      body: "An opioid pain medication often combined with acetaminophen for moderate to moderately severe pain.",
+      usage: "Brand name Vicodin combines hydrocodone with acetaminophen. Has high potential for dependence.",
+      analogy: "A moderate-strength pain blocker, often paired with acetaminophen for added effect.",
+      category: "medication"
+    },
+    "tramadol": {
+      title: "tramadol",
+      body: "A moderate opioid-like pain medication for moderate to moderately severe pain.",
+      usage: "Brand name is Ultram. Weaker than morphine but stronger than regular over-the-counter pain relievers.",
+      analogy: "A middle-ground pain medication — stronger than ibuprofen but gentler than morphine.",
+      category: "medication"
+    },
+    "ketorolac": {
+      title: "ketorolac",
+      body: "A powerful non-opioid anti-inflammatory pain medication given by injection or IV in hospitals.",
+      usage: "Brand name is Toradol. Used for short-term pain relief after surgery or procedures. Not for long-term use.",
+      analogy: "Like a very strong ibuprofen given by injection — powerful anti-inflammatory pain relief without opioids.",
+      category: "medication"
+    },
+    "ondansetron": {
+      title: "ondansetron",
+      body: "An anti-nausea medication that blocks signals in the brain that trigger vomiting.",
+      usage: "Brand name is Zofran. Used for nausea from chemotherapy, surgery, or other causes. Very effective.",
+      analogy: "Like a bouncer that blocks the brain signals saying it is time to vomit.",
+      category: "medication"
+    },
+    "zofran": {
+      title: "Zofran (ondansetron)",
+      body: "A brand name anti-nausea medication that effectively stops nausea and vomiting.",
+      usage: "Generic name is ondansetron. Used after surgery, during chemotherapy, or for severe nausea.",
+      analogy: "Blocks the nausea signals your brain sends — one of the most effective anti-nausea drugs available.",
+      category: "medication"
+    },
+    "heparin": {
+      title: "heparin",
+      body: "A fast-acting blood thinner given by IV or injection in hospitals to prevent or treat dangerous blood clots.",
+      usage: "Used during surgeries, heart procedures, and to treat deep vein thrombosis and pulmonary embolism.",
+      analogy: "A quick-acting anti-clotting agent — like adding a substance that keeps your blood flowing freely in your vessels.",
+      category: "medication"
+    },
+    "epinephrine": {
+      title: "epinephrine",
+      body: "Also called adrenaline. Used in emergencies for severe allergic reactions, cardiac arrest, and severe asthma attacks.",
+      usage: "The medication in EpiPens. Also used during CPR. Acts within seconds.",
+      analogy: "The body is emergency alarm system in a syringe — rapidly reverses life-threatening allergic reactions.",
+      category: "medication"
+    },
+    "epipen": {
+      title: "EpiPen (epinephrine)",
+      body: "An auto-injector device containing epinephrine (adrenaline) for emergency treatment of severe allergic reactions.",
+      usage: "Used for anaphylaxis from bee stings, food allergies, or other severe reactions. Inject into outer thigh.",
+      analogy: "A life-saving emergency tool that rapidly reverses a severe allergic reaction.",
+      category: "medication"
+    },
+    "prednisone": {
+      title: "prednisone",
+      body: "A corticosteroid that powerfully reduces inflammation and suppresses the immune system.",
+      usage: "Used for many conditions including asthma flares, allergic reactions, arthritis, and autoimmune diseases. Short courses are common.",
+      analogy: "Like a powerful master dimmer switch for your immune system and inflammation responses.",
+      category: "medication"
+    },
+    "dexamethasone": {
+      title: "dexamethasone",
+      body: "A powerful corticosteroid used to reduce severe inflammation, treat certain cancers, and manage swelling in the brain.",
+      usage: "Brand name is Decadron. Often used in hospitals for serious conditions. Stronger than prednisone.",
+      analogy: "A very potent inflammation fighter used when other treatments are not enough.",
+      category: "medication"
+    },
+    "methylprednisolone": {
+      title: "methylprednisolone",
+      body: "A corticosteroid used to quickly reduce severe inflammation, often given by IV in hospitals.",
+      usage: "Brand name is Solu-Medrol. Used for severe asthma, allergic reactions, and inflammatory conditions.",
+      analogy: "A fast-acting IV version of a strong anti-inflammatory steroid.",
+      category: "medication"
+    },
+    "vancomycin": {
+      title: "vancomycin",
+      body: "A powerful antibiotic used in hospitals for serious infections, especially MRSA (antibiotic-resistant staph infections).",
+      usage: "Given by IV for serious infections. Requires monitoring of blood levels. Last-resort for some resistant bacteria.",
+      analogy: "The heavy artillery of antibiotics — used when other antibiotics cannot do the job.",
+      category: "medication"
+    },
+    "metronidazole": {
+      title: "metronidazole",
+      body: "An antibiotic and antiparasitic medication used for bacterial infections of the stomach, skin, vagina, and other areas.",
+      usage: "Brand name is Flagyl. Often used for C. difficile infections, dental infections, and certain STIs.",
+      analogy: "A versatile antibiotic that fights both bacteria and parasites, especially in the gut.",
+      category: "medication"
+    },
+
+    "insulin": {
+      title: "insulin",
+      body: "A hormone that helps sugar from food get into your cells for energy.",
+      usage: "A medication some people with diabetes need to manage blood sugar.",
+      analogy: "Like a key that unlocks your cells so sugar can get inside.",
+      category: "medication"
+    },
+    "statin": {
+      title: "statin",
+      body: "Medicine that lowers cholesterol in your blood.",
+      usage: "Taken daily to reduce risk of heart disease and stroke.",
+      analogy: "Like a street sweeper that clears fatty buildup from your blood vessels.",
+      category: "medication"
+    },
+
+    // Medical procedures
+    "biopsy": {
+      title: "biopsy",
+      body: "Taking a small sample of tissue from your body to examine under a microscope.",
+      usage: "Done to check if tissue is cancerous or to diagnose other conditions.",
+      analogy: "Like taking a small bite of food to taste what it is.",
+      category: "procedure"
+    },
+    "catheterization": {
+      title: "catheterization",
+      body: "Inserting a thin, flexible tube into your body to drain fluids or deliver medication.",
+      usage: "Common types include urinary catheters and heart catheterization.",
+      analogy: "Like putting a tiny straw into your body to either drain something out or put something in.",
+      category: "procedure"
+    },
+    "endoscopy": {
+      title: "endoscopy",
+      body: "Using a thin, flexible tube with a camera to look inside your body.",
+      usage: "Used to examine the inside of organs like the stomach, colon, or lungs.",
+      analogy: "Like sending a tiny submarine with a periscope to explore inside your body.",
+      category: "procedure"
+    },
+    "MRI": {
+      title: "MRI",
+      body: "Magnetic Resonance Imaging - uses strong magnets and radio waves to create detailed pictures inside your body.",
+      usage: "Used to see soft tissues like brain, muscles, and organs in great detail.",
+      analogy: "Like taking a very detailed photograph of the inside of your body without using X-rays.",
+      category: "procedure"
+    },
+    "CT scan": {
+      title: "CT scan",
+      body: "Computed Tomography - uses X-rays from different angles to create cross-sectional images of your body.",
+      usage: "Shows bones, organs, and tissues, often used to diagnose injuries or diseases.",
+      analogy: "Like taking many X-ray slices of your body and stacking them to see the whole picture.",
+      category: "procedure"
+    },
+    "ultrasound": {
+      title: "ultrasound",
+      body: "Uses sound waves to create pictures of organs and tissues inside your body.",
+      usage: "Safe imaging test often used for pregnancy, heart, liver, and other organs.",
+      analogy: "Like using sonar, the way dolphins navigate, to see inside your body.",
+      category: "procedure"
+    },
+    "echocardiogram": {
+      title: "echocardiogram",
+      body: "An ultrasound of your heart to see how well it's pumping and check for problems.",
+      usage: "Used to diagnose heart conditions, check valve function, and assess heart strength.",
+      analogy: "Like taking a video of your heart to watch it beat and see how it's working.",
+      category: "procedure"
+    },
+    "EKG": {
+      title: "EKG (Electrocardiogram)",
+      body: "A test that measures the electrical activity of your heart.",
+      usage: "Quick, painless test to check heart rhythm and detect heart problems.",
+      analogy: "Like listening to your heart's electrical soundtrack to make sure it's playing the right tune.",
+      category: "procedure"
+    },
+    "ECG": {
+      title: "ECG (Electrocardiogram)",
+      body: "A test that measures the electrical activity of your heart.",
+      usage: "Quick, painless test to check heart rhythm and detect heart problems.",
+      analogy: "Like listening to your heart's electrical soundtrack to make sure it's playing the right tune.",
+      category: "procedure"
+    },
+    "X-ray": {
+      title: "X-ray",
+      body: "Uses electromagnetic radiation to create pictures of bones and some organs.",
+      usage: "Most commonly used to check for broken bones, pneumonia, or other problems.",
+      analogy: "Like taking a photograph that can see through skin to show your skeleton.",
+      category: "procedure"
+    },
+    "colonoscopy": {
+      title: "colonoscopy",
+      body: "A procedure using a flexible tube with a camera to examine the inside of your large intestine.",
+      usage: "Used to screen for colon cancer and check for polyps or other problems.",
+      analogy: "Like sending a tiny submarine with a camera to explore your intestinal highway.",
+      category: "procedure"
+    },
+    "mammogram": {
+      title: "mammogram",
+      body: "An X-ray examination of the breasts to screen for breast cancer.",
+      usage: "Regular screening test for women to detect breast cancer early.",
+      analogy: "Like taking detailed photographs of breast tissue to look for anything unusual.",
+      category: "procedure"
+    },
+    "anesthesia": {
+      title: "anesthesia",
+      body: "Medicine that blocks pain during medical procedures or surgery.",
+      usage: "Can be local (numbing one area), regional (numbing a larger area), or general (putting you to sleep).",
+      analogy: "Like turning down the volume on your body's pain signals, or turning them off completely.",
+      category: "procedure"
+    },
+    "IV": {
+      title: "IV (Intravenous)",
+      body: "A thin tube placed in your vein to give fluids, medications, or nutrients directly into your bloodstream.",
+      usage: "Used in hospitals to deliver treatments quickly and keep you hydrated.",
+      analogy: "Like a direct pipeline to deliver supplies to your body's highway system.",
+      category: "procedure"
+    },
+
+    // Medical terminology
+    "acute": {
+      title: "acute",
+      body: "Something that starts suddenly and is usually severe but short-term.",
+      usage: "Describes conditions that need immediate attention, like acute pain or acute infection.",
+      analogy: "Like a sudden thunderstorm - intense but usually doesn't last long."
+    },
+    "chronic": {
+      title: "chronic",
+      body: "A condition that lasts a long time or keeps coming back.",
+      usage: "Describes ongoing health problems that need long-term management.",
+      analogy: "Like a leaky faucet that drips consistently over time."
+    },
+    "benign": {
+      title: "benign",
+      body: "Not harmful or dangerous, especially when talking about tumors that aren't cancer.",
+      usage: "Often used to describe non-cancerous growths or conditions that aren't serious.",
+      analogy: "Like a harmless bump on a tree - it's there, but it won't hurt the tree."
+    },
+    "malignant": {
+      title: "malignant",
+      body: "Harmful and likely to spread, especially when describing cancer.",
+      usage: "Used to describe cancerous tumors that can grow and spread to other parts of the body.",
+      analogy: "Like aggressive weeds that spread and can damage the whole garden."
+    },
+    "prognosis": {
+      title: "prognosis",
+      body: "The likely outcome of your medical condition - how you're expected to recover.",
+      usage: "Doctors give a prognosis to help you understand what to expect from your illness or treatment.",
+      analogy: "Like a weather forecast for your health condition."
+    },
+
+    // Diagnostic terms
+    "diagnosis": {
+      title: "diagnosis",
+      body: "Figuring out what medical condition or disease you have.",
+      usage: "Made by doctors after examining you, running tests, and reviewing your symptoms.",
+      analogy: "Like being a detective who solves the mystery of what's making you feel sick."
+    },
+    "symptom": {
+      title: "symptom",
+      body: "Something you feel or notice that might indicate you have a medical condition.",
+      usage: "Things like pain, fever, nausea, or fatigue that you tell your doctor about.",
+      analogy: "Like warning lights on your car's dashboard telling you something needs attention."
+    },
+    "vital signs": {
+      title: "vital signs",
+      body: "Basic measurements that show how your body is functioning - blood pressure, heart rate, temperature, and breathing rate.",
+      usage: "Checked at every doctor visit to monitor your overall health.",
+      analogy: "Like the basic gauges on your car - oil, gas, temperature - that tell you how it's running."
+    },
+
+    // Common medications by category
+    "antidepressant": {
+      title: "antidepressant",
+      body: "Medicine used to treat depression and sometimes anxiety or chronic pain.",
+      usage: "Usually taken daily and may take several weeks to show full effects.",
+      analogy: "Like adjusting the chemical balance in your brain to help you feel more like yourself.",
+      category: "medication"
+    },
+    "antihistamine": {
+      title: "antihistamine",
+      body: "Medicine that reduces allergic reactions like sneezing, itching, and runny nose.",
+      usage: "Used for allergies, hay fever, and sometimes to help with sleep.",
+      analogy: "Like putting up barriers to block allergens from bothering your body.",
+      category: "medication"
+    },
+    "beta blocker": {
+      title: "beta blocker",
+      body: "Medicine that slows your heart rate and lowers blood pressure.",
+      usage: "Used to treat high blood pressure, heart conditions, and sometimes anxiety.",
+      analogy: "Like a speed governor on your heart that keeps it from going too fast.",
+      category: "medication"
+    },
+
+    // Body parts and systems
+    "sternum": {
+      title: "sternum",
+      body: "The flat bone in the center of your chest that your ribs connect to.",
+      usage: "Important landmark for CPR and some surgical procedures.",
+      analogy: "Like the centerpiece of a fan that all the fan blades (ribs) connect to."
+    },
+    "vertebrae": {
+      title: "vertebrae",
+      body: "The individual bones that make up your spine.",
+      usage: "Problems with vertebrae can cause back pain or nerve issues.",
+      analogy: "Like building blocks stacked on top of each other to make your backbone."
+    },
+    "lymph nodes": {
+      title: "lymph nodes",
+      body: "Small, bean-shaped organs that filter germs and cancer cells from your lymph fluid.",
+      usage: "Often swell when you're fighting an infection.",
+      analogy: "Like security checkpoints that catch and destroy bad things trying to spread through your body."
+    },
+
+    // Medical specialties
+    "cardiologist": {
+      title: "cardiologist",
+      body: "A doctor who specializes in heart and blood vessel problems.",
+      usage: "You might see one for chest pain, heart murmurs, or high blood pressure.",
+      analogy: "Like a mechanic who specializes in fixing car engines, but for your heart."
+    },
+    "dermatologist": {
+      title: "dermatologist",
+      body: "A doctor who specializes in skin, hair, and nail problems.",
+      usage: "Treats conditions like acne, moles, rashes, or skin cancer.",
+      analogy: "Like a specialist who takes care of your body's outer covering."
+    },
+    "endocrinologist": {
+      title: "endocrinologist",
+      body: "A doctor who specializes in hormone problems and glands like the thyroid.",
+      usage: "Often treats diabetes, thyroid problems, and other hormone-related conditions.",
+      analogy: "Like a specialist in your body's chemical messenger system."
+    },
+
+    // Common medical phrases
+    "side effects": {
+      title: "side effects",
+      body: "Unwanted effects that can happen when you take medicine.",
+      usage: "Every medication has potential side effects, but not everyone experiences them.",
+      analogy: "Like unintended consequences when you do something - the medicine helps, but might cause other issues."
+    },
+    "contraindication": {
+      title: "contraindication",
+      body: "A reason why you shouldn't take a certain medication or have a specific procedure.",
+      usage: "Based on your other conditions, allergies, or medications you're already taking.",
+      analogy: "Like a red flag warning that says 'this isn't safe for you.'"
+    },
+    "generic medication": {
+      title: "generic medication",
+      body: "A medicine that has the same active ingredient as the brand-name version but costs less.",
+      usage: "Works the same as brand-name medications but is usually much cheaper.",
+      analogy: "Like store-brand cereal that has the same ingredients as the name-brand version."
+    },
+
+    // Emergency and hospital terms
+    "triage": {
+      title: "triage",
+      body: "The process of deciding who gets medical care first based on how serious their condition is.",
+      usage: "Used in emergency rooms to prioritize patients who need immediate attention.",
+      analogy: "Like sorting mail by urgency - urgent letters get handled first."
+    },
+    "discharge": {
+      title: "discharge (hospital)",
+      body: "Being released from the hospital to go home.",
+      usage: "Happens when doctors decide you're well enough to continue recovery at home.",
+      analogy: "Like checking out of a hotel when your stay is complete."
+    },
+    "admission": {
+      title: "admission (hospital)",
+      body: "Being accepted into the hospital for treatment that requires staying overnight or longer.",
+      usage: "Happens when your condition needs monitoring or treatment that can't be done as an outpatient.",
+      analogy: "Like checking into a hotel for an extended stay while you receive care."
+    },
+
+    // Additional common terms
+    "medication": {
+      title: "medication",
+      body: "Medicine or drugs used to treat, prevent, or manage health conditions.",
+      usage: "Prescribed by doctors to help with various health problems.",
+      analogy: "Like tools in a toolbox - each one designed to fix a specific problem.",
+      category: "medication"
+    },
+    "therapy": {
+      title: "therapy",
+      body: "Treatment designed to help cure or manage a health condition.",
+      usage: "Can include medication therapy, physical therapy, or other treatments.",
+      analogy: "Like a repair plan to fix or improve something that's not working right."
+    },
+    "specialist": {
+      title: "specialist",
+      body: "A doctor who focuses on treating specific types of medical conditions.",
+      usage: "You might be referred to a specialist for expert care in a particular area.",
+      analogy: "Like going to a mechanic who only works on certain types of cars."
+    },
+    "treatment": {
+      title: "treatment",
+      body: "Medical care given to help cure, manage, or improve a health condition.",
+      usage: "Can include medications, procedures, therapy, or lifestyle changes.",
+      analogy: "Like following a recipe to fix something that's broken in your body."
+    },
+    "condition": {
+      title: "condition",
+      body: "A health problem or disease that affects how your body works.",
+      usage: "Can be temporary (like a cold) or ongoing (like diabetes).",
+      analogy: "Like a problem with your car that needs attention or management."
+    },
+
+    // Specific drug names - common medications patients encounter
+    "lisinopril": {
+      title: "Lisinopril",
+      body: "A blood pressure medication (ACE inhibitor) that helps relax blood vessels.",
+      usage: "Usually taken once daily to treat high blood pressure and protect the heart.",
+      analogy: "Like opening up narrow roads to let traffic flow more easily.",
+      category: "medication"
+    },
+    "atorvastatin": {
+      title: "Atorvastatin",
+      body: "A cholesterol-lowering medication (statin) that reduces fatty buildup in blood vessels. Brand name is Lipitor.",
+      usage: "Taken daily, usually at bedtime, to lower cholesterol and prevent heart disease.",
+      analogy: "Like a street cleaner that removes grease buildup from your pipes.",
+      category: "medication"
+    },
+    "metformin": {
+      title: "Metformin",
+      body: "A diabetes medication that helps lower blood sugar and makes your body more sensitive to insulin.",
+      usage: "Usually taken twice daily with meals to control blood sugar in type 2 diabetes.",
+      analogy: "Like tuning an engine to run more efficiently on fuel (sugar).",
+      category: "medication"
+    },
+    "albuterol": {
+      title: "Albuterol",
+      body: "A bronchodilator inhaler that quickly opens up airways in your lungs. Brand names include ProAir and Ventolin.",
+      usage: "Used as needed for asthma attacks or breathing problems - provides quick relief.",
+      analogy: "Like opening windows in a stuffy room to let air flow freely.",
+      category: "medication"
+    },
+    "omeprazole": {
+      title: "Omeprazole",
+      body: "A proton pump inhibitor that reduces stomach acid production. Brand name is Prilosec.",
+      usage: "Taken daily to treat heartburn, GERD, or stomach ulcers.",
+      analogy: "Like turning down the heat on a stove that's cooking too hot.",
+      category: "medication"
+    },
+    "amlodipine": {
+      title: "Amlodipine",
+      body: "A calcium channel blocker that lowers blood pressure by relaxing blood vessels. Brand name is Norvasc.",
+      usage: "Taken once daily to treat high blood pressure and chest pain (angina).",
+      analogy: "Like loosening tight pipes so water can flow with less pressure.",
+      category: "medication"
+    },
+    "losartan": {
+      title: "Losartan",
+      body: "An ARB (angiotensin receptor blocker) that lowers blood pressure. Brand name is Cozaar.",
+      usage: "Taken daily to treat high blood pressure and protect kidneys in diabetes.",
+      analogy: "Like removing roadblocks so traffic (blood) can flow smoothly.",
+      category: "medication"
+    },
+    "levothyroxine": {
+      title: "Levothyroxine",
+      body: "A thyroid hormone replacement medication. Brand names include Synthroid and Levoxyl.",
+      usage: "Taken daily on an empty stomach to replace thyroid hormone your body isn't making enough of.",
+      analogy: "Like adding the right amount of fuel additive to keep your engine running properly.",
+      category: "medication"
+    },
+    "sertraline": {
+      title: "Sertraline",
+      body: "An SSRI antidepressant that helps balance brain chemicals. Brand name is Zoloft.",
+      usage: "Taken daily to treat depression, anxiety, and other mood disorders.",
+      analogy: "Like adjusting the chemical balance in a swimming pool to keep it clear.",
+      category: "medication"
+    },
+    "gabapentin": {
+      title: "Gabapentin",
+      body: "A nerve pain medication that calms overactive nerves. Brand name is Neurontin.",
+      usage: "Used for nerve pain, seizures, and sometimes restless leg syndrome.",
+      analogy: "Like turning down the volume on electrical wires that are too loud (painful).",
+      category: "medication"
+    },
+    "prednisone": {
+      title: "Prednisone",
+      body: "A corticosteroid (steroid) that reduces inflammation and suppresses the immune system.",
+      usage: "Used short-term for severe inflammation, allergies, or autoimmune conditions.",
+      analogy: "Like calling in firefighters to put out a big fire (inflammation) in your body.",
+      category: "medication"
+    },
+    "warfarin": {
+      title: "Warfarin",
+      body: "A blood thinner (anticoagulant) that prevents blood clots. Brand name is Coumadin.",
+      usage: "Requires regular blood tests and careful diet monitoring to prevent bleeding or clotting.",
+      analogy: "Like thinning paint so it flows better, but you have to be careful not to make it too thin.",
+      category: "medication"
+    },
+    "tramadol": {
+      title: "Tramadol",
+      body: "A prescription pain reliever for moderate pain. Brand name is Ultram.",
+      usage: "Used when over-the-counter pain relievers aren't strong enough.",
+      analogy: "Like a stronger volume control for turning down pain signals.",
+      category: "medication"
+    },
+    "furosemide": {
+      title: "Furosemide",
+      body: "A water pill (diuretic) that helps remove excess fluid from your body. Brand name is Lasix.",
+      usage: "Used to treat swelling (edema) and high blood pressure by making you urinate more.",
+      analogy: "Like opening a drain to let excess water out of a flooded basement.",
+      category: "medication"
+    },
+    "aspirin": {
+      title: "Aspirin",
+      body: "A pain reliever and blood thinner that also reduces inflammation and fever.",
+      usage: "Low-dose aspirin is used daily for heart protection; regular dose for pain and fever.",
+      analogy: "Like a Swiss Army knife - one pill that does several helpful things.",
+      category: "medication"
+    },
+
+    // Common brand names patients recognize
+    "tylenol": {
+      title: "Tylenol",
+      body: "Brand name for acetaminophen - a pain reliever and fever reducer.",
+      usage: "Used for headaches, pain, and fever. Safer for your stomach than ibuprofen.",
+      analogy: "Like a thermostat that turns down your body's pain and fever settings.",
+      category: "medication"
+    },
+    "advil": {
+      title: "Advil",
+      body: "Brand name for ibuprofen - a pain reliever that also reduces swelling and fever.",
+      usage: "Good for headaches, muscle pain, and inflammation. Take with food to protect your stomach.",
+      analogy: "Like a firefighter that puts out the fire of pain and swelling.",
+      category: "medication"
+    },
+    "lipitor": {
+      title: "Lipitor",
+      body: "Brand name for atorvastatin - a cholesterol-lowering medication.",
+      usage: "Taken daily to lower cholesterol and reduce risk of heart disease and stroke.",
+      analogy: "Like a street cleaner that removes grease buildup from your pipes.",
+      category: "medication"
+    },
+    "synthroid": {
+      title: "Synthroid",
+      body: "Brand name for levothyroxine - a thyroid hormone replacement.",
+      usage: "Taken daily on an empty stomach to replace thyroid hormone your body lacks.",
+      analogy: "Like adding the right amount of fuel additive to keep your engine running properly.",
+      category: "medication"
+    },
+    "zoloft": {
+      title: "Zoloft",
+      body: "Brand name for sertraline - an antidepressant medication.",
+      usage: "Taken daily to treat depression, anxiety, and other mood disorders.",
+      analogy: "Like adjusting the chemical balance in a swimming pool to keep it clear.",
+      category: "medication"
+    },
+    "prilosec": {
+      title: "Prilosec",
+      body: "Brand name for omeprazole - a medication that reduces stomach acid.",
+      usage: "Taken daily to treat heartburn, GERD, or stomach ulcers.",
+      analogy: "Like turning down the heat on a stove that's cooking too hot.",
+      category: "medication"
+    },
+
+    // Additional Body Systems and Anatomy
+    "immune system": {
+      title: "immune system",
+      body: "Your body's defense network that fights off infections and diseases.",
+      usage: "Can be weakened by illness or strengthened by vaccines and healthy living.",
+      analogy: "Like your body's army that protects you from invaders like germs and viruses."
+    },
+    "endocrine system": {
+      title: "endocrine system",
+      body: "The network of glands that make hormones to control your body's functions.",
+      usage: "Includes thyroid, adrenal glands, pancreas, and reproductive organs.",
+      analogy: "Like your body's chemical messenger service that sends signals to different parts."
+    },
+    "musculoskeletal": {
+      title: "musculoskeletal",
+      body: "Related to your muscles, bones, joints, ligaments, and tendons.",
+      usage: "Describes problems with movement, strength, or structural support of your body.",
+      analogy: "Your body's framework and motor system - like the frame and engine of a car."
+    },
+    "reproductive system": {
+      title: "reproductive system",
+      body: "The organs involved in making babies and producing sex hormones.",
+      usage: "Includes ovaries, uterus, testicles, prostate, and related structures.",
+      analogy: "Like your body's system for creating new life and maintaining gender characteristics."
+    },
+    "urinary system": {
+      title: "urinary system",
+      body: "Your kidneys, bladder, and tubes that filter waste and make urine.",
+      usage: "Removes toxins from blood and controls fluid balance in your body.",
+      analogy: "Like your body's plumbing and filtration system."
+    },
+    "spleen": {
+      title: "spleen",
+      body: "An organ that filters blood and helps fight infections.",
+      usage: "Can be injured in accidents or enlarged in certain diseases.",
+      analogy: "Like a blood filter and recycling center for old red blood cells."
+    },
+    "thyroid gland": {
+      title: "thyroid gland",
+      body: "A butterfly-shaped gland in your neck that controls your metabolism.",
+      usage: "Makes hormones that control how fast your body uses energy.",
+      analogy: "Like your body's gas pedal that controls how fast everything runs."
+    },
+    "adrenal glands": {
+      title: "adrenal glands",
+      body: "Small glands above your kidneys that make stress hormones like adrenaline.",
+      usage: "Help your body respond to stress and regulate blood pressure.",
+      analogy: "Like your body's emergency response system that kicks in during stress."
+    },
+    "pancreas": {
+      title: "pancreas",
+      body: "An organ that makes insulin to control blood sugar and enzymes to digest food.",
+      usage: "Problems can cause diabetes or digestion issues.",
+      analogy: "Like a factory that makes both fuel controllers (insulin) and food processors (enzymes)."
+    },
+    "liver": {
+      title: "liver",
+      body: "A large organ that cleans your blood, makes proteins, and processes nutrients.",
+      usage: "Can be damaged by alcohol, viruses, or medications.",
+      analogy: "Like your body's chemical processing plant and detox center."
+    },
+    "gallbladder": {
+      title: "gallbladder",
+      body: "A small sac that stores bile to help digest fats.",
+      usage: "Can form painful stones that may require surgical removal.",
+      analogy: "Like a small storage tank for digestive juice."
+    },
+    "appendix": {
+      title: "appendix",
+      body: "A small pouch attached to your large intestine with no known essential function.",
+      usage: "Can become infected (appendicitis) and require surgical removal.",
+      analogy: "Like a small dead-end street off the main highway of your intestine."
+    },
+    "prostate": {
+      title: "prostate",
+      body: "A walnut-sized gland in men that surrounds the urethra and makes part of semen.",
+      usage: "Can become enlarged with age or infected, affecting urination.",
+      analogy: "Like a donut around a straw that can get bigger and squeeze the straw."
+    },
+    "uterus": {
+      title: "uterus",
+      body: "The organ in women where babies grow during pregnancy.",
+      usage: "Also called the womb; sheds its lining monthly during menstruation.",
+      analogy: "Like a expandable room designed to nurture and protect growing life."
+    },
+    "ovaries": {
+      title: "ovaries",
+      body: "Two organs in women that release eggs and make female hormones.",
+      usage: "Control menstrual cycles and can develop cysts or other problems.",
+      analogy: "Like monthly egg dispensers that also control feminine characteristics."
+    },
+
+    // Mental Health and Psychiatric Conditions
+    "depression": {
+      title: "depression",
+      body: "A mental health condition causing persistent sadness, loss of interest, and low energy.",
+      usage: "A mental health condition that healthcare providers can help address.",
+      analogy: "Like being stuck under a heavy blanket of sadness that won't lift.",
+      category: "condition"
+    },
+    "anxiety": {
+      title: "anxiety",
+      body: "Excessive worry, fear, or nervousness that interferes with daily life.",
+      usage: "A mental health condition that affects many people and can be addressed by professionals.",
+      analogy: "Like having a smoke alarm in your brain that goes off too often.",
+      category: "condition"
+    },
+    "bipolar disorder": {
+      title: "bipolar disorder",
+      body: "A condition causing extreme mood swings between depression and mania (highs).",
+      usage: "A mental health condition requiring ongoing professional care.",
+      analogy: "Like an emotional roller coaster that goes from very high peaks to very low valleys.",
+      category: "condition"
+    },
+    "ADHD": {
+      title: "ADHD (Attention Deficit Hyperactivity Disorder)",
+      body: "A condition affecting attention, hyperactivity, and impulse control.",
+      usage: "Often diagnosed in childhood; treated with behavioral therapy and sometimes medication.",
+      analogy: "Like having a brain that constantly changes channels instead of focusing on one program.",
+      category: "condition"
+    },
+    "PTSD": {
+      title: "PTSD (Post-Traumatic Stress Disorder)",
+      body: "A mental health condition triggered by experiencing or witnessing a traumatic event.",
+      usage: "Symptoms include flashbacks, nightmares, and anxiety. Treated with specialized therapy.",
+      analogy: "Like your brain's alarm system getting stuck in the 'on' position after a scary event.",
+      category: "condition"
+    },
+    "schizophrenia": {
+      title: "schizophrenia",
+      body: "A chronic mental disorder affecting thinking, perception, and behavior.",
+      usage: "Requires lifelong treatment with antipsychotic medications and support services.",
+      analogy: "Like having crossed wires in the brain that mix up reality with false perceptions.",
+      category: "condition"
+    },
+    "OCD": {
+      title: "OCD (Obsessive-Compulsive Disorder)",
+      body: "A condition causing unwanted repetitive thoughts and behaviors.",
+      usage: "Treated with specific therapy techniques and sometimes medication.",
+      analogy: "Like having a broken record in your mind that keeps playing the same worrying song.",
+      category: "condition"
+    },
+    "panic disorder": {
+      title: "panic disorder",
+      body: "A condition causing sudden, intense episodes of fear and physical symptoms.",
+      usage: "Panic attacks can feel like heart attacks; treated with therapy and medication.",
+      analogy: "Like your body's fire alarm going off when there's no fire.",
+      category: "condition"
+    },
+    "autism": {
+      title: "autism",
+      body: "A developmental condition affecting social interaction, communication, and behavior.",
+      usage: "Usually diagnosed in early childhood; managed with behavioral therapies and support.",
+      analogy: "Like having a different operating system that processes the world in unique ways.",
+      category: "condition"
+    },
+    "dementia": {
+      title: "dementia",
+      body: "A decline in memory, thinking, and reasoning skills that interferes with daily life.",
+      usage: "Most commonly caused by Alzheimer's disease; managed with medications and care support.",
+      analogy: "Like a library where books are gradually being moved to different shelves or lost.",
+      category: "condition"
+    },
+    "alzheimer's disease": {
+      title: "Alzheimer's disease",
+      body: "The most common cause of dementia, causing progressive memory loss and confusion.",
+      usage: "Currently no cure, but medications may slow progression in early stages.",
+      analogy: "Like a computer slowly losing files and having trouble running programs.",
+      category: "condition"
+    },
+
+    // Laboratory Tests and Diagnostic Values
+    "CBC": {
+      title: "CBC (Complete Blood Count)",
+      body: "A blood test that checks different types of blood cells and their counts.",
+      usage: "Screens for infections, anemia, blood disorders, and overall health.",
+      analogy: "Like taking inventory of all the different workers in your blood factory.",
+      category: "procedure"
+    },
+    "hemoglobin": {
+      title: "hemoglobin",
+      body: "The protein in red blood cells that carries oxygen throughout your body.",
+      usage: "Low levels indicate anemia; high levels may suggest dehydration or lung problems.",
+      analogy: "Like little delivery trucks in your blood that carry oxygen packages."
+    },
+    "blood glucose": {
+      title: "blood glucose",
+      body: "The amount of sugar (glucose) in your blood.",
+      usage: "High levels may indicate diabetes; low levels can cause dangerous symptoms.",
+      analogy: "Like measuring the fuel level in your body's gas tank."
+    },
+    "A1C": {
+      title: "A1C (Hemoglobin A1C)",
+      body: "A blood test showing your average blood sugar levels over the past 2-3 months.",
+      usage: "Used to diagnose and monitor diabetes. Goal is usually less than 7%.",
+      analogy: "Like a report card showing how well you've controlled your blood sugar.",
+      category: "procedure"
+    },
+    "cholesterol": {
+      title: "cholesterol",
+      body: "A fatty substance in your blood that can build up in arteries if too high.",
+      usage: "High levels increase heart disease risk; managed with diet, exercise, and medication.",
+      analogy: "Like grease that can clog your body's pipes if there's too much."
+    },
+    "lipid panel": {
+      title: "lipid panel",
+      body: "Blood tests measuring cholesterol, triglycerides, and other fats in your blood.",
+      usage: "Assesses heart disease risk; usually done after fasting for 12 hours.",
+      analogy: "Like checking the oil quality and levels in your car's engine.",
+      category: "procedure"
+    },
+    "TSH": {
+      title: "TSH (Thyroid Stimulating Hormone)",
+      body: "A hormone that tells your thyroid gland how much thyroid hormone to make.",
+      usage: "High TSH suggests low thyroid function; low TSH suggests overactive thyroid.",
+      analogy: "Like a thermostat signal telling your body's furnace how hard to work.",
+      category: "procedure"
+    },
+    "creatinine": {
+      title: "creatinine",
+      body: "A waste product in blood that shows how well your kidneys are filtering.",
+      usage: "High levels may indicate kidney problems or dehydration.",
+      analogy: "Like checking how much exhaust is coming from your kidney's engine."
+    },
+    "BUN": {
+      title: "BUN (Blood Urea Nitrogen)",
+      body: "Another waste product that measures kidney function.",
+      usage: "High levels with high creatinine suggest kidney problems.",
+      analogy: "Another type of exhaust that shows how your kidneys are working."
+    },
+    "white blood cells": {
+      title: "white blood cells",
+      body: "Blood cells that fight infections and diseases.",
+      usage: "High counts often mean infection; low counts may indicate immune system problems.",
+      analogy: "Like the soldiers in your blood army that fight off invaders."
+    },
+    "platelets": {
+      title: "platelets",
+      body: "Blood cells that help form clots to stop bleeding.",
+      usage: "Low counts can cause easy bruising and bleeding; high counts may increase clot risk.",
+      analogy: "Like tiny Band-Aids that quickly patch up holes in your blood vessels."
+    },
+    "INR": {
+      title: "INR (International Normalized Ratio)",
+      body: "A blood test that measures how long it takes your blood to clot.",
+      usage: "Used to monitor blood thinner medications like warfarin.",
+      analogy: "Like timing how long it takes paint to dry - too fast or slow can be a problem.",
+      category: "procedure"
+    },
+    "PSA": {
+      title: "PSA (Prostate Specific Antigen)",
+      body: "A protein made by the prostate gland; elevated levels may suggest prostate problems.",
+      usage: "Screening test for prostate cancer in men, usually after age 50.",
+      analogy: "Like a smoke detector for the prostate - high levels are a warning signal.",
+      category: "procedure"
+    },
+
+    // Surgical Procedures and Interventions
+    "appendectomy": {
+      title: "appendectomy",
+      body: "Surgery to remove the appendix, usually because of infection (appendicitis).",
+      usage: "Often done as emergency surgery when the appendix becomes inflamed and infected.",
+      analogy: "Like removing a small, infected dead-end pipe before it bursts.",
+      category: "procedure"
+    },
+    "cholecystectomy": {
+      title: "cholecystectomy",
+      body: "Surgery to remove the gallbladder, often due to painful gallstones.",
+      usage: "Can be done laparoscopically (keyhole surgery) or through traditional open surgery.",
+      analogy: "Like removing a small storage tank that keeps getting clogged with stones.",
+      category: "procedure"
+    },
+    "hip replacement": {
+      title: "hip replacement",
+      body: "Surgery to replace a damaged hip joint with an artificial joint.",
+      usage: "Usually done for severe arthritis or hip fractures in older adults.",
+      analogy: "Like replacing a worn-out car part with a new mechanical joint.",
+      category: "procedure"
+    },
+    "knee replacement": {
+      title: "knee replacement",
+      body: "Surgery to replace a damaged knee joint with an artificial joint.",
+      usage: "Done for severe arthritis when other treatments haven't helped.",
+      analogy: "Like replacing worn-out hinges with new mechanical ones.",
+      category: "procedure"
+    },
+    "bypass surgery": {
+      title: "bypass surgery",
+      body: "Heart surgery that creates new routes for blood to flow around blocked arteries.",
+      usage: "Used when coronary arteries are severely blocked and angioplasty isn't enough.",
+      analogy: "Like building a detour road around a highway that's completely blocked.",
+      category: "procedure"
+    },
+    "angioplasty": {
+      title: "angioplasty",
+      body: "A procedure to open blocked heart arteries using a tiny balloon and often a stent.",
+      usage: "Less invasive than bypass surgery for treating blocked coronary arteries.",
+      analogy: "Like using a balloon to push open a clogged pipe and inserting a tiny tube to keep it open.",
+      category: "procedure"
+    },
+    "laparoscopy": {
+      title: "laparoscopy",
+      body: "Minimally invasive surgery using a thin, lighted tube through small incisions.",
+      usage: "Used for gallbladder removal, hernia repair, and diagnostic procedures.",
+      analogy: "Like keyhole surgery - fixing things through tiny openings instead of big cuts.",
+      category: "procedure"
+    },
+    "hernia repair": {
+      title: "hernia repair",
+      body: "Surgery to fix a hernia, where an organ pushes through a weak spot in muscle or tissue.",
+      usage: "Can be done with traditional surgery or laparoscopy, often using mesh for reinforcement.",
+      analogy: "Like patching a hole in a wall where something is poking through.",
+      category: "procedure"
+    },
+
+    // Medical Specialties and Specialists
+    "oncologist": {
+      title: "oncologist",
+      body: "A doctor who specializes in diagnosing and treating cancer.",
+      usage: "Coordinates cancer treatment including chemotherapy, radiation, and other therapies.",
+      analogy: "Like a general in the war against cancer, planning the battle strategy."
+    },
+    "neurologist": {
+      title: "neurologist",
+      body: "A doctor who specializes in brain, spinal cord, and nerve disorders.",
+      usage: "Treats conditions like stroke, epilepsy, Parkinson's disease, and headaches.",
+      analogy: "Like an electrician who specializes in your body's wiring system."
+    },
+    "psychiatrist": {
+      title: "psychiatrist",
+      body: "A medical doctor who specializes in mental health and can prescribe medications.",
+      usage: "Treats depression, anxiety, bipolar disorder, and other mental health conditions.",
+      analogy: "Like a doctor for your mind who can also write prescriptions."
+    },
+    "orthopedist": {
+      title: "orthopedist",
+      body: "A doctor who specializes in bones, joints, muscles, and the skeletal system.",
+      usage: "Treats fractures, arthritis, sports injuries, and performs joint replacement surgery.",
+      analogy: "Like a mechanic who fixes your body's frame and moving parts."
+    },
+    "gastroenterologist": {
+      title: "gastroenterologist",
+      body: "A doctor who specializes in the digestive system and related disorders.",
+      usage: "Performs colonoscopies and treats stomach, liver, and intestinal problems.",
+      analogy: "Like a plumber who specializes in your body's food processing pipes."
+    },
+    "pulmonologist": {
+      title: "pulmonologist",
+      body: "A doctor who specializes in lung and breathing problems.",
+      usage: "Treats asthma, COPD, pneumonia, and other respiratory conditions.",
+      analogy: "Like an HVAC specialist for your body's air system."
+    },
+    "nephrologist": {
+      title: "nephrologist",
+      body: "A doctor who specializes in kidney diseases and disorders.",
+      usage: "Treats kidney failure, kidney stones, and manages dialysis patients.",
+      analogy: "Like a specialist in your body's filtration system."
+    },
+    "urologist": {
+      title: "urologist",
+      body: "A doctor who specializes in urinary system and male reproductive organ disorders.",
+      usage: "Treats kidney stones, prostate problems, and urinary tract issues.",
+      analogy: "Like a plumber who specializes in your body's waste removal system."
+    },
+
+    // Women's Health and Pregnancy Terms
+    "prenatal": {
+      title: "prenatal",
+      body: "Medical care and checkups during pregnancy before the baby is born.",
+      usage: "Includes regular doctor visits, ultrasounds, and tests to monitor baby and mother's health.",
+      analogy: "Like regular maintenance checks for both the car and the precious cargo it's carrying."
+    },
+    "postpartum": {
+      title: "postpartum",
+      body: "The period after giving birth, usually the first six weeks.",
+      usage: "Important time for mother's recovery and bonding with baby; may include mood changes.",
+      analogy: "Like the recovery period after a major life event while adjusting to huge changes."
+    },
+    "menopause": {
+      title: "menopause",
+      body: "When a woman's menstrual periods permanently stop, usually around age 50.",
+      usage: "May cause hot flashes, mood changes, and bone loss; sometimes treated with hormones.",
+      analogy: "Like your body's factory shutting down one production line and readjusting operations."
+    },
+    "pap smear": {
+      title: "Pap smear",
+      body: "A screening test for cervical cancer that takes cells from the cervix.",
+      usage: "Done every 3-5 years for women to detect early signs of cervical cancer.",
+      analogy: "Like taking a small sample to check for problems before they become serious.",
+      category: "procedure"
+    },
+    "gynecologist": {
+      title: "gynecologist",
+      body: "A doctor who specializes in women's reproductive health.",
+      usage: "Provides routine care, treats reproductive problems, and delivers babies.",
+      analogy: "Like a specialist mechanic for women's reproductive system."
+    },
+    "obstetrics": {
+      title: "obstetrics",
+      body: "The medical specialty that cares for women during pregnancy, childbirth, and after delivery.",
+      usage: "Obstetricians deliver babies and manage pregnancy complications.",
+      analogy: "Like specialized support for the amazing journey of bringing new life into the world."
+    },
+
+    // Emergency and Critical Care Terms
+    "cardiac arrest": {
+      title: "cardiac arrest",
+      body: "When the heart suddenly stops beating effectively, stopping blood flow.",
+      usage: "Medical emergency requiring immediate CPR and defibrillation to save life.",
+      analogy: "Like a car engine that suddenly shuts off completely on the highway.",
+      category: "condition"
+    },
+    "stroke": {
+      title: "stroke",
+      body: "When blood flow to part of the brain is blocked or a blood vessel bursts.",
+      usage: "Medical emergency - quick treatment can prevent permanent brain damage.",
+      analogy: "Like a power outage in part of your brain's electrical system.",
+      category: "condition"
+    },
+    "heart attack": {
+      title: "heart attack",
+      body: "When blood flow to part of the heart muscle is blocked, damaging the heart.",
+      usage: "Medical emergency requiring immediate treatment to restore blood flow.",
+      analogy: "Like a traffic jam blocking supplies from reaching part of your heart.",
+      category: "condition"
+    },
+    "CPR": {
+      title: "CPR (Cardiopulmonary Resuscitation)",
+      body: "Emergency procedure using chest compressions and rescue breathing to save lives.",
+      usage: "Used when someone's heart stops beating or they stop breathing.",
+      analogy: "Like manually pumping the heart and breathing for someone when their body can't.",
+      category: "procedure"
+    },
+    "defibrillation": {
+      title: "defibrillation",
+      body: "Using electrical shocks to restore normal heart rhythm during cardiac arrest.",
+      usage: "Done with AED machines or hospital defibrillators to restart the heart.",
+      analogy: "Like jump-starting a car battery to get the engine running again.",
+      category: "procedure"
+    },
+    "ICU": {
+      title: "ICU (Intensive Care Unit)",
+      body: "A special hospital unit for patients who need constant monitoring and life support.",
+      usage: "For critically ill patients who need round-the-clock medical attention.",
+      analogy: "Like a high-tech garage where the sickest cars get the most intensive repairs."
+    },
+
+    // Infection and Disease Terms
+    "infection": {
+      title: "infection",
+      body: "When harmful germs like bacteria, viruses, or fungi invade and multiply in your body.",
+      usage: "Can be localized (one area) or systemic (whole body); treated based on type of germ.",
+      analogy: "Like unwanted invaders setting up camp and causing trouble in your body.",
+      category: "condition"
+    },
+    "antibiotic resistance": {
+      title: "antibiotic resistance",
+      body: "When bacteria become immune to antibiotics that used to kill them.",
+      usage: "Growing problem caused by overuse of antibiotics; makes infections harder to treat.",
+      analogy: "Like germs developing armor against the weapons we use to fight them."
+    },
+    "UTI": {
+      title: "UTI (Urinary Tract Infection)",
+      body: "An infection in your urinary system, usually the bladder or urethra.",
+      usage: "More common in women; causes burning with urination and frequent urges to go.",
+      analogy: "Like having irritating invaders in your body's plumbing system.",
+      category: "condition"
+    },
+    "STD": {
+      title: "STD (Sexually Transmitted Disease)",
+      body: "Infections spread through sexual contact, including chlamydia, gonorrhea, and herpes.",
+      usage: "Many can be cured with treatment; prevention includes safe sex practices.",
+      analogy: "Like contagious conditions that can pass from person to person through intimate contact.",
+      category: "condition"
+    },
+    "hepatitis": {
+      title: "hepatitis",
+      body: "Inflammation of the liver, often caused by viruses (Hepatitis A, B, or C).",
+      usage: "Can be acute or chronic; some types have vaccines, others require ongoing treatment.",
+      analogy: "Like your liver's factory getting inflamed and not working properly.",
+      category: "condition"
+    },
+    "tuberculosis": {
+      title: "tuberculosis (TB)",
+      body: "A bacterial infection that usually affects the lungs but can spread to other organs.",
+      usage: "Requires long-term antibiotic treatment; can be contagious through coughing.",
+      analogy: "Like persistent bacterial invaders that set up strongholds in your lungs.",
+      category: "condition"
+    },
+    "meningitis": {
+      title: "meningitis",
+      body: "Dangerous infection or inflammation of the membranes around the brain and spinal cord.",
+      usage: "A medical emergency that requires immediate professional attention.",
+      analogy: "Like a fire in the protective wrapping around your brain and spinal cord.",
+      category: "condition"
+    },
+
+    // Additional terms for sample text support
+    "sedation": {
+      title: "sedation",
+      body: "Medicine given to help you relax and feel drowsy during medical procedures.",
+      usage: "Used to keep patients comfortable during procedures like endoscopy or surgery.",
+      analogy: "Like being given a calming medication to help you feel sleepy and relaxed."
+    },
+    "lesion": {
+      title: "lesion",
+      body: "An abnormal change in tissue, like a wound, sore, or abnormal growth.",
+      usage: "Can be found during examinations or imaging tests; may be benign or require further evaluation.",
+      analogy: "Like any unusual spot or change from normal tissue."
+    },
+    "inflammation": {
+      title: "inflammation",
+      body: "Your body's response to injury or infection, causing redness, swelling, heat, and pain.",
+      usage: "A natural healing response that can sometimes become chronic and problematic.",
+      analogy: "Like your body's alarm system causing the area to become red, swollen, and sore."
+    },
+    "acid reflux": {
+      title: "acid reflux",
+      body: "When stomach acid flows backward into the esophagus, causing heartburn.",
+      usage: "Common condition that can cause chest burning and indigestion symptoms.",
+      analogy: "Like having stomach acid travel up the wrong way, irritating your food pipe.",
+      category: "condition"
+    },
+
+    // Commonly Misused Medical Terms
+    "integrated care": {
+      title: "integrated care",
+      body: "Different healthcare providers working together in a coordinated system.",
+      usage: "When your primary doctor, specialists, and other providers share information and coordinate your care.",
+      analogy: "Like having all the mechanics in a garage working together on your car."
+    },
+    "integrative care": {
+      title: "integrative care",
+      body: "Combining conventional medicine with complementary approaches like acupuncture or meditation.",
+      usage: "Uses both traditional medical treatments and alternative therapies together.",
+      analogy: "Like using both a toolbox and a first aid kit to fix something."
+    },
+    "artery": {
+      title: "artery",
+      body: "Blood vessels that carry oxygen-rich blood away from your heart to your body.",
+      usage: "These are the vessels that can get blocked in heart attacks.",
+      analogy: "Like highways carrying fresh supplies from the central warehouse to different neighborhoods."
+    },
+    "vein": {
+      title: "vein",
+      body: "Blood vessels that carry used blood back to your heart to get fresh oxygen.",
+      usage: "These are the vessels you can often see under your skin, especially in your arms.",
+      analogy: "Like return roads bringing empty trucks back to the warehouse for more supplies."
+    },
+    "rosacea": {
+      title: "rosacea",
+      body: "A skin condition causing persistent redness and sometimes bumps, usually on the face.",
+      usage: "Common in middle-aged adults, often triggered by sun, stress, or certain foods.",
+      analogy: "Like having a permanent blush that sometimes gets bumpy.",
+      category: "condition"
+    },
+    "acne": {
+      title: "acne",
+      body: "Skin condition with blackheads, whiteheads, and pimples, usually from clogged pores.",
+      usage: "Most common in teenagers but can occur at any age.",
+      analogy: "Like having tiny drains that get clogged and overflow.",
+      category: "condition"
+    },
+    "diagnose": {
+      title: "diagnose",
+      body: "To identify a specific medical condition after examining symptoms and test results.",
+      usage: "Doctors diagnose when they can name the exact condition you have.",
+      analogy: "Like a detective solving a case and naming the culprit."
+    },
+    "evaluate": {
+      title: "evaluate",
+      body: "To examine and assess symptoms or conditions without necessarily identifying a specific diagnosis.",
+      usage: "Doctors evaluate when they're still gathering information and considering possibilities.",
+      analogy: "Like a detective investigating clues but not yet ready to name the suspect."
+    },
+    "immunize": {
+      title: "immunize",
+      body: "To make someone immune to a disease, usually through vaccination.",
+      usage: "The general process of providing protection against diseases.",
+      analogy: "Like training your body's army to recognize and fight specific enemies."
+    },
+    "inoculate": {
+      title: "inoculate",
+      body: "The specific act of introducing a vaccine or substance into the body.",
+      usage: "The physical process of giving a vaccine, usually by injection.",
+      analogy: "Like actually delivering the training materials to your body's army."
+    },
+    "case": {
+      title: "case (medical)",
+      body: "A patient with a particular condition or an instance of a disease.",
+      usage: "Refers to the person or the occurrence of illness, not what's done to help them.",
+      analogy: "Like a story about someone who had a particular problem."
+    },
+    "procedure": {
+      title: "procedure (medical)",
+      body: "A specific medical action or operation performed on a patient.",
+      usage: "Refers to what doctors do to diagnose or help patients.",
+      analogy: "Like a specific repair job done on a car."
+    },
+
+    // Medical Acronyms (commonly misunderstood)
+    "NPO": {
+      title: "NPO (Nothing by Mouth)",
+      body: "Medical instruction meaning don't eat or drink anything.",
+      usage: "Often ordered before surgery or certain medical tests.",
+      analogy: "Like a 'closed' sign on your mouth until further notice."
+    },
+    "PRN": {
+      title: "PRN (As Needed)",
+      body: "Medical instruction meaning take medication only when you need it, not on a schedule.",
+      usage: "Used for pain medications, nausea medicine, or other symptoms that come and go.",
+      analogy: "Like having a fire extinguisher - only use it when there's a fire."
+    },
+    "PCP": {
+      title: "PCP (Primary Care Provider)",
+      body: "Your main doctor who coordinates your overall healthcare.",
+      usage: "Usually a family doctor, internist, or general practitioner you see for regular care.",
+      analogy: "Like the general contractor who oversees your house projects."
+    },
+    "ED": {
+      title: "ED (Emergency Department)",
+      body: "The hospital department for urgent medical problems that need immediate attention.",
+      usage: "Where you go for serious injuries, chest pain, difficulty breathing, or other emergencies.",
+      analogy: "Like the fire station - always ready for urgent situations."
+    },
+
+    // Disease Progression Terms
+    "progressive": {
+      title: "progressive (medical)",
+      body: "A condition that gradually gets worse over time.",
+      usage: "Describes diseases that continue to advance despite medical care.",
+      analogy: "Like a crack in a wall that slowly gets bigger over time."
+    },
+    "remission": {
+      title: "remission",
+      body: "When signs and symptoms of a disease decrease or disappear temporarily.",
+      usage: "Often used with cancer or autoimmune diseases when they become inactive.",
+      analogy: "Like a fire that's been put out but could potentially restart."
+    },
+    "reaction": {
+      title: "reaction (medical)",
+      body: "Your body's response to a medication, treatment, or substance.",
+      usage: "Can be expected (like drowsiness from pain medication) or unexpected (like an allergic reaction).",
+      analogy: "Like your body giving feedback about something new you've introduced."
+    }
+  };
+
+  // Terms we detect in medical text. Order matters: longer first to avoid partial matches.
+  const TERM_KEYS = Object.keys(TERMS).sort((a, b) => b.length - a.length);
+  console.log('Medical terms loaded:', TERM_KEYS.length, 'terms');
+  
+  function escapeRegex(s) { 
+    return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); 
+  }
+  
+  // Single regex that matches any known term (supports multi‑word phrases)
+  const TERMS_REGEX = new RegExp(`\\b(${TERM_KEYS.map(k => escapeRegex(k)).join('|')})\\b`, 'gi');
+  console.log('Terms regex created:', TERMS_REGEX);
+
+  // Top prescribed medication names — always highlight purple if not in glossary
+  const MEDICATION_NAMES = new Set([
+    'atorvastatin','metformin','levothyroxine','lisinopril','amlodipine',
+    'metoprolol','metoprolol tartrate','metoprolol succinate','metoprolol xl',
+    'albuterol','losartan','gabapentin','omeprazole','sertraline',
+    'rosuvastatin','pantoprazole','escitalopram','hydrochlorothiazide',
+    'bupropion','fluoxetine','semaglutide','trazodone','simvastatin',
+    'amoxicillin','tamsulosin','hydrocodone','fluticasone','meloxicam',
+    'apixaban','eliquis','furosemide','duloxetine','ibuprofen','famotidine',
+    'empagliflozin','jardiance','carvedilol','tramadol','alprazolam',
+    'prednisone','hydroxyzine','buspirone','clopidogrel','glipizide',
+    'citalopram','allopurinol','aspirin','cyclobenzaprine','oxycodone',
+    'atenolol','celecoxib','clonazepam','doxycycline','pravastatin',
+    'spironolactone','azithromycin','methylprednisolone','naproxen',
+    'cetirizine','loratadine','montelukast','singulair','fluconazole',
+    'augmentin','ciprofloxacin','levofloxacin','metronidazole','cephalexin',
+    'warfarin','coumadin','rivaroxaban','xarelto','dabigatran','pradaxa',
+    'digoxin','diltiazem','verapamil','nifedipine','hydralazine',
+    'nitroglycerin','benazepril','enalapril','ramipril','telmisartan',
+    'valsartan','olmesartan','irbesartan','candesartan','sacubitril',
+    'entresto','insulin glargine','insulin','lantus','basaglar','toujeo',
+    'ozempic','wegovy','mounjaro','tirzepatide','victoza','liraglutide',
+    'trulicity','dulaglutide','farxiga','dapagliflozin','invokana',
+    'januvia','sitagliptin','linagliptin','saxagliptin','glimepiride',
+    'glyburide','pioglitazone','actos','testosterone','estradiol',
+    'progesterone','estrogen','premarin','fosamax','alendronate',
+    'prolia','denosumab','raloxifene','folic acid','vitamin b12',
+    'methylphenidate','ritalin','concerta','adderall','vyvanse',
+    'lisdexamfetamine','atomoxetine','modafinil','zolpidem','ambien',
+    'eszopiclone','temazepam','diphenhydramine','benadryl','doxylamine',
+    'mirtazapine','amitriptyline','nortriptyline','quetiapine','seroquel',
+    'olanzapine','zyprexa','risperidone','aripiprazole','abilify',
+    'lurasidone','latuda','haloperidol','lithium','lamotrigine','lamictal',
+    'valproic acid','depakote','carbamazepine','levetiracetam','keppra',
+    'topiramate','topamax','phenytoin','pregabalin','lyrica','baclofen',
+    'tizanidine','carisoprodol','ipratropium','tiotropium','spiriva',
+    'budesonide','beclomethasone','mometasone','zafirlukast','fexofenadine',
+    'allegra','levocetirizine','desloratadine','olopatadine','guaifenesin',
+    'mucinex','pseudoephedrine','minocycline','erythromycin','clarithromycin',
+    'clindamycin','vancomycin','nitrofurantoin','acyclovir','valacyclovir',
+    'valtrex','famciclovir','oseltamivir','tamiflu','terbinafine','lamisil',
+    'nystatin','hydrocortisone','triamcinolone','betamethasone','clobetasol',
+    'tacrolimus','tretinoin','finasteride','sildenafil','viagra','tadalafil',
+    'cialis','tamsulosin','solifenacin','oxybutynin','tolterodine','mirabegron',
+    'latanoprost','bimatoprost','timolol','dorzolamide','brimonidine',
+    'liothyronine','methimazole','dexamethasone','decadron','bisoprolol',
+    'propranolol','inderal','sotalol','labetalol','nebivolol','bystolic',
+    'felodipine','chlorthalidone','indapamide','torsemide','bumetanide',
+    'eplerenone','clonidine','catapres','methyldopa','minoxidil','ranolazine',
+    'ivabradine','dobutamine','milrinone','potassium chloride',
+    'ergocalciferol','cholecalciferol','ferrous sulfate','iron',
+    'lipitor','zocor','crestor','norvasc','zestril','prinivil',
+    'lasix','glucophage','synthroid','protonix','nexium','prevacid',
+    'prilosec','pepcid','zoloft','lexapro','prozac','effexor','cymbalta',
+    'wellbutrin','buspar','xanax','valium','ativan','klonopin',
+    'vicodin','percocet','tylenol','advil','motrin','celebrex','mobic',
+    'flexeril','voltaren','lopressor','toprol','coreg',
+  ]);
+
+  const MEDICAL_SUFFIX = /(?:itis|osis|emia|uria|ectomy|otomy|oscopy|plasty|graphy|algia|pathy|ology|ogenic|ascular|cardiac|renal|hepat|pulmon|neuro|gastro|onco|immuno|hemato|lympho|thorac|abdom|glyc|lipid|sterol|azole|mycin|cillin|statin|sartan|pril|olol|dipine|oxacin|tidine|mab|nib|umab|zumab|prazole)$/i;
+  const MEDICAL_ABBREV = /^[A-Z]{2,6}$/;
+
+  // Real medical terms we recognize but haven't defined in Lite yet
+  // These will show purple -- "we know this exists, Pro explains it fully"
+  const KNOWN_UNDEFINED = new Set([
+    // Lung/breathing exam findings
+    'crepitations','rhonchi','rales','stridor','wheeze','wheezes','crackles',
+    'tachypnea','bradypnea','orthopnea','dyspnea','apnea','hypoxemia',
+    // Heart exam findings
+    'bradycardia','tachycardia','palpitations','murmur','gallop','thrill',
+    'fibrillation','flutter','ischemia','infarction','stenosis','regurgitation',
+    // Lab values and tests
+    'hemoglobin','hematocrit','platelets','leukocytes','lymphocytes','neutrophils',
+    'eosinophils','basophils','monocytes','erythrocytes','reticulocytes',
+    'creatinine','electrolytes','albumin','bilirubin','troponin','ferritin',
+    'prothrombin','fibrinogen','d-dimer','lipase','amylase','lactate',
+    'hemoglobin a1c','hba1c','psa','tsh','t3','t4','bnp','inr','aptt','pt',
+    // Procedures and imaging
+    'echocardiogram','electrocardiogram','spirometry','bronchoscopy',
+    'laparoscopy','arthroscopy','cystoscopy','sigmoidoscopy','colonoscopy',
+    'fluoroscopy','mammography','angiography','venography','myelography',
+    'ecg','ekg','mri','ct','pet','eeg','emg','eeg',
+    // Conditions not in glossary
+    'hypothyroidism','hyperthyroidism','hyperlipidemia','dyslipidemia',
+    'atherosclerosis','arteriosclerosis','thrombosis','embolism','aneurysm',
+    'cardiomyopathy','pericarditis','endocarditis','myocarditis',
+    'glomerulonephritis','pyelonephritis','nephrolithiasis','urolithiasis',
+    'diverticulitis','diverticulosis','cholecystitis','cholelithiasis',
+    'hepatitis','cirrhosis','gastroparesis','colitis','enteritis',
+    'osteoarthritis','rheumatoid','fibromyalgia','tendinitis','bursitis',
+    'spondylosis','radiculopathy','myelopathy','neuropathy',
+    'hypoglycemia','hyperglycemia','ketoacidosis','hyperkalemia','hyponatremia',
+    'hypokalemia','hypernatremia','acidosis','alkalosis','septicemia',
+    // Medications not yet in glossary
+    'torsemide','eplerenone','spironolactone','empagliflozin','dapagliflozin',
+    'canagliflozin','liraglutide','dulaglutide','semaglutide','tirzepatide',
+    'sitagliptin','linagliptin','saxagliptin','glimepiride','pioglitazone',
+    'rosuvastatin','pravastatin','fluvastatin','lovastatin','pitavastatin',
+    'amlodipine','felodipine','nifedipine','diltiazem','verapamil',
+    'benazepril','ramipril','quinapril','fosinopril','enalapril','captopril',
+    'telmisartan','olmesartan','irbesartan','candesartan','valsartan',
+    'bisoprolol','nebivolol','carvedilol','labetalol','sotalol',
+    'rivaroxaban','dabigatran','edoxaban','fondaparinux','enoxaparin',
+    'allopurinol','febuxostat','colchicine','probenecid',
+    'ondansetron','metoclopramide','prochlorperazine','promethazine',
+    'diphenhydramine','loratadine','cetirizine','fexofenadine','levocetirizine',
+    'montelukast','zafirlukast','ipratropium','tiotropium','salmeterol',
+    'formoterol','ciclesonide','mometasone','beclomethasone',
+    'clindamycin','vancomycin','metronidazole','doxycycline','minocycline',
+    'azithromycin','clarithromycin','levofloxacin','ciprofloxacin',
+    'trimethoprim','nitrofurantoin','fluconazole','itraconazole','terbinafine',
+    'acyclovir','valacyclovir','famciclovir','oseltamivir',
+    'alprazolam','clonazepam','diazepam','lorazepam','temazepam',
+    'quetiapine','olanzapine','risperidone','aripiprazole','lurasidone',
+    'lamotrigine','topiramate','levetiracetam','oxcarbazepine','pregabalin',
+    'amitriptyline','nortriptyline','mirtazapine','venlafaxine','desvenlafaxine',
+    'methylphenidate','lisdexamfetamine','atomoxetine','modafinil',
+    'zolpidem','eszopiclone','suvorexant','ramelteon',
+    'finasteride','dutasteride','tamsulosin','sildenafil','tadalafil',
+    'levothyroxine','liothyronine','methimazole','propylthiouracil',
+    'prolia','denosumab','zoledronic acid','alendronate','risedronate',
+    // Procedure and exam terms
+    'glucagon','retroflexion','fundus','valsalva','auscultation',
+    'palpation','percussion','intubation','extubation','cannulation',
+    'catheterization','debridement','cauterization','ablation','embolization',
+    'stenting','endarterectomy','fasciotomy','thoracentesis','paracentesis',
+    'arthrocentesis','lumbar puncture','bone marrow','biopsy',
+  ]);
+
+  function looksLikeMedical(word) {
+    if (word.length < 3) return false;
+    const lower = word.toLowerCase();
+    if (MEDICATION_NAMES.has(lower)) return true;
+    if (KNOWN_UNDEFINED.has(lower)) return true;
+    if (MEDICAL_SUFFIX.test(word)) return true;
+    if (MEDICAL_ABBREV.test(word) && word.length >= 3) return true;
+    return false;
+  }
+
+  function renderClickable(text) {
+    if (!text) return '';
+
+    // First pass: highlight known glossary terms
+    const result = text.replace(TERMS_REGEX, (match) => {
+      const key = TERM_KEYS.find(k => k.toLowerCase() === match.toLowerCase());
+      if (!key) return match;
+      const term = TERMS[key];
+      const categoryClass = term.category ? ` ${term.category}` : '';
+      return `<span class="term${categoryClass}" data-term="${key}">${match}</span>`;
+    });
+
+    // Second pass: highlight unknown medical-looking words using DOM parser
+    const parser = new DOMParser();
+    const doc = parser.parseFromString('<div>' + result + '</div>', 'text/html');
+    const root = doc.querySelector('div');
+
+    function processNode(node) {
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        if (node.classList.contains('term')) return;
+        Array.from(node.childNodes).forEach(processNode);
+      } else if (node.nodeType === Node.TEXT_NODE) {
+        const text = node.textContent;
+        if (!text.trim()) return;
+        const newHtml = text.replace(/([a-zA-Z][a-zA-Z\-]+)/g, (word) => {
+          const lower = word.toLowerCase();
+          const inGlossary = TERM_KEYS.some(k => k.toLowerCase() === lower);
+          if (inGlossary) return word;
+          if (looksLikeMedical(word)) {
+            return `<span class="term-unknown" data-word="${word}">${word}</span>`;
+          }
+          return word;
+        });
+        if (newHtml !== text) {
+          const span = doc.createElement('span');
+          span.innerHTML = newHtml;
+          node.parentNode.replaceChild(span, node);
+        }
+      }
+    }
+
+    processNode(root);
+    return root.innerHTML;
+  }
+
+  function showExplanation(key) {
+    const t = TERMS[key];
+    if (!t) return;
+    explanation.innerHTML = `
+      <div class="explain-title">${t.title}</div>
+      <div class="explain-body">${t.body}</div>
+      ${t.usage ? `<div class="explain-usage"><strong>How it's used:</strong> ${t.usage}</div>` : ''}
+      ${t.analogy ? `<div class="explain-analogy"><strong>Think of it like:</strong> ${t.analogy}</div>` : ''}
+    `;
+  }
+
+  function refresh() {
+    const raw = input.value;
+    clickable.innerHTML = renderClickable(escapeHtml(raw));
+  }
+
+  // Keep users safe from HTML injection
+  function escapeHtml(str) {
+    return str
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;');
+  }
+
+  // Event listeners
+  input.addEventListener('input', refresh);
+  clickable.addEventListener('click', (e) => {
+    const target = e.target;
+    if (!target || !target.classList) return;
+    if (target.classList.contains('term')) {
+      const key = target.getAttribute('data-term');
+      showExplanation(key);
+    } else if (target.classList.contains('term-unknown')) {
+      const word = target.getAttribute('data-word');
+      explanation.innerHTML = `
+        <div class="explain-title" style="color:#7c3aed;">&#9888; "${word}" — not defined in Lite</div>
+        <div class="explain-body">The Lite app cannot define every medical term. The Pro app can explain a real document for you with more detail and better explanation, plus follow-up questions answered.</div>
+        <div class="explain-usage" style="margin-top:0.75rem;">
+          <strong>MedeXplainr Pro</strong> explains every term — including this one — in full context using AI. Try Pro for a complete plain-English explanation.
+        </div>
+      `;
+    }
+  });
+
+  btnMedication.addEventListener('click', () => {
+    input.value = `Example Medication List:
+• Lisinopril 10mg daily for hypertension
+• Metformin 500mg twice daily for diabetes
+• Atorvastatin 20mg at bedtime for high cholesterol
+• Ibuprofen 400mg as needed for arthritis pain
+• Albuterol inhaler 2 puffs every 4 hours as needed for asthma
+• Omeprazole 20mg daily for acid reflux
+• Levothyroxine 50mcg daily for thyroid
+• Metoprolol tartrate 25mg twice daily for hypertension
+• Losartan 50mg daily for hypertension
+• Torsemide 20mg daily for edema
+• Spironolactone 25mg daily for hyperaldosteronism
+• Empagliflozin 10mg daily for glycemic control
+
+Note: This is an educational example showing common medications and their indications. All medication decisions should be made in consultation with healthcare providers.`;
+    explanation.innerHTML = '';
+    refresh();
+  });
+
+  btnProcedure.addEventListener('click', () => {
+    input.value = `Example Procedure Note: Upper Endoscopy
+
+Patient underwent upper endoscopy to evaluate gastrointestinal symptoms. The procedure was performed under conscious sedation with midazolam and fentanyl. Glucagon was administered prior to the procedure. Retroflexion was performed in the gastric fundus. The valsalva maneuver was noted during recovery.
+
+Findings: Mild inflammation in the stomach lining, consistent with gastritis. No malignant lesions were identified. A small biopsy was taken for further analysis. Patient is on pantoprazole 40mg daily.
+
+Post-procedure: Patient tolerated the procedure well with no immediate complications. Results from the biopsy will be available in 3-5 days. Patient was discharged home with post-procedure care instructions.
+
+Follow-up appointment scheduled with gastroenterology in 2 weeks to review biopsy results and discuss next steps with the healthcare team.`;
+    explanation.innerHTML = '';
+    refresh();
+  });
+
+  btnClear.addEventListener('click', () => {
+    input.value = '';
+    clickable.innerHTML = '';
+    explanation.innerHTML = '';
+  });
+
+  // Initial render
+  refresh();
+})();
+  </script>
+</body>
+</html>
