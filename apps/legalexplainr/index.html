@@ -1,0 +1,1295 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LegaleXplainr</title>
+    <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#2525C9" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <style>
+/* Legal-themed styling for professionalism and trust */
+:root {
+  --ink: #1a1a1a;
+  --paper: #ffffff;
+  --muted: #6b7280;
+  --accent: #1e40af; /* Professional legal blue */
+  --border: #e5e7eb;
+  --panel: #fafafa; /* Light legal gray */
+  --legal-gold: #d97706; /* For important terms */
+  --legal-green: #059669; /* For positive outcomes */
+  --legal-red: #dc2626; /* For warnings/penalties */
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+  line-height: 1.5;
+}
+
+header, footer {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+footer { 
+  border-top: 1px solid var(--border); 
+  border-bottom: none; 
+  background-color: #f8fafc;
+}
+
+.footer-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.legal-disclaimer {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background-color: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 0.375rem;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #92400e;
+}
+
+.legal-disclaimer strong {
+  color: #78350f;
+}
+
+main {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.controls { display: flex; gap: .5rem; flex-wrap: wrap; }
+button {
+  background: var(--accent);
+  color: white;
+  border: 0;
+  border-radius: .375rem;
+  padding: .5rem .75rem;
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+button:hover { filter: brightness(0.95); }
+
+.editor, .output, .explanation { display: grid; gap: .5rem; }
+label { color: var(--muted); font-weight: 600; }
+
+#legal-input {
+  width: 100%;
+  min-height: 200px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  border: 1px solid var(--border);
+  border-radius: .375rem;
+  padding: .75rem;
+  line-height: 1.6;
+}
+
+.panel {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: .375rem;
+  padding: .75rem;
+  min-height: 100px;
+  overflow: auto;
+  line-height: 1.6;
+}
+
+.term {
+  background: #eff6ff; /* Light legal blue background */
+  border-bottom: 2px solid var(--accent);
+  cursor: pointer;
+  padding: 0 2px;
+  border-radius: 2px;
+  transition: background-color 0.2s;
+}
+.term:hover { 
+  background: #dbeafe; /* Slightly darker blue on hover */
+}
+
+/* Different highlighting for different legal term types */
+.term.criminal {
+  background: #fef2f2; /* Light red for criminal law */
+  border-bottom-color: var(--legal-red);
+}
+.term.civil {
+  background: #ecfdf5; /* Light green for civil law */
+  border-bottom-color: var(--legal-green);
+}
+.term.contract {
+  background: #fefbef; /* Light gold for contract terms */
+  border-bottom-color: var(--legal-gold);
+}
+.term.court {
+  background: #f3f4f6; /* Light gray for court procedures */
+  border-bottom-color: #6b7280;
+}
+.term.business {
+  background: #f0f9ff; /* Light blue for business law */
+  border-bottom-color: var(--accent);
+}
+
+.explain-title { 
+  font-weight: 700; 
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+.explain-body { 
+  margin-top: .25rem; 
+  font-size: 16px;
+}
+.explain-usage { 
+  margin-top: .75rem; 
+  padding-top: .5rem;
+  border-top: 1px solid var(--border);
+  font-style: italic; 
+  color: #4b5563;
+}
+.explain-analogy { 
+  margin-top: .75rem; 
+  padding: .75rem;
+  background: #f9fafb;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 .375rem .375rem 0;
+  color: #374151; 
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  header, footer, main {
+    padding: 0.75rem;
+  }
+  
+  .controls {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  button {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 16px;
+  }
+  
+  #legal-input {
+    min-height: 150px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  .panel {
+    min-height: 80px;
+    padding: 0.5rem;
+  }
+  
+  .footer-content {
+    padding: 0;
+  }
+  
+  .legal-disclaimer {
+    font-size: 13px;
+    padding: 0.5rem;
+  }
+  
+  .explain-title {
+    font-size: 18px;
+  }
+  
+  .explain-body {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  header h1 {
+    font-size: 1.5rem;
+  }
+  
+  header p {
+    font-size: 14px;
+  }
+  
+  button {
+    padding: 0.6rem;
+    font-size: 15px;
+  }
+  
+  #legal-input {
+    min-height: 120px;
+  }
+  
+  .legal-disclaimer {
+    font-size: 12px;
+  }
+}
+
+/* Improved touch targets for mobile */
+@media (hover: none) and (pointer: coarse) {
+  .term {
+    padding: 4px 6px;
+    margin: 1px;
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  button {
+    min-height: 44px;
+  }
+}
+  
+.term-unknown {
+  background: #f3e8ff;
+  border-bottom: 2px solid #7c3aed;
+  cursor: pointer;
+  padding: 0 2px;
+  border-radius: 2px;
+  transition: background-color 0.2s;
+}
+.term-unknown:hover {
+  background: #ede9fe;
+}
+  
+/* Unified green for all known terms */
+.term.criminal, .term.civil, .term.contract, .term.court, .term.business {
+  background: #ecfdf5;
+  border-bottom-color: #059669;
+}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>LegaleXplainr <span style="font-weight:700;font-style:italic;color:#2525C9;margin-left:4px;">Lite</span></h1>
+    
+  </header>
+
+  <main>
+    <section class="controls">
+      <button id="load-contract-example" type="button" style="display:flex;flex-direction:column;align-items:center;line-height:1.3;">
+        <span>See Sample Contract</span>
+        <em style="font-size:12px;font-weight:400;">Ver Contrato de Muestra</em>
+      </button>
+      <button id="load-court-example" type="button" style="display:flex;flex-direction:column;align-items:center;line-height:1.3;">
+        <span>See Sample Court Document</span>
+        <em style="font-size:12px;font-weight:400;">Ver Documento Judicial de Muestra</em>
+      </button>
+      <button id="load-business-example" type="button" style="display:flex;flex-direction:column;align-items:center;line-height:1.3;">
+        <span>See Sample Business Text</span>
+        <em style="font-size:12px;font-weight:400;">Ver Texto Empresarial de Muestra</em>
+      </button>
+      <button id="clear" type="button" style="display:flex;flex-direction:column;align-items:center;line-height:1.3;">
+        <span>Clear</span>
+        <em style="font-size:12px;font-weight:400;">Borrar</em>
+      </button>
+    </section>
+
+    <section class="disclaimer-section" style="padding:0 1rem;"><div style="margin:0.75rem 0;padding:0.75rem 1rem;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;font-size:12px;color:#7c2d12;line-height:1.5;">
+  <strong>Legal information only — not legal advice.</strong> This tool defines legal terms. Consult a qualified attorney before making any legal decisions.
+  <br><em style="font-size:11px;">Solo información legal — no es asesoramiento legal. Esta herramienta define términos legales. Consulte siempre a un abogado calificado antes de tomar decisiones legales.</em>
+</div></section>
+    <section class="editor">
+      <p style="font-size:15px;font-weight:600;color:#111;margin-bottom:0.25rem;">Paste or enter text. After entering, click a highlighted term for its definition and explanation.</p>
+      <p style="font-size:13px;font-style:italic;color:#6b7280;margin-bottom:0.75rem;">Pegue o escriba texto. Después, haga clic en un término resaltado para ver su definición y explicación.</p>
+      <textarea id="legal-input" spellcheck="false" placeholder="Type or paste legal documents, contracts, court papers, or any legal text here... / Escriba o pegue documentos legales, contratos, documentos judiciales o cualquier texto legal aquí..."></textarea>
+    </section>
+
+    <section class="output">
+      <label style="font-size:16px;font-weight:700;color:#111;">Clickable view / <em style="font-weight:400;font-style:italic;color:#6b7280;">Vista interactiva</em></label>
+      <p style="font-size:14px;color:#374151;margin:4px 0 4px;">Green terms are in our glossary — click for a plain-English explanation. Purple terms aren't in Lite — try Pro apps for full detail.</p>
+      <p style="font-size:13px;font-style:italic;color:#6b7280;margin:0 0 8px;">Los términos verdes están en nuestro glosario — haga clic para ver la explicación. Los términos morados no están en Lite — pruebe las apps Pro.</p>
+      <div id="clickable-view" class="panel" aria-live="polite"></div>
+    </section>
+
+    <section class="explanation">
+      <label>Explanation / <em style="font-weight:400;font-style:italic;color:#6b7280;">Explicación</em></label>
+      <div id="explanation" class="panel" aria-live="polite"></div>
+    </section>
+
+    <section style="margin-top:0.5rem;">
+      <div style="padding:0.75rem 1rem;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;font-size:14px;color:#0c4a6e;line-height:1.6;text-align:center;">
+        This app is free from <strong>AI Health Plus</strong> — a free English/Spanish health community on Skool.com.
+        <br><a href="https://www.skool.com/ai-done-for-you-7410/about" target="_blank" rel="noopener" style="color:#2525C9;font-weight:700;text-decoration:underline;">Click here to join</a>
+        <br><em style="font-size:13px;color:#0369a1;">Esta app es gratuita de <strong>AI Health Plus</strong> — una comunidad de salud en inglés y español en Skool.com. <a href="https://www.skool.com/ai-done-for-you-7410/about" target="_blank" rel="noopener" style="color:#2525C9;font-weight:700;text-decoration:underline;">Haz clic aquí para unirte.</a></em>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-content">
+      <small>Made to help understand legal information.</small>
+      <div class="legal-disclaimer">
+        <strong>Legal Disclaimer:</strong> This application is for educational purposes only and is not intended to be a substitute for professional legal advice. Always consult with a qualified attorney with any questions you may have regarding legal matters. Never rely solely on this application for legal decisions.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+/*
+  LegaleXplainr - Legal terminology highlighter and explainer
+  Comprehensive coverage of legal terms from multiple practice areas
+*/
+
+(function () {
+  console.log('⚖️ LegaleXplainr loading...');
+  
+  // Get DOM elements
+  const input = document.getElementById('legal-input');
+  const clickable = document.getElementById('clickable-view');
+  const explanation = document.getElementById('explanation');
+  const btnContract = document.getElementById('load-contract-example');
+  const btnCourt = document.getElementById('load-court-example');
+  const btnBusiness = document.getElementById('load-business-example');
+  const btnClear = document.getElementById('clear');
+
+  console.log('Elements found:', {
+    input: !!input,
+    clickable: !!clickable,
+    explanation: !!explanation
+  });
+
+  // Comprehensive legal terms database
+  const TERMS = {
+    // CRIMINAL LAW TERMS
+    "felony": {
+      title: "felony",
+      body: "A serious crime punishable by more than one year in prison or by death.",
+      usage: "More severe than misdemeanors; includes crimes like murder, robbery, and major fraud.",
+      analogy: "Like the difference between a parking ticket (misdemeanor) and car theft (felony).",
+      category: "criminal"
+    },
+    "misdemeanor": {
+      title: "misdemeanor",
+      body: "A less serious crime typically punishable by less than one year in jail and/or fines.",
+      usage: "Includes minor offenses like petty theft, simple assault, or traffic violations.",
+      analogy: "Like getting a traffic ticket versus being arrested for stealing a car.",
+      category: "criminal"
+    },
+    "indictment": {
+      title: "indictment",
+      body: "A formal charge or accusation that a person has committed a crime.",
+      usage: "Issued by a grand jury when they believe there's enough evidence for a trial.",
+      analogy: "Like being formally accused of cheating on a test after an investigation.",
+      category: "criminal"
+    },
+    "arraignment": {
+      title: "arraignment",
+      body: "The first court hearing where a defendant is formally told the charges and enters a plea.",
+      usage: "Defendant pleads guilty, not guilty, or no contest to the charges.",
+      analogy: "Like the first meeting where you're officially told what you're accused of.",
+      category: "criminal"
+    },
+    "plea bargain": {
+      title: "plea bargain",
+      body: "An agreement where a defendant pleads guilty to a lesser charge in exchange for a lighter sentence.",
+      usage: "Helps reduce court time and gives defendants a more predictable outcome.",
+      analogy: "Like agreeing to clean the garage instead of doing all the yard work as punishment.",
+      category: "criminal"
+    },
+    "probation": {
+      title: "probation",
+      body: "A period of supervised release instead of serving time in jail or prison.",
+      usage: "Defendant must follow specific conditions like reporting to a probation officer.",
+      analogy: "Like being grounded but allowed to leave home if you follow strict rules.",
+      category: "criminal"
+    },
+    "parole": {
+      title: "parole",
+      body: "Early release from prison with supervision, before completing the full sentence.",
+      usage: "Granted for good behavior; violating parole conditions can mean returning to prison.",
+      analogy: "Like being let out of detention early but still being watched by the teacher.",
+      category: "criminal"
+    },
+
+    // CIVIL LAW TERMS
+    "plaintiff": {
+      title: "plaintiff",
+      body: "The person or entity who brings a lawsuit against another party in civil court.",
+      usage: "The party claiming they were wronged and seeking compensation or other remedy.",
+      analogy: "Like the person filing a complaint with customer service about bad treatment.",
+      category: "civil"
+    },
+    "defendant": {
+      title: "defendant",
+      body: "The person or entity being sued or accused in a legal proceeding.",
+      usage: "Must respond to the lawsuit and defend against the claims made.",
+      analogy: "Like the store that has to respond to a customer's complaint.",
+      category: "civil"
+    },
+    "damages": {
+      title: "damages",
+      body: "Money awarded to compensate someone for losses or injuries caused by another's actions.",
+      usage: "Can include medical bills, lost wages, pain and suffering, or property damage.",
+      analogy: "Like paying someone back for the phone you accidentally broke, plus extra for the inconvenience.",
+      category: "civil"
+    },
+    "liability": {
+      title: "liability",
+      body: "Legal responsibility for one's acts or omissions; being legally obligated to pay damages.",
+      usage: "If you're found liable, you're legally responsible for causing the harm or loss.",
+      analogy: "Like being responsible for paying for something you broke, whether on purpose or by accident.",
+      category: "civil"
+    },
+    "negligence": {
+      title: "negligence",
+      body: "Failure to exercise reasonable care, resulting in harm to another person.",
+      usage: "Must show duty of care, breach of that duty, causation, and actual damages.",
+      analogy: "Like a lifeguard who's supposed to watch the pool but is texting instead when someone drowns.",
+      category: "civil"
+    },
+    "tort": {
+      title: "tort",
+      body: "A civil wrong that causes harm to another person, leading to legal liability.",
+      usage: "Includes negligence, intentional harmful acts, and strict liability cases.",
+      analogy: "Like any situation where your actions hurt someone and they can seek compensation.",
+      category: "civil"
+    },
+    "injunction": {
+      title: "injunction",
+      body: "A court order requiring someone to do or stop doing something specific.",
+      usage: "Used to prevent ongoing harm or require specific actions before a trial.",
+      analogy: "Like a judge ordering someone to stop playing loud music at night.",
+      category: "civil"
+    },
+
+    // COURT PROCEDURES & TERMS
+    "jurisdiction": {
+      title: "jurisdiction",
+      body: "The authority of a court to hear and decide a case.",
+      usage: "Based on location, subject matter, or amount of money involved in the case.",
+      analogy: "Like a teacher only having authority over their own classroom, not the whole school.",
+      category: "court"
+    },
+    "venue": {
+      title: "venue",
+      body: "The proper or most convenient location for a trial to take place.",
+      usage: "Usually where the events occurred or where the parties live or do business.",
+      analogy: "Like choosing which restaurant to meet at based on what's convenient for everyone.",
+      category: "court"
+    },
+    "deposition": {
+      title: "deposition",
+      body: "Sworn testimony taken outside of court, usually in a lawyer's office, before trial.",
+      usage: "Allows lawyers to question witnesses and gather information for the case.",
+      analogy: "Like a practice test where you have to answer questions under oath before the real exam.",
+      category: "court"
+    },
+    "discovery": {
+      title: "discovery",
+      body: "The pre-trial process where both sides gather evidence and information from each other.",
+      usage: "Includes depositions, document requests, and interrogatories (written questions).",
+      analogy: "Like both teams sharing their playbooks before the big game so there are no surprises.",
+      category: "court"
+    },
+    "subpoena": {
+      title: "subpoena",
+      body: "A legal document commanding someone to appear in court or produce documents.",
+      usage: "Failure to comply can result in contempt of court and possible jail time.",
+      analogy: "Like a legal summons you can't ignore - it's a command, not a request.",
+      category: "court"
+    },
+    "motion": {
+      title: "motion",
+      body: "A formal request to the court asking for a specific ruling or order.",
+      usage: "Common motions include requests to dismiss, for summary judgment, or to exclude evidence.",
+      analogy: "Like raising your hand in class to ask the teacher to do something specific.",
+      category: "court"
+    },
+    "summary judgment": {
+      title: "summary judgment",
+      body: "A court ruling that decides a case without a full trial when there are no disputed facts.",
+      usage: "Granted when the law clearly favors one side based on undisputed evidence.",
+      analogy: "Like ending a game early when one team is so far ahead that the outcome is certain.",
+      category: "court"
+    },
+    "appeal": {
+      title: "appeal",
+      body: "A request to a higher court to review and reverse a lower court's decision.",
+      usage: "Must usually be filed within a specific time period after the original judgment.",
+      analogy: "Like asking the principal to review a teacher's decision about your grade.",
+      category: "court"
+    },
+
+    // CONTRACT LAW TERMS
+    "consideration": {
+      title: "consideration",
+      body: "Something of value exchanged between parties to make a contract legally binding.",
+      usage: "Can be money, services, goods, or even a promise to do or not do something.",
+      analogy: "Like the mutual exchange in trading baseball cards - both sides must give up something valuable.",
+      category: "contract"
+    },
+    "breach of contract": {
+      title: "breach of contract",
+      body: "Failure to perform any duty or obligation specified in a contract without legal excuse.",
+      usage: "Can result in damages, specific performance, or contract cancellation.",
+      analogy: "Like breaking a promise you made in writing - you didn't do what you agreed to do.",
+      category: "contract"
+    },
+    "void": {
+      title: "void",
+      body: "A contract or agreement that has no legal effect and is unenforceable from the beginning.",
+      usage: "Contracts for illegal activities or made by someone lacking capacity are void.",
+      analogy: "Like an invitation to a party that was never really planned - it was never valid to begin with.",
+      category: "contract"
+    },
+    "voidable": {
+      title: "voidable",
+      body: "A contract that is valid but can be legally cancelled by one of the parties.",
+      usage: "Often due to fraud, duress, mistake, or lack of capacity when the contract was made.",
+      analogy: "Like a gym membership you can cancel if they tricked you into signing it.",
+      category: "contract"
+    },
+    "assignment": {
+      title: "assignment",
+      body: "Transferring your rights or benefits under a contract to another person.",
+      usage: "The assignee gets the same rights you had, but you may still be responsible for obligations.",
+      analogy: "Like giving your concert ticket to a friend - they get to go, but you might still owe for it.",
+      category: "contract"
+    },
+    "novation": {
+      title: "novation",
+      body: "Replacing an existing contract with a new one, typically with different parties.",
+      usage: "All parties must agree, and the original contract is completely replaced.",
+      analogy: "Like trading in your old car for a completely new deal, not just modifying the old one.",
+      category: "contract"
+    },
+    "liquidated damages": {
+      title: "liquidated damages",
+      body: "A predetermined amount of money specified in a contract as compensation for breach.",
+      usage: "Must be a reasonable estimate of actual damages, not a penalty.",
+      analogy: "Like agreeing in advance that if you're late to dinner, you'll pay for everyone's dessert.",
+      category: "contract"
+    },
+
+    // BUSINESS LAW TERMS  
+    "corporation": {
+      title: "corporation",
+      body: "A legal entity separate from its owners, providing liability protection and tax benefits.",
+      usage: "Shareholders own the company but aren't personally liable for corporate debts.",
+      analogy: "Like creating a separate person on paper who owns the business and takes responsibility for it.",
+      category: "business"
+    },
+    "LLC": {
+      title: "LLC (Limited Liability Company)",
+      body: "A business structure combining corporate liability protection with partnership tax benefits.",
+      usage: "Owners (called members) generally aren't personally liable for business debts.",
+      analogy: "Like having a protective shield around your personal assets while running a business.",
+      category: "business"
+    },
+    "partnership": {
+      title: "partnership",
+      body: "A business owned by two or more people who share profits, losses, and responsibilities.",
+      usage: "Partners are usually personally liable for business debts and each other's actions.",
+      analogy: "Like being in a group project where everyone is responsible for the whole grade.",
+      category: "business"
+    },
+    "fiduciary duty": {
+      title: "fiduciary duty",
+      body: "A legal obligation to act in someone else's best interest, putting their needs above your own.",
+      usage: "Applies to trustees, board members, lawyers, and others in positions of trust.",
+      analogy: "Like being asked to housesit and being expected to take better care of their home than your own.",
+      category: "business"
+    },
+    "shareholders": {
+      title: "shareholders",
+      body: "People or entities who own shares of stock in a corporation.",
+      usage: "Have voting rights and may receive dividends, but limited liability for corporate actions.",
+      analogy: "Like owning a piece of a pizza - you get a slice of the profits but not the whole responsibility.",
+      category: "business"
+    },
+    "bylaws": {
+      title: "bylaws",
+      body: "The internal rules that govern how a corporation or organization operates.",
+      usage: "Cover things like meeting procedures, officer duties, and decision-making processes.",
+      analogy: "Like the house rules for a game - they tell everyone how things should work.",
+      category: "business"
+    },
+
+    // REAL ESTATE LAW TERMS
+    "deed": {
+      title: "deed",
+      body: "A legal document that transfers ownership of real property from one party to another.",
+      usage: "Must be signed, witnessed, and usually recorded with the county to be official.",
+      analogy: "Like the title to a car, but for real estate - it proves who owns the property.",
+      category: "civil"
+    },
+    "title": {
+      title: "title",
+      body: "Legal ownership and the right to use and transfer property.",
+      usage: "A clear title means no one else has competing claims to the property.",
+      analogy: "Like having your name on the title of a car - it proves the car is legally yours.",
+      category: "civil"
+    },
+    "escrow": {
+      title: "escrow",
+      body: "A neutral third party that holds money or documents until all conditions of a sale are met.",
+      usage: "Common in real estate transactions to ensure buyer and seller both fulfill their obligations.",
+      analogy: "Like having a trusted friend hold both the money and the keys until everyone does what they promised.",
+      category: "civil"
+    },
+    "easement": {
+      title: "easement",
+      body: "The right to use someone else's property for a specific purpose.",
+      usage: "Common examples include utility lines, shared driveways, or paths across property.",
+      analogy: "Like having permission to walk through your neighbor's yard to get to the mailbox.",
+      category: "civil"
+    },
+    "lien": {
+      title: "lien",
+      body: "A legal claim against property as security for a debt or obligation.",
+      usage: "Must be satisfied before the property can be sold with clear title.",
+      analogy: "Like having a hold on your diploma until you pay your student loans.",
+      category: "civil"
+    },
+    "foreclosure": {
+      title: "foreclosure",
+      body: "The legal process by which a lender takes possession of property when loan payments aren't made.",
+      usage: "Allows the lender to sell the property to recover the amount owed on the mortgage.",
+      analogy: "Like the bank taking back a car when you stop making payments, but with a house.",
+      category: "civil"
+    },
+
+    // GENERAL LEGAL TERMS
+    "statute of limitations": {
+      title: "statute of limitations",
+      body: "A law that sets the maximum time after an event within which legal proceedings may be initiated.",
+      usage: "Different types of cases have different time limits; after the deadline, you usually can't sue.",
+      analogy: "Like an expiration date on your right to complain - wait too long and you lose the chance.",
+      category: "court"
+    },
+    "precedent": {
+      title: "precedent",
+      body: "A legal decision that establishes a principle or rule for future similar cases.",
+      usage: "Courts generally follow precedents from higher courts in their jurisdiction.",
+      analogy: "Like using last year's successful playbook - if it worked before, courts tend to use it again.",
+      category: "court"
+    },
+    "due process": {
+      title: "due process",
+      body: "The legal requirement that the government must respect all legal rights owed to a person.",
+      usage: "Includes the right to a fair trial, proper notice, and the opportunity to be heard.",
+      analogy: "Like the basic rule that you get to tell your side of the story before being punished.",
+      category: "court"
+    },
+    "burden of proof": {
+      title: "burden of proof",
+      body: "The obligation to prove one's assertion or claim in court.",
+      usage: "In criminal cases, prosecution must prove guilt 'beyond reasonable doubt'; civil cases use 'preponderance of evidence'.",
+      analogy: "Like being the one who has to prove you didn't eat the last cookie when accused.",
+      category: "court"
+    },
+    "settlement": {
+      title: "settlement",
+      body: "An agreement between parties to resolve a dispute without going to trial.",
+      usage: "Often involves payment of money and may include confidentiality agreements.",
+      analogy: "Like agreeing to split the cost of fixing a fence rather than fighting about whose fault it was.",
+      category: "civil"
+    },
+    "arbitration": {
+      title: "arbitration",
+      body: "A method of dispute resolution where a neutral third party makes a binding decision.",
+      usage: "Often faster and less expensive than court, but usually gives up the right to a jury trial.",
+      analogy: "Like agreeing to let a neutral friend decide who wins an argument, and everyone accepts their decision.",
+      category: "civil"
+    },
+    "mediation": {
+      title: "mediation",
+      body: "A process where a neutral third party helps disputing parties reach a voluntary agreement.",
+      usage: "The mediator doesn't make decisions but helps parties communicate and find common ground.",
+      analogy: "Like having a counselor help you and your roommate work out your differences.",
+      category: "civil"
+    },
+
+    // FAMILY LAW TERMS
+    "custody": {
+      title: "custody",
+      body: "The legal right and responsibility to care for and make decisions about a child.",
+      usage: "Can be physical (where child lives) or legal (decision-making authority). May be joint or sole.",
+      analogy: "Like being assigned as the main caretaker who decides about school, doctors, and daily life.",
+      category: "family"
+    },
+    "alimony": {
+      title: "alimony",
+      body: "Financial support paid by one spouse to another after separation or divorce.",
+      usage: "Also called spousal support or maintenance. Amount and duration vary by circumstances.",
+      analogy: "Like continued financial help after a partnership ends, especially if one person gave up career for the relationship.",
+      category: "family"
+    },
+    "child support": {
+      title: "child support",
+      body: "Court-ordered payments from one parent to another for a child's expenses.",
+      usage: "Based on income, custody arrangement, and state guidelines. Non-payment can lead to serious consequences.",
+      analogy: "Like splitting the cost of raising a child even when parents live separately.",
+      category: "family"
+    },
+    "divorce": {
+      title: "divorce",
+      body: "The legal termination of a marriage by a court.",
+      usage: "Involves dividing property, determining custody, and setting support obligations.",
+      analogy: "Like officially dissolving a business partnership, but with family relationships involved.",
+      category: "family"
+    },
+    "prenuptial agreement": {
+      title: "prenuptial agreement",
+      body: "A contract made before marriage specifying how assets will be divided if the marriage ends.",
+      usage: "Must be voluntary, with full disclosure of assets, and fair to both parties.",
+      analogy: "Like agreeing on how to split shared expenses before becoming roommates.",
+      category: "family"
+    },
+    "adoption": {
+      title: "adoption",
+      body: "The legal process of establishing a parent-child relationship with someone not biologically related.",
+      usage: "Terminates birth parents' rights and gives adoptive parents full parental rights.",
+      analogy: "Like officially joining a new family with all the same legal rights as biological children.",
+      category: "family"
+    },
+    "guardianship": {
+      title: "guardianship",
+      body: "Legal authority to care for another person or their property, typically for minors or incapacitated adults.",
+      usage: "Less permanent than adoption; guardianship can end when no longer needed.",
+      analogy: "Like being appointed as the official caretaker when parents can't care for their child.",
+      category: "family"
+    },
+    "emancipation": {
+      title: "emancipation",
+      body: "Legal process freeing a minor from parental control before reaching adulthood.",
+      usage: "Minor gains adult legal rights and responsibilities; parents lose duty to support.",
+      analogy: "Like being declared an adult early and getting to make all your own decisions.",
+      category: "family"
+    },
+
+    // INTELLECTUAL PROPERTY TERMS
+    "patent": {
+      title: "patent",
+      body: "Exclusive rights granted for an invention, preventing others from making, using, or selling it.",
+      usage: "Lasts 20 years from filing date. Must be novel, useful, and non-obvious.",
+      analogy: "Like getting exclusive rights to make and sell your unique invention for 20 years.",
+      category: "intellectual property"
+    },
+    "trademark": {
+      title: "trademark",
+      body: "A recognizable sign, design, or expression identifying products or services of a particular source.",
+      usage: "Can last indefinitely if renewed and actively used. Protects brand identity.",
+      analogy: "Like putting your signature logo on your products so people know it's yours.",
+      category: "intellectual property"
+    },
+    "copyright": {
+      title: "copyright",
+      body: "Legal rights protecting original works of authorship like books, music, art, and software.",
+      usage: "Automatic upon creation; registration provides additional legal benefits. Lasts life plus 70 years.",
+      analogy: "Like having exclusive rights to your creative work - others can't copy or sell it without permission.",
+      category: "intellectual property"
+    },
+    "trade secret": {
+      title: "trade secret",
+      body: "Confidential business information that provides a competitive advantage.",
+      usage: "Protected as long as kept secret. Examples: formulas, practices, designs, or processes.",
+      analogy: "Like KFC's secret recipe - valuable because it's kept hidden from competitors.",
+      category: "intellectual property"
+    },
+    "infringement": {
+      title: "infringement",
+      body: "Unauthorized use of intellectual property protected by patent, trademark, or copyright.",
+      usage: "Can result in lawsuits, damages, and injunctions to stop the unauthorized use.",
+      analogy: "Like copying someone's homework and claiming it as your own work.",
+      category: "intellectual property"
+    },
+    "fair use": {
+      title: "fair use",
+      body: "Limited use of copyrighted material without permission for purposes like criticism, commentary, news, teaching, or research.",
+      usage: "Determined by four factors: purpose, nature, amount used, and market effect.",
+      analogy: "Like being allowed to quote a book in your review without asking permission first.",
+      category: "intellectual property"
+    },
+    "licensing": {
+      title: "licensing",
+      body: "Granting permission to use intellectual property in exchange for payment or other terms.",
+      usage: "License can be exclusive or non-exclusive, with specific terms about use and duration.",
+      analogy: "Like renting out your car - you still own it, but someone else can use it under your rules.",
+      category: "intellectual property"
+    },
+
+    // EMPLOYMENT LAW TERMS
+    "at-will employment": {
+      title: "at-will employment",
+      body: "Employment that can be terminated by either party at any time for any legal reason.",
+      usage: "Most US employment is at-will unless there's a contract stating otherwise.",
+      analogy: "Like a relationship where either person can walk away anytime, no reason needed.",
+      category: "employment"
+    },
+    "wrongful termination": {
+      title: "wrongful termination",
+      body: "Firing an employee for illegal reasons like discrimination, retaliation, or contract violations.",
+      usage: "Even in at-will states, can't fire for discriminatory or retaliatory reasons.",
+      analogy: "Like being kicked out of a club specifically because of your race or gender.",
+      category: "employment"
+    },
+    "discrimination": {
+      title: "discrimination",
+      body: "Unfair treatment based on protected characteristics like race, gender, age, religion, or disability.",
+      usage: "Illegal in employment, housing, and public accommodations under federal and state laws.",
+      analogy: "Like being rejected for a job you're qualified for just because of your age or ethnicity.",
+      category: "employment"
+    },
+    "harassment": {
+      title: "harassment",
+      body: "Unwelcome conduct based on protected characteristics that creates a hostile work environment.",
+      usage: "Can be verbal, physical, or visual. Must be severe or pervasive to be illegal.",
+      analogy: "Like being constantly bullied at work because of your gender or religion.",
+      category: "employment"
+    },
+    "FMLA": {
+      title: "FMLA (Family and Medical Leave Act)",
+      body: "Federal law providing eligible employees up to 12 weeks of unpaid, job-protected leave for family or medical reasons.",
+      usage: "Covers birth, adoption, serious health conditions, or caring for ill family members.",
+      analogy: "Like having a legal right to time off for major life events without losing your job.",
+      category: "employment"
+    },
+    "workers' compensation": {
+      title: "workers' compensation",
+      body: "Insurance providing wage replacement and medical benefits to employees injured on the job.",
+      usage: "Typically prevents employees from suing their employer for workplace injuries.",
+      analogy: "Like an insurance policy that takes care of you if you get hurt at work.",
+      category: "employment"
+    },
+    "non-compete agreement": {
+      title: "non-compete agreement",
+      body: "Contract preventing an employee from working for competitors or starting a competing business for a specified time and area.",
+      usage: "Enforceability varies by state. Must be reasonable in scope, time, and geography.",
+      analogy: "Like promising not to open a rival coffee shop next door after you leave your current job.",
+      category: "employment"
+    },
+    "collective bargaining": {
+      title: "collective bargaining",
+      body: "Negotiation between employers and a group of employees (typically through a union) about working conditions.",
+      usage: "Results in collective bargaining agreements covering wages, hours, benefits, and other terms.",
+      analogy: "Like having employees negotiate as a team rather than individually for better pay and conditions.",
+      category: "employment"
+    },
+
+    // TAX LAW TERMS
+    "tax deduction": {
+      title: "tax deduction",
+      body: "Expenses that can be subtracted from total income to reduce the amount of income subject to tax.",
+      usage: "Common deductions include mortgage interest, charitable donations, and business expenses.",
+      analogy: "Like getting a discount on how much of your income gets taxed.",
+      category: "tax"
+    },
+    "tax credit": {
+      title: "tax credit",
+      body: "A dollar-for-dollar reduction in the amount of tax owed.",
+      usage: "More valuable than deductions because they directly reduce tax, not just taxable income.",
+      analogy: "Like getting a coupon that directly reduces your tax bill by the full amount.",
+      category: "tax"
+    },
+    "capital gains": {
+      title: "capital gains",
+      body: "Profit from the sale of an asset like stocks, real estate, or other investments.",
+      usage: "Taxed differently based on how long you held the asset. Long-term gains (over 1 year) get better rates.",
+      analogy: "Like the profit you make when you sell something for more than you paid for it.",
+      category: "tax"
+    },
+    "audit": {
+      title: "audit",
+      body: "An examination of financial records and tax returns by the IRS or state tax agency.",
+      usage: "Can be random or triggered by red flags. Requires documentation to support claimed deductions.",
+      analogy: "Like the teacher checking your math homework in detail to make sure you didn't make mistakes.",
+      category: "tax"
+    },
+    "tax shelter": {
+      title: "tax shelter",
+      body: "Legal methods of reducing taxable income through deductions, credits, or investment structures.",
+      usage: "Must be legitimate strategies, not illegal tax evasion schemes.",
+      analogy: "Like using legal loopholes to protect some of your money from taxes.",
+      category: "tax"
+    },
+
+    // IMMIGRATION LAW TERMS
+    "visa": {
+      title: "visa",
+      body: "Official permission to enter, stay, or work in a country for a specific purpose and time period.",
+      usage: "Many types exist: tourist, student, work, etc. Each has different requirements and durations.",
+      analogy: "Like getting a special ticket that allows you to visit or work in another country legally.",
+      category: "immigration"
+    },
+    "green card": {
+      title: "green card",
+      body: "Permanent resident status allowing someone to live and work in the US indefinitely.",
+      usage: "Holders can eventually apply for citizenship. Can be obtained through family, employment, or other categories.",
+      analogy: "Like getting a permanent membership card to live and work in the United States.",
+      category: "immigration"
+    },
+    "naturalization": {
+      title: "naturalization",
+      body: "The legal process by which a foreign citizen becomes a citizen of a country.",
+      usage: "Typically requires permanent residency, time living in country, and passing tests.",
+      analogy: "Like officially joining a club and getting all the same rights as people born into it.",
+      category: "immigration"
+    },
+    "deportation": {
+      title: "deportation",
+      body: "The formal removal of a foreign national from a country for violating immigration laws.",
+      usage: "Can result from visa violations, criminal activity, or other immigration violations.",
+      analogy: "Like being kicked out of a venue for breaking the rules.",
+      category: "immigration"
+    },
+    "asylum": {
+      title: "asylum",
+      body: "Protection granted to foreign nationals who have fled their country due to persecution or fear of persecution.",
+      usage: "Based on race, religion, nationality, political opinion, or membership in a particular social group.",
+      analogy: "Like finding safe shelter when you're running away from danger in your home country.",
+      category: "immigration"
+    },
+
+    // ADDITIONAL PROCEDURAL TERMS
+    "affidavit": {
+      title: "affidavit",
+      body: "A written statement confirmed by oath or affirmation, used as evidence in court.",
+      usage: "Must be sworn before a notary or other official authorized to administer oaths.",
+      analogy: "Like writing down your story and promising under oath that it's true.",
+      category: "court"
+    },
+    "contempt of court": {
+      title: "contempt of court",
+      body: "Behavior that disrespects or disobeys the court's authority.",
+      usage: "Can be civil (failing to follow orders) or criminal (disrupting proceedings). Punishable by fines or jail.",
+      analogy: "Like being punished for talking back to the teacher or ignoring classroom rules.",
+      category: "court"
+    },
+    "testimony": {
+      title: "testimony",
+      body: "Evidence given by a witness under oath, typically in court or during a deposition.",
+      usage: "Can be oral or written. False testimony under oath is perjury.",
+      analogy: "Like telling your version of events while promising you're telling the truth.",
+      category: "court"
+    },
+    "perjury": {
+      title: "perjury",
+      body: "Lying under oath in court or in a sworn written statement.",
+      usage: "A criminal offense that can result in fines and imprisonment.",
+      analogy: "Like breaking a sacred promise to tell the truth in court.",
+      category: "criminal"
+    },
+    "voir dire": {
+      title: "voir dire",
+      body: "The process of questioning potential jurors to determine if they can be impartial.",
+      usage: "Attorneys can challenge jurors 'for cause' or use limited 'peremptory challenges'.",
+      analogy: "Like interviewing people to make sure they can be fair judges before picking your jury.",
+      category: "court"
+    },
+    "verdict": {
+      title: "verdict",
+      body: "The final decision made by a jury or judge in a trial.",
+      usage: "In criminal cases: guilty or not guilty. In civil cases: for plaintiff or defendant, plus damages.",
+      analogy: "Like the final score announced at the end of the game.",
+      category: "court"
+    },
+    "acquittal": {
+      title: "acquittal",
+      body: "A judgment that a person is not guilty of the crime charged.",
+      usage: "Can result from jury verdict or judge's ruling. Person cannot be retried for the same crime.",
+      analogy: "Like being found not guilty and getting to go free with a clean record for that charge.",
+      category: "criminal"
+    },
+    "conviction": {
+      title: "conviction",
+      body: "A formal declaration that someone is guilty of a criminal offense.",
+      usage: "Results from guilty verdict or guilty plea. Followed by sentencing.",
+      analogy: "Like being officially declared guilty of breaking the rules.",
+      category: "criminal"
+    },
+    "expungement": {
+      title: "expungement",
+      body: "The legal process of sealing or erasing a criminal conviction from public records.",
+      usage: "Eligibility varies by state and offense. Makes record unavailable to most background checks.",
+      analogy: "Like getting your permanent record cleaned up so old mistakes don't follow you forever.",
+      category: "criminal"
+    },
+    "statute": {
+      title: "statute",
+      body: "A written law passed by a legislative body.",
+      usage: "Federal statutes are passed by Congress; state statutes by state legislatures.",
+      analogy: "Like an official written rule that everyone must follow.",
+      category: "court"
+    },
+    "ordinance": {
+      title: "ordinance",
+      body: "A law or regulation made by a city or local government.",
+      usage: "Covers local issues like zoning, noise, parking, and building codes.",
+      analogy: "Like neighborhood rules that only apply in your town or city.",
+      category: "court"
+    },
+    "retainer": {
+      title: "retainer",
+      body: "An upfront fee paid to a lawyer to secure their services.",
+      usage: "Often held in trust and billed against as work is performed. Different from a flat fee.",
+      analogy: "Like making a deposit to reserve a lawyer's time and services.",
+      category: "court"
+    },
+    "pro bono": {
+      title: "pro bono",
+      body: "Legal work done for free, typically for clients who cannot afford to pay.",
+      usage: "Latin for 'for the public good.' Many lawyers do some pro bono work as professional responsibility.",
+      analogy: "Like a doctor offering free medical care to people who can't afford it.",
+      category: "court"
+    },
+    "power of attorney": {
+      title: "power of attorney",
+      body: "Legal document giving someone authority to act on another person's behalf in legal or financial matters.",
+      usage: "Can be general or limited to specific matters. Ends at death or revocation.",
+      analogy: "Like giving someone official permission to sign documents and make decisions for you.",
+      category: "civil"
+    },
+    "living will": {
+      title: "living will",
+      body: "Document specifying what medical treatments you want if you become unable to communicate your wishes.",
+      usage: "Different from a regular will (which deals with property after death). Covers end-of-life medical decisions.",
+      analogy: "Like leaving instructions about your medical care wishes if you can't speak for yourself.",
+      category: "civil"
+    }
+  };
+
+  console.log('📚 Legal terms loaded:', Object.keys(TERMS).length);
+
+  // Create regex for term detection  
+  const TERM_KEYS = Object.keys(TERMS).sort((a, b) => b.length - a.length);
+  
+  function escapeRegex(s) {
+    return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+  
+  const TERMS_REGEX = new RegExp(`\\b(${TERM_KEYS.map(k => escapeRegex(k)).join('|')})\\b`, 'gi');
+  console.log('🔍 Regex created for', TERM_KEYS.length, 'terms');
+
+  // Highlighting function
+  
+  // Real legal terms we recognize but haven't defined in Lite yet
+  const LEGAL_UNDEFINED = new Set([
+    // Contract law
+    'indemnification','indemnity','subrogation','novation','estoppel',
+    'rescission','restitution','quantum meruit','unjust enrichment',
+    'novation','voidable','fiduciary','indemnify','indemnification',
+    'unconscionability','adhesion','illusory','voidable','executory',
+    'liquidated','exculpatory','severability','integration','parol',
+    // Property law
+    'encumbrance','lien','easement','covenant','escheat','alienation',
+    'conveyance','quitclaim','encroachment','eminent domain','condemnation',
+    'riparian','adverse possession','fee simple','tenancy','leasehold',
+    // Tort law
+    'tortfeasor','proximate','causation','negligence per se','strict liability',
+    'vicarious','respondeat superior','assumption of risk','contributory',
+    'comparative negligence','punitive','treble','compensatory','nominal',
+    // Criminal law
+    'arraignment','indictment','subpoena','injunction','mandamus','certiorari',
+    'habeas corpus','mens rea','actus reus','culpability','recidivism',
+    'exculpatory','mitigating','aggravating','allocution','nolo contendere',
+    // Civil procedure
+    'demurrer','pleading','deposition','interrogatories','spoliation',
+    'standing','ripeness','mootness','laches','res judicata','collateral estoppel',
+    'venue','jurisdiction','remand','remittitur','additur','sequestration',
+    // Business law
+    'piercing','veil','dissolution','receivership','solvency','insolvency',
+    'fraudulent conveyance','preference','cram down','cramdown',
+    'promissory estoppel','tortious interference','unfair competition',
+    'trade dress','dilution','cybersquatting','misappropriation',
+    // Estate and family law
+    'intestate','testate','testamentary','probate','ancillary','guardian',
+    'conservatorship','incapacitation','codicil','bequest','devise','devise',
+    'curtesy','dower','community property','transmutation','prenuptial',
+    // Employment law
+    'wrongful termination','constructive discharge','retaliation','whistleblower',
+    'quid pro quo','hostile environment','disparate impact','disparate treatment',
+    'bona fide','occupational','reasonable accommodation','undue hardship',
+    // Abbreviations
+    'LLC','LLP','PC','PLLC','DBA','UCC','ERISA','HIPAA','ADA','FMLA',
+    'OSHA','NLRB','SEC','FTC','CFPB','DOJ','EEOC','FINRA',
+  ]);
+
+  function looksLikeSubjectTerm(word) {
+    if (word.length < 3) return false;
+    const lower = word.toLowerCase();
+    if (LEGAL_UNDEFINED.has(lower)) return true;
+    if (LEGAL_UNDEFINED.has(word)) return true; // for abbreviations
+    return false;
+  }
+
+  function addUnknownHighlights(result) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString('<div>' + result + '</div>', 'text/html');
+    const root = doc.querySelector('div');
+    function processNode(node) {
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        if (node.classList.contains('term')) return;
+        Array.from(node.childNodes).forEach(processNode);
+      } else if (node.nodeType === Node.TEXT_NODE) {
+        const text = node.textContent;
+        if (!text.trim()) return;
+        const newHtml = text.replace(/([a-zA-Z][a-zA-Z\-]+)/g, (word) => {
+          const lower = word.toLowerCase();
+          const inGlossary = TERM_KEYS.some(k => k.toLowerCase() === lower);
+          if (inGlossary) return word;
+          if (looksLikeSubjectTerm(word)) {
+            return `<span class="term-unknown" data-word="${word}">${word}</span>`;
+          }
+          return word;
+        });
+        if (newHtml !== text) {
+          const span = doc.createElement('span');
+          span.innerHTML = newHtml;
+          node.parentNode.replaceChild(span, node);
+        }
+      }
+    }
+    processNode(root);
+    return root.innerHTML;
+  }
+
+  function renderClickable(text) {
+    console.log('🖍️ Highlighting legal text...');
+    if (!text) return '';
+    
+    let matchCount = 0;
+    const result = text.replace(TERMS_REGEX, (match) => {
+      matchCount++;
+      console.log('✅ Found:', match);
+      const key = TERM_KEYS.find(k => k.toLowerCase() === match.toLowerCase());
+      if (!key) return match;
+      const term = TERMS[key];
+      const categoryClass = term.category ? ` ${term.category}` : '';
+      return `<span class="term${categoryClass}" data-term="${key}">${match}</span>`;
+    });
+    
+    console.log('🎯 Highlighted', matchCount, 'legal terms');
+    return addUnknownHighlights(result);
+  }
+
+  // Show explanation function
+  function showExplanation(key) {
+    const t = TERMS[key];
+    if (!t) return;
+    explanation.innerHTML = `
+      <div class="explain-title">${t.title}</div>
+      <div class="explain-body">${t.body}</div>
+      ${t.usage ? `<div class="explain-usage"><strong>How it's used:</strong> ${t.usage}</div>` : ''}
+      ${t.analogy ? `<div class="explain-analogy"><strong>Think of it like:</strong> ${t.analogy}</div>` : ''}
+    `;
+  }
+
+  // HTML escaping
+  function escapeHtml(str) {
+    return str
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;');
+  }
+
+  // Main refresh function
+  function refresh() {
+    if (!input) return;
+    console.log('🔄 Refreshing display...');
+    const raw = input.value;
+    const escaped = escapeHtml(raw);
+    const highlighted = renderClickable(escaped);
+    clickable.innerHTML = highlighted;
+  }
+
+  // Event listeners
+  if (input) {
+    input.addEventListener('input', refresh);
+  }
+  
+  if (clickable) {
+    clickable.addEventListener('click', (e) => {
+      const target = e.target;
+      if (!target || !target.classList) return;
+      if (target.classList.contains('term')) {
+        const key = target.getAttribute('data-term');
+        showExplanation(key);
+      } else if (target.classList.contains('term-unknown')) {
+        const word = target.getAttribute('data-word');
+        explanation.innerHTML = `
+          <div class="explain-title" style="color:#7c3aed;">&#9888; "${word}" — not defined in Lite</div>
+          <div class="explain-body">The Lite app cannot define every legal term. The Pro app can explain a real document for you with more detail and better explanation, plus follow-up questions answered.</div>
+        `;
+      }
+    });
+  }
+
+  // Button handlers  
+  if (btnContract) {
+    btnContract.addEventListener('click', () => {
+      input.value = `Sample Contract Excerpt:
+
+WHEREAS the parties wish to enter into this agreement, and in consideration of the mutual covenants herein, the parties agree:
+
+1. BREACH: Any breach of contract by either party shall result in liquidated damages of $1,000.
+
+2. ASSIGNMENT: This contract may not be assigned without written consent.
+
+3. NOVATION: Any changes require a novation signed by all parties.
+
+The parties acknowledge that this agreement is voidable if obtained through fraud or duress. The indemnification clause holds each party harmless for consequential damages. This clause is subject to subrogation rights.`;
+      explanation.innerHTML = '';
+      refresh();
+    });
+  }
+
+  if (btnCourt) {
+    btnCourt.addEventListener('click', () => {
+      input.value = `Sample Court Document:
+
+MOTION FOR SUMMARY JUDGMENT
+
+The plaintiff seeks summary judgment against the defendant for negligence resulting in damages of $50,000.
+
+DISCOVERY: During deposition, defendant admitted liability for the tort. A subpoena was issued for relevant documents.
+
+JURISDICTION: This court has proper venue and jurisdiction over this matter.
+
+Based on precedent and the burden of proof standard, plaintiff requests the court grant this motion due to lack of genuine issues of material fact. The doctrine of collateral estoppel bars relitigation of decided issues. The tortfeasor may face additional tortious liability.`;
+      explanation.innerHTML = '';
+      refresh();
+    });
+  }
+
+  if (btnBusiness) {
+    btnBusiness.addEventListener('click', () => {
+      input.value = `Sample Business Legal Text:
+
+CORPORATE FORMATION: The LLC shall be managed by its shareholders according to the bylaws.
+
+FIDUCIARY DUTY: All officers have a fiduciary duty to act in the corporation's best interest.
+
+PARTNERSHIP: The general partnership exposes partners to personal liability for business debts.
+
+This agreement establishes the rights and obligations of all parties in accordance with applicable business law.`;
+      explanation.innerHTML = '';
+      refresh();
+    });
+  }
+
+  if (btnClear) {
+    btnClear.addEventListener('click', () => {
+      input.value = '';
+      clickable.innerHTML = '';
+      explanation.innerHTML = '';
+    });
+  }
+
+  // Initial load
+  console.log('🚀 Running initial refresh...');
+  refresh();
+  
+  console.log('✅ LegaleXplainr loaded successfully!');
+})();
+  </script>
+</body>
+</html>
