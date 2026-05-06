@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MedeXplainr Pro — XplainrHub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f0ece3; --surface: #ffffff; --border: #c8c0b0; --border-strong: #a09880;
+    --text: #161612; --text-muted: #524e45; --text-faint: #8a8478;
+    --accent: #059669; --accent-dark: #047857; --accent-light: #d1fae5; --accent-border: #6ee7b7;
+    --subject: #10b981; --btn-bg: #1a1a16; --btn-text: #ffffff;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  .hub-nav { background: linear-gradient(135deg, #dc2626 0%, #3b82f6 100%); padding: 0 2rem; display: flex; align-items: center; gap: 16px; height: 46px; }
+  .hub-nav a { color: rgba(255,255,255,0.85); text-decoration: none; font-size: 13px; font-weight: 500; font-family: 'DM Sans', sans-serif; }
+  .hub-nav a:hover { color: white; }
+  .hub-nav .sep { color: rgba(255,255,255,0.35); font-size: 12px; }
+  .hub-nav .current { color: white; font-weight: 600; font-size: 13px; font-family: 'DM Sans', sans-serif; }
+  .hub-nav .pro-pill { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.35); border-radius: 99px; padding: 2px 9px; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: white; margin-left: 2px; }
+  header { background: var(--surface); border-bottom: 1.5px solid var(--border); padding: 1rem 2.5rem; display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .logo { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 500; letter-spacing: -0.5px; color: var(--text); }
+  .logo em { color: var(--subject); font-style: italic; }
+  .logo .subject-tag { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: var(--text-faint); font-style: normal; margin-left: 10px; vertical-align: middle; }
+  .header-right { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; color: var(--text-faint); }
+  main { max-width: 840px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
+  .tagline { font-family: 'Playfair Display', serif; font-style: italic; font-size: 17px; color: var(--text-muted); text-align: center; margin-bottom: 2rem; line-height: 1.6; }
+  .key-section { background: var(--accent-light); border: 1.5px solid var(--accent-border); border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .key-label { font-size: 11px; font-weight: 500; color: var(--accent-dark); white-space: nowrap; font-family: 'DM Mono', monospace; letter-spacing: 0.06em; }
+  #api-key-input { flex: 1; min-width: 200px; padding: 6px 10px; border: 1.5px solid var(--accent-border); border-radius: 6px; font-family: 'DM Mono', monospace; font-size: 12px; background: white; color: var(--text); outline: none; }
+  #api-key-input:focus { border-color: var(--accent); }
+  .key-hint { font-size: 11px; color: var(--accent-dark); width: 100%; margin-top: -4px; }
+  .card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.25rem; }
+  .section-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: var(--text-faint); text-transform: uppercase; margin-bottom: 0.75rem; }
+  .sample-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 0.85rem; }
+  .sample-btn { padding: 8px 14px; border: none; border-radius: 8px; background: #1a237e; font-family: 'DM Sans', sans-serif; font-size: 13px; color: #ffffff; cursor: pointer; transition: all 0.12s; }
+  .sample-btn:hover { background: #283593; }
+  textarea { width: 100%; min-height: 185px; resize: vertical; border: 1.5px solid var(--border); border-radius: 8px; padding: 0.9rem 1rem; font-family: 'Playfair Display', serif; font-size: 14px; line-height: 1.75; color: var(--text); background: var(--bg); outline: none; transition: border-color 0.15s; }
+  textarea:focus { border-color: var(--accent); }
+  textarea::placeholder { color: var(--text-faint); font-style: italic; }
+  .controls { display: flex; align-items: center; gap: 12px; margin-top: 1rem; flex-wrap: wrap; }
+  .depth-group { display: flex; align-items: center; gap: 8px; }
+  .depth-label { font-size: 11px; font-family: 'DM Mono', monospace; letter-spacing: 0.07em; color: var(--text-faint); text-transform: uppercase; }
+  select { padding: 8px 12px; border: 1.5px solid var(--border-strong); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text); background: var(--surface); outline: none; cursor: pointer; }
+  select:focus { border-color: var(--accent); }
+  .go-btn { padding: 10px 26px; background: var(--btn-bg); color: var(--btn-text); border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: opacity 0.15s, transform 0.1s; margin-left: auto; }
+  .go-btn:hover { opacity: 0.82; } .go-btn:active { transform: scale(0.98); } .go-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .download-group { position: relative; display: inline-block; }
+  .dl-btn { padding: 10px 22px; background: var(--btn-bg); color: var(--btn-text); border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: opacity 0.15s; }
+  .dl-btn:hover { opacity: 0.82; }
+  .download-menu { display: none; position: absolute; top: calc(100% + 6px); right: 0; background: var(--surface); border: 1.5px solid var(--border-strong); border-radius: 8px; overflow: hidden; z-index: 100; min-width: 200px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+  .download-menu.open { display: block; }
+  .download-item { padding: 10px 18px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text-muted); cursor: pointer; border: none; background: none; width: 100%; text-align: left; }
+  .download-item:hover { background: var(--bg); color: var(--text); }
+  .error-msg { display: none; margin-top: 0.75rem; padding: 0.75rem 1rem; background: #fdf0ef; border: 1.5px solid #e8a09a; border-radius: 8px; font-size: 13px; color: #b02a1e; }
+  .error-msg.visible { display: block; }
+  .loading { display: none; align-items: center; gap: 12px; padding: 1.25rem 0; color: var(--text-muted); font-size: 13px; font-style: italic; }
+  .loading.visible { display: flex; }
+  .dots span { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin: 0 2px; animation: pulse 1.3s infinite ease-in-out; }
+  .dots span:nth-child(2) { animation-delay: 0.2s; } .dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes pulse { 0%,80%,100%{transform:scale(0.5);opacity:0.3} 40%{transform:scale(1);opacity:1} }
+  .output-wrap { display: none; } .output-wrap.visible { display: block; }
+  hr { border: none; border-top: 1.5px solid var(--border); margin: 1.5rem 0; }
+  .output-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 8px; }
+  .output-actions { display: flex; gap: 8px; align-items: center; }
+  .copy-btn { padding: 8px 16px; border: 1.5px solid var(--border); border-radius: 6px; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text-muted); cursor: pointer; transition: all 0.12s; }
+  .copy-btn:hover { background: var(--bg); color: var(--text); }
+  .output-body { font-family: 'Playfair Display', serif; font-size: 15px; line-height: 1.9; color: var(--text); }
+  .output-body p { margin-bottom: 1.1em; }
+  .output-body h1,.output-body h2 { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 500; margin: 1.5em 0 0.5em; }
+  .output-body h3 { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint); margin: 1.5em 0 0.4em; }
+  .output-body strong { font-weight: 600; }
+  .output-body em { font-style: italic; color: var(--accent-dark); }
+  .output-body ul { padding-left: 1.4em; margin-bottom: 1.1em; } .output-body li { margin-bottom: 0.45em; }
+  .output-body blockquote { background: var(--accent-light); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 0.8rem 1.1rem; margin: 0.4em 0; font-family: 'DM Sans', sans-serif; font-size: 13.5px; line-height: 1.75; color: var(--text-muted); }
+  hr.notes-divider { border: none; border-top: 1.5px solid var(--border); margin: 1.75rem 0 1.25rem; }
+  footer { text-align: center; font-size: 11px; font-family: 'DM Mono', monospace; letter-spacing: 0.08em; color: var(--text-faint); margin-top: 3rem; }
+  @media print {
+    .hub-nav,header,.tagline,.key-section,.card:has(textarea),.loading,footer,.output-header,.section-label { display: none !important; }
+    body { background: white !important; } main { padding: 0 !important; max-width: 100% !important; }
+    .output-wrap { display: block !important; } .card { border: none !important; padding: 0 !important; } hr { display: none !important; }
+  }
+
+  .mic-btn { position: absolute; right: 10px; bottom: 10px; background: none; border: none; cursor: pointer; padding: 6px; border-radius: 50%; color: var(--text-faint); transition: all 0.15s; font-size: 18px; line-height: 1; }
+  .mic-btn:hover { color: var(--accent); background: var(--accent-light); }
+  .mic-btn.listening { color: #dc2626; animation: pulse 1s infinite; }
+  .textarea-wrap { position: relative; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+  .upload-btn { padding: 8px 14px; border: 1.5px dashed var(--border-strong); border-radius: 8px; background: var(--surface); font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--accent-dark); cursor: pointer; transition: all 0.12s; }
+  .upload-btn:hover { background: var(--accent-light); border-color: var(--accent); }
+  #file-input { display: none; }
+  .upload-status { font-size: 12px; color: var(--text-faint); font-style: italic; margin-left: 4px; }
+
+  .textarea-wrap.dragover { outline: 2px dashed var(--accent); outline-offset: 2px; background: var(--accent-light); }
+</style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body>
+<nav class="hub-nav">
+  <a href="../../index.html">← XplainrHub</a>
+  <span class="sep">/</span>
+  <span class="current">MedeXplainr <span class="pro-pill">PRO</span></span>
+</nav>
+<header>
+  <div class="logo">MedeXplainr <span style="font-style:italic;color:var(--text);font-weight:500;">Pro</span><span class="subject-tag">MEDICAL EDITION</span></div>
+  <div class="header-right">PRO &nbsp;·&nbsp; POWERED BY CLAUDE</div>
+</header>
+<main>
+  <p class="tagline">Paste any medical document — discharge notes, lab results, specialist letters.<br>Get it back in plain English — every term explained, nothing assumed. Use MedeXplainr Pro to understand your results.<br><em style="font-size:0.85em;color:var(--text-muted);">Pegue cualquier documento médico — notas de alta, resultados de laboratorio, cartas de especialistas. Recíbalo en inglés sencillo — cada término explicado, sin suposiciones. Use MedeXplainr Pro para entender sus resultados.</em></p>
+  <div class="key-section">
+    <span class="key-label">COMMUNITY PASSWORD / CONTRASEÑA DE LA COMUNIDAD</span>
+    <input type="password" id="api-key-input" placeholder="Enter your AI Health Plus Paid members password… / Ingrese su contraseña de miembro de pago…" autocomplete="off" />
+    <span class="key-hint">Enter the password from your AI Health Plus Paid members area. It stays in this browser tab only.<br><em>Ingrese la contraseña del área de miembros de pago de AI Health Plus. Solo permanece en esta pestaña del navegador.</em></span>
+  </div>
+  <div class="card">
+    <div class="section-label">Your medical text</div>
+    <div class="sample-btns">
+      <button class="sample-btn" onclick="loadSample('discharge')" style="display:flex;flex-direction:column;align-items:center;line-height:1.3;">
+        <span>See Sample Discharge Summary</span>
+        <em style="font-size:11px;font-weight:400;">Ver Resumen de Alta de Muestra</em>
+      </button>
+      <button class="sample-btn" onclick="loadSample('labs')" style="display:flex;flex-direction:column;align-items:center;line-height:1.3;">
+        <span>See Sample Lab Results</span>
+        <em style="font-size:11px;font-weight:400;">Ver Resultados de Laboratorio de Muestra</em>
+      </button>
+      <button class="sample-btn" onclick="clearInput()" style="display:flex;flex-direction:column;align-items:center;line-height:1.3;">
+        <span>Clear</span>
+        <em style="font-size:11px;font-weight:400;">Borrar</em>
+      </button>
+      <button class="upload-btn" onclick="triggerUpload()">&#128206; Upload PDF or TXT</button>
+      <input type="file" id="file-input" accept=".pdf,.txt,.rtf" onchange="handleFileUpload(this)">
+      <span class="upload-status" id="upload-status"></span>
+      <p style="font-size:13px;color:#161612;margin:6px 0 0;font-weight:500;">Uploaded information is processed by an AI. To follow privacy laws, process only your own information or that of others if you have their permission. Anthropic Corp., the AI company that processes this information, does not use your data for AI training.<br><em style="font-weight:400;color:#524e45;">La información cargada es procesada por una IA. Para cumplir con las leyes de privacidad, procese solo su propia información o la de otros si tiene su permiso. Anthropic Corp. no usa sus datos para entrenar IA.</em></p>
+    </div>
+    <textarea id="input-area" placeholder="Paste a discharge summary, lab report, specialist letter, medication list, or any medical text here… / Pegue un resumen de alta, informe de laboratorio, carta de especialista, lista de medicamentos o cualquier texto médico aquí…"></textarea>
+    <p style="font-size:12px;color:#8a8478;margin:4px 0 0;font-style:italic;">You can also drag and drop a PDF or TXT file directly onto the text area above. / También puede arrastrar y soltar un archivo PDF o TXT directamente sobre el área de texto.</p>
+    <div class="controls">
+      <div class="depth-group">
+        <span class="depth-label">My Level / <em style="font-weight:400;font-style:italic;">Mi Nivel</em></span>
+        <select id="depth-select">
+          <option value="patient">Patient — explain everything / Paciente — explique todo</option>
+          <option value="caregiver" selected>Caregiver — I know some basics / Cuidador — sé lo básico</option>
+          <option value="professional">Healthcare professional / Profesional de salud</option>
+        </select>
+      </div>
+      <button class="go-btn" id="go-btn" onclick="runXplainr()">Explain it</button>
+      <div class="download-group">
+        <button class="dl-btn" onclick="toggleDownloadMenu()">Download ▾</button>
+        <div class="download-menu" id="download-menu">
+          <button class="download-item" onclick="downloadAs('txt')">Plain text (.txt)</button>
+          <button class="download-item" onclick="downloadAs('html')">Formatted page (.html)</button>
+          <button class="download-item" onclick="window.print()">Print / Save as PDF</button>
+          <button class="download-item" onclick="downloadAs('rtf')">Editable document (.rtf)</button>
+          <button class="download-item" onclick="downloadAs('docx')">Word document (.docx)</button>
+        </div>
+      </div>
+    </div>
+    <div class="error-msg" id="error-msg"></div>
+  </div>
+  <div class="loading" id="loading"><div class="dots"><span></span><span></span><span></span></div>Annotating your text…</div>
+  <div class="output-wrap" id="output-wrap">
+    <hr>
+    <div class="output-header">
+      <div class="section-label">Annotated result</div>
+      <div class="output-actions">
+        <button class="copy-btn" onclick="clearConversation()" style="color:#dc2626;border-color:#fca5a5;">New conversation</button>
+        <button class="copy-btn" onclick="copyOriginal(event)">Copy original</button>
+        <button class="copy-btn" onclick="copyOutput(event)">Copy result</button>
+        <button class="copy-btn" id="share-btn" onclick="shareResult()">Share</button>
+        <button class="copy-btn" id="summary-btn" onclick="runSummary()" style="background:var(--accent-light);border-color:var(--accent-border);color:var(--accent-dark);font-weight:500;">+ Summarize</button>
+      </div>
+    </div>
+    <div id="med-disclaimer" style="display:none;margin-bottom:1rem;padding:0.875rem 1rem;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;font-size:13px;color:#7c2d12;line-height:1.5;"><strong>This tool provides medical information and definitions only -- not medical advice.</strong> This tool only explains and defines medical terms to help you understand medical documents and to try to answer your questions. However, it does not and cannot provide any diagnosis, treatment recommendations, personal medical guidance or advice. Always consult your doctor or healthcare provider before making any medical decision, no matter how small it may seem.<br><br>I can only provide answers to non-personal inquiries about health issues. If you ask about your personal medical issues or their causes, or what your symptoms might mean, I may not be able to provide information. It could be harmful. Please talk to your doctor; only he or she should address such questions about your personal situation.</div>
+    
+    <div id="summary-loading" class="loading" style="margin-top:0.5rem;display:none;">
+      <div class="dots"><span></span><span></span><span></span></div>
+      Generating summary…
+    </div>
+    <div id="summary-wrap" style="display:none;margin-top:1rem;margin-bottom:1rem;">
+      <div class="output-header">
+        <div class="section-label">Summary</div>
+        <div class="output-actions">
+          <button class="copy-btn" onclick="copySummary(event)">Copy summary</button>
+        </div>
+      </div>
+      <div class="card" style="border-left:3px solid var(--accent);border-radius:0 12px 12px 0;">
+        <div class="output-body" id="summary-body"></div>
+      </div>
+    </div>
+    <div class="card"><div class="output-body" id="output-body"></div></div>
+
+  </div>
+
+  <div style="margin-top:1.5rem;padding:0.75rem 1rem;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;font-size:14px;color:#0c4a6e;line-height:1.6;text-align:center;">
+    This app is from <strong>AI Health Plus</strong> — a free English/Spanish health community on Skool.com.
+    <br><a href="https://www.skool.com/ai-done-for-you-7410/about" target="_blank" rel="noopener" style="color:#2525C9;font-weight:700;text-decoration:underline;">Click here to join</a>
+    <br><em style="font-size:13px;color:#0369a1;">Esta app es de <strong>AI Health Plus</strong> — una comunidad de salud en inglés y español en Skool.com. <a href="https://www.skool.com/ai-done-for-you-7410/about" target="_blank" rel="noopener" style="color:#2525C9;font-weight:700;text-decoration:underline;">Haz clic aquí para unirte.</a></em>
+  </div>
+
+  <footer>MedeXplainr Pro &nbsp;·&nbsp; XplainrHub &nbsp;·&nbsp; powered by Claude</footer>
+</main>
+<script>
+const SAMPLE_DISCHARGE = `DISCHARGE SUMMARY
+
+Patient: [Name] DOB: [Date] MRN: [Number]
+Admitting Diagnosis: Acute decompensated heart failure with preserved ejection fraction (HFpEF)
+Discharge Diagnosis: Same, with secondary diagnosis of hyponatremia and stage 3 chronic kidney disease (CKD)
+
+Hospital Course:
+Patient presented to ED with progressive dyspnea on exertion, orthopnea, and bilateral lower extremity edema x 5 days. BNP on admission was 1,840 pg/mL. Chest X-ray showed cardiomegaly and bilateral pleural effusions. Echo revealed preserved EF of 58% with grade II diastolic dysfunction and elevated filling pressures.
+
+Patient was diuresed with IV furosemide with good response. Net negative fluid balance achieved of approximately -3.2L over 4 days. Creatinine trended from 1.9 on admission to 2.3 at peak, then improved to 2.1 at discharge consistent with cardiorenal syndrome. Sodium corrected from 129 to 134 mEq/L.
+
+Discharge Medications:
+- Furosemide 80mg PO BID (increased from 40mg daily)
+- Carvedilol 6.25mg PO BID
+- Lisinopril held given AKI  --  restart when creatinine returns to baseline per PCP
+- Spironolactone 25mg daily
+- Atorvastatin 40mg QHS
+
+Follow-up: Cardiology in 1 week. PCP within 72 hours. Daily weights  --  call if gain >2 lbs in 24h or >5 lbs in 1 week.`;
+
+const SAMPLE_LABS = `LABORATORY RESULTS  --  Patient: [Name] Collection Date: [Date]
+
+COMPLETE METABOLIC PANEL:
+Sodium: 138 mEq/L (135-145) NORMAL
+Potassium: 3.2 mEq/L (3.5-5.0) LOW *
+Chloride: 101 mEq/L (98-107) NORMAL
+CO2: 22 mEq/L (22-29) NORMAL
+BUN: 28 mg/dL (7-20) HIGH *
+Creatinine: 1.4 mg/dL (0.6-1.2) HIGH *
+eGFR: 52 mL/min/1.73m2 (>60) LOW *
+Glucose: 118 mg/dL (70-100) HIGH *
+AST: 34 U/L (10-40) NORMAL
+ALT: 28 U/L (7-56) NORMAL
+
+COMPLETE BLOOD COUNT:
+WBC: 7.2 K/uL (4.5-11.0) NORMAL
+RBC: 3.8 M/uL (4.5-5.5) LOW *
+Hemoglobin: 10.2 g/dL (13.5-17.5) LOW *
+Hematocrit: 31% (41-53) LOW *
+MCV: 72 fL (80-100) LOW *
+Platelets: 245 K/uL (150-400) NORMAL
+
+LIPID PANEL:
+Total Cholesterol: 224 mg/dL (<200) HIGH *
+LDL: 148 mg/dL (<100) HIGH *
+HDL: 38 mg/dL (>40) LOW *
+Triglycerides: 190 mg/dL (<150) HIGH *
+
+HbA1c: 7.2% (<5.7%)   --  Diabetic range`;
+
+function loadSample(type) { document.getElementById('input-area').value = type === 'discharge' ? SAMPLE_DISCHARGE : SAMPLE_LABS; }
+function clearInput() { document.getElementById('input-area').value = ''; document.getElementById('output-wrap').classList.remove('visible'); document.getElementById('error-msg').classList.remove('visible'); const st = document.getElementById('upload-status'); if (st) st.textContent = ''; }
+
+function copyOriginal(event) {
+  const text = document.getElementById('input-area').value;
+  if (!text.trim()) return;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = event.target; btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy original', 1800);
+  });
+}
+
+function copySummary(event) {
+  navigator.clipboard.writeText(document.getElementById('summary-body').innerText).then(() => {
+    const btn = event.target; btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy summary', 1800);
+  });
+}
+
+async function runSummary() {
+  const apiKey = document.getElementById('api-key-input').value.trim();
+  const inputText = document.getElementById('input-area').value.trim();
+  if (!apiKey || !inputText) return;
+
+  const summaryBtn = document.getElementById('summary-btn');
+  const loadingEl = document.getElementById('summary-loading');
+  const summaryWrap = document.getElementById('summary-wrap');
+  const summaryBody = document.getElementById('summary-body');
+
+  summaryBtn.disabled = true;
+  loadingEl.style.display = 'flex';
+  summaryWrap.style.display = 'none';
+  summaryBody.innerHTML = '';
+
+  // Determine length guidance based on word count
+  const wordCount = inputText.trim().split(/\s+/).length;
+  let lengthGuide, maxTokens;
+  if (wordCount < 300) {
+    lengthGuide = 'Write 2-3 sentences. The source is short so keep the summary tight.';
+    maxTokens = 300;
+  } else if (wordCount < 800) {
+    lengthGuide = 'Write one short paragraph of 4-6 sentences covering the main point, key details, and takeaway.';
+    maxTokens = 500;
+  } else if (wordCount < 2500) {
+    lengthGuide = 'Write 2-3 paragraphs. Cover the main argument or topic, the key supporting points, and the conclusion or takeaway.';
+    maxTokens = 900;
+  } else {
+    lengthGuide = 'Write 4-6 paragraphs. This is a long piece  --  give a thorough summary covering the main thesis, each major section or argument, key evidence or examples, and the overall conclusion. Use a short header for each paragraph if helpful.';
+    maxTokens = 1800;
+  }
+
+  const systemPrompt = `You are MedeXplainr Pro. The user has submitted a medical text. Summarize its main topic, key points, and takeaway. Write in plain English. Do not use jargon without explaining it. Start directly  --  no preamble, no "Here is a summary:" opener.
+
+${lengthGuide}`;
+
+  try {
+    const response = await fetch('/api/proxy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        password: apiKey,
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: maxTokens,
+        system: systemPrompt,
+        messages: (() => {
+          conversationHistory.push({ role: 'user', content: `Please annotate this medical text:\n\n${inputText}` });
+          if (conversationHistory.length > MAX_HISTORY_TURNS * 2)
+            conversationHistory = conversationHistory.slice(-MAX_HISTORY_TURNS * 2);
+          return conversationHistory;
+        })()
+      })
+    });
+    const data = await response.json();
+    if (data.error) throw new Error(data.error.message || 'API error');
+    const result = (data.content || []).map(b => b.text || '').join('');
+    summaryBody.innerHTML = renderMarkdown(result);
+    summaryWrap.style.display = 'block';
+    summaryWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    summaryBtn.textContent = 'Summarized';
+  } catch (err) {
+    summaryBody.innerHTML = '<p style="color:#b02a1e">Summary failed: ' + err.message + '</p>';
+    summaryWrap.style.display = 'block';
+  } finally {
+    summaryBtn.disabled = false;
+    loadingEl.style.display = 'none';
+  }
+}
+
+function copyOutput(event) { const text = document.getElementById('output-body').innerText; navigator.clipboard.writeText(text).then(() => { const btn = event.target; btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy result', 1800); }); }
+function toggleDownloadMenu() { document.getElementById('download-menu').classList.toggle('open'); }
+document.addEventListener('click', e => { if (!e.target.closest('.download-group')) document.getElementById('download-menu').classList.remove('open'); });
+
+function htmlToRtf(html, title, dateStr) {
+  // RTF header
+  let rtf = '{\\rtf1\\ansi\\deff0\n';
+  rtf += '{\\fonttbl{\\f0\\froman\\fcharset0 Times New Roman;}{\\f1\\fswiss\\fcharset0 Arial;}}\n';
+  rtf += '{\\colortbl;\\red16\\green16\\blue18;\\red4\\green120\\blue87;}\n';
+  rtf += '\\widowctrl\\hyphauto\n';
+  rtf += '\\margl1800\\margr1800\\margt1440\\margb1440\n';
+
+  // Title
+  rtf += '{\\f1\\fs28\\b ' + escRtf(title) + '}\\line\n';
+  rtf += '{\\f1\\fs18\\i ' + escRtf(dateStr) + '}\\par\n';
+  rtf += '\\f1\\fs20\n';
+
+  // Convert HTML to RTF
+  let text = html;
+  // Bold
+  text = text.replace(/<strong>(.*?)<\/strong>/gi, '{\\b $1}');
+  // Italic (green annotations)
+  text = text.replace(/<em>(.*?)<\/em>/gi, '{\\i\\cf2 $1}');
+  // Headings
+  text = text.replace(/<h[123][^>]*>(.*?)<\/h[123]>/gi, '\\par{\\f1\\fs24\\b $1}\\par\n');
+  // Blockquotes (notes)
+  text = text.replace(/<blockquote>(.*?)<\/blockquote>/gi, '\\par{\\li360\\ri360\\f1\\fs18\\i $1}\\par\n');
+  // HR
+  text = text.replace(/<hr[^>]*>/gi, '\\par{\\brdrb\\brdrs\\brdrw10 \\par}\n');
+  // List items
+  text = text.replace(/<li>(.*?)<\/li>/gi, '\\par{\\li360 - $1}\n');
+  // Paragraphs
+  text = text.replace(/<p>(.*?)<\/p>/gi, '\\par $1\\par\n');
+  // Line breaks
+  text = text.replace(/<br\s*\/?>/gi, '\\line\n');
+  // Strip remaining tags
+  text = text.replace(/<[^>]+>/g, '');
+  // Unescape HTML entities
+  text = text.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'");
+
+  rtf += text;
+  rtf += '\n}';
+  return rtf;
+}
+
+function escRtf(str) {
+  return str.replace(/\\/g,'\\\\').replace(/\{/g,'\\{').replace(/\}/g,'\\}').replace(/[^\x00-\x7F]/g, c => '\\u' + c.charCodeAt(0) + '?');
+}
+
+function downloadAs(format) {
+  const outputEl = document.getElementById('output-body');
+  const plainText = outputEl.innerText;
+  const renderedHTML = outputEl.innerHTML;
+  // Include summary if present
+  const summaryWrap = document.getElementById('summary-wrap');
+  const summaryEl = document.getElementById('summary-body');
+  const hasSummary = summaryWrap && summaryWrap.style.display !== 'none' && summaryEl && summaryEl.innerText.trim();
+  const summaryText = hasSummary ? summaryEl.innerText.trim() : '';
+  const summaryHTML = hasSummary ? summaryEl.innerHTML : '';
+  // Capture disclaimer text if present
+  const disclaimerEl = document.querySelector('[id$="-disclaimer"]');
+  const disclaimerText = disclaimerEl ? disclaimerEl.innerText.trim() : '';
+  const disclaimerHTML = disclaimerEl ? '<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:0.875rem 1rem;margin-bottom:1.5rem;font-size:13px;color:#7c2d12;line-height:1.5;">' + disclaimerEl.innerHTML + '</div>' : '';
+  const originalText = document.getElementById('input-area').value;
+  const dateStr = new Date().toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
+  let blob, filename;
+  if (format === 'txt') {
+    blob = new Blob([`MEDEXPLAINR PRO  --  ANNOTATED RESULT\nGenerated: ${dateStr}\n${'-'.repeat(52)}\n\n${disclaimerText ? 'IMPORTANT NOTICE\n' + '-'.repeat(52) + '\n' + disclaimerText + '\n\n' + '-'.repeat(52) + '\n\n' : ''}${summaryText ? 'SUMMARY\n' + '-'.repeat(52) + '\n' + summaryText + '\n\n' + '-'.repeat(52) + '\n\nANNOTATED RESULT\n' + '-'.repeat(52) + '\n\n' : ''}${plainText.replace(/\n{3,}/g,'\n\n').trim()}\n\n${'-'.repeat(52)}\nMedeXplainr Pro * XplainrHub * powered by Claude`], {type:'text/plain'});
+    filename = 'medexplainr-result.txt';
+  } else if (format === 'rtf') {
+    const rtfContent = htmlToRtf((disclaimerHTML || '') + (summaryHTML ? '<h2>Summary</h2>' + summaryHTML + '<hr>' : '') + renderedHTML, 'MedeXplainr Pro -- Annotated Result', dateStr);
+    blob = new Blob([rtfContent], {type:'application/rtf'});
+    filename = 'medexplainr-result.rtf';
+  } else if (format === 'docx') {
+    // Generate RTF content compatible with Word
+    const rtfContent = htmlToRtf((disclaimerHTML || '') + (summaryHTML ? '<h2>Summary</h2>' + summaryHTML + '<hr>' : '') + renderedHTML, 'MedeXplainr Pro -- Annotated Result', dateStr);
+    blob = new Blob([rtfContent], {type:'application/msword'});
+    filename = 'medexplainr-result.doc';
+  } else {
+    const h = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>MedeXplainr Pro  --  Annotated Result</title><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet"><style>body{font-family:'DM Sans',sans-serif;background:#f0ece3;color:#161612;max-width:760px;margin:3rem auto;padding:0 1.5rem 5rem}.xp-header{display:flex;align-items:baseline;justify-content:space-between;border-bottom:1.5px solid #c8c0b0;padding-bottom:1rem;margin-bottom:2rem}.logo{font-family:'Playfair Display',serif;font-size:28px;font-weight:500}.logo em{color:#10b981;font-style:italic}.meta{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.1em;color:#8a8478}details{margin-bottom:2rem}summary{font-family:'DM Mono',monospace;font-size:11px;text-transform:uppercase;color:#8a8478;cursor:pointer}.original-box{background:#fff;border:1.5px solid #c8c0b0;border-radius:8px;padding:1rem 1.25rem;font-family:'Playfair Display',serif;font-size:13px;line-height:1.75;color:#524e45;white-space:pre-wrap;margin-top:0.6rem}.result-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#8a8478;margin-bottom:.75rem}.result-card{background:#fff;border:1.5px solid #c8c0b0;border-radius:12px;padding:1.75rem 2rem}.output-body{font-family:'Playfair Display',serif;font-size:15px;line-height:1.9;color:#161612}.output-body p{margin-bottom:1.1em}.output-body strong{font-weight:600}.output-body em{font-style:italic;color:#047857}.output-body ul{padding-left:1.4em;margin-bottom:1.1em}.output-body li{margin-bottom:.45em}.output-body blockquote{background:#d1fae5;border-left:3px solid #059669;border-radius:0 8px 8px 0;padding:.8rem 1.1rem;margin:.4em 0;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.75;color:#524e45}hr.notes-divider{border:none;border-top:1.5px solid #c8c0b0;margin:1.75rem 0 1.25rem}.xp-footer{margin-top:2.5rem;text-align:center;font-family:'DM Mono',monospace;font-size:11px;color:#8a8478}@media print{body{background:white}.result-card{border:none;padding:0}</style>
+</head><body><div class="xp-header"><div class="logo">MedeXplain<em>r</em> Pro</div><div class="meta">ANNOTATED RESULT * ${dateStr}</div></div><details><summary>> Show original text</summary><div class="original-box">${originalText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div></details><div class="result-label">Annotated result</div><div class="result-card"><div class="output-body">${renderedHTML}</div></div>${summaryHTML ? '<div style="margin-top:1.5rem;"><div style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:#8a8478;margin-bottom:0.5rem;">Summary</div><div style="background:#fff;border:1.5px solid #c8c0b0;border-left:3px solid var(--accent,#059669);border-radius:0 12px 12px 0;padding:1.75rem 2rem;">' + summaryHTML + '</div></div>' : ''}<div class="xp-footer">MedeXplainr Pro * XplainrHub * powered by Claude * anthropic.com</div></body></html>`;
+    blob = new Blob([h], {type:'text/html'}); filename = 'medexplainr-result.html';
+  }
+  const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+  document.getElementById('download-menu').classList.remove('open');
+}
+
+const DEPTH_PROMPTS = {
+  patient: `You are MedeXplainr Pro, a medical literacy companion from XplainrHub. You are annotating medical text for a patient with no medical background. Today's date is ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}.
+
+Explain EVERY medical term, medication name, abbreviation, test name, measurement, and procedure. Assume the reader knows nothing about medicine. Use plain everyday language. For medications, explain what they treat and common side effects to watch for. For test results, explain what the number means and why it matters.
+
+RULE 1  --  EVERY MEDICAL TERM gets an inline parenthetical immediately after it.
+Examples: "hypertension (high blood pressure  --  when the force of blood against your artery walls is consistently too high)"
+"BNP (B-type Natriuretic Peptide  --  a protein your heart releases when it's under stress; high levels signal the heart is working too hard)"
+"furosemide (a diuretic  --  a 'water pill' that makes your kidneys remove extra fluid from your body through urine)"
+
+RULE 2  --  ABBREVIATIONS always get expanded and explained.
+Examples: "PO (by mouth  --  taken as a pill or liquid you swallow)" * "BID (twice daily)" * "QHS (every night at bedtime)"
+
+RULE 3  --  TEST RESULTS get context: what's normal, what the patient's result means, and why it matters.
+
+RULE 4  --  PRESERVE all original structure, numbers, and formatting.
+
+RULE 5  --  MARKDOWN OUTPUT: You MUST use markdown formatting throughout. Every medical term must be **bolded** and every explanation must be in *italics*. This is not optional.
+
+Format every annotation exactly like this:
+**Hypertension** *(high blood pressure  --  when the force of blood pushing against artery walls is consistently too high, which strains the heart over time)*
+**BID** *(twice daily  --  take this medication two times per day)*
+**eGFR** *(estimated Glomerular Filtration Rate  --  a measure of how well your kidneys are filtering waste; your result of 52 means your kidneys are working at about 52% of normal capacity)*
+
+Use > blockquotes for the 📚 Notes section. Use --- to separate sections.
+
+Add a warm, reassuring note at the start reminding the reader to discuss questions with their doctor. Tone: warm, patient, never alarming.
+
+IMPORTANT: You are a medical LITERACY and INFORMATION tool. Your PRIMARY purpose is annotating and explaining medical documents including lab results, discharge summaries, medication lists, and clinical reports -- ALWAYS annotate these fully regardless of whose results they appear to be. Explaining what lab values mean, what HIGH/LOW flags indicate, and what medical terms in documents mean is your core function and is always allowed. You explain medical terms, define conditions, and share general medical information. ALLOWED: Explaining what a condition is, what symptoms mean, how treatments generally work, what tests measure, and general information about medical topics -- even when the user describes their own situation. NOT ALLOWED: Telling the user what they personally should do, recommending specific treatments for their case, giving dosage instructions, or making clinical judgments about their specific situation. The test is simple: are you explaining what something IS (allowed) or telling someone what to DO about their personal situation (not allowed)? If someone asks "What can you tell me about pregnancy?" or "What is gestational diabetes?" -- answer fully with annotated information. REDIRECT RULES -- these override everything else:
+
+1. EXCEPTION: If the user has pasted a medical document such as lab results, a discharge summary, or a medication list -- ALWAYS annotate and explain it fully. This is exactly what you are designed for. Do NOT redirect document annotation requests. ONLY redirect when someone is asking for personal medical advice WITHOUT having pasted a document -- for example "I have diabetes, what should I do?" with no document attached.
+
+2. If anyone asks about symptoms -- their own, a friend's, a family member's -- or asks what symptoms might indicate, respond ONLY with: "I am not able to provide information about symptoms or what they might mean for anyone. It could be harmful. Please talk to a doctor; only he or she should address such questions."
+
+3. IMPORTANT PATTERN TO RECOGNIZE: Questions like "I have [condition], what does that mean?" or "I have [condition X] and [condition Y], what should I know?" or "Someone told me I could have problems -- what were they talking about?" are all requests for personal medical guidance regardless of how they are worded. Always redirect these to a doctor.
+
+4. You MAY explain what a standalone medical term or condition means in general (e.g. "What is HbA1c?" or "What does pre-eclampsia mean?") -- but ONLY when asked about the term itself, not in the context of someone's personal situation.`,
+
+  caregiver: `You are MedeXplainr Pro, a medical literacy companion from XplainrHub. You are annotating medical text for a caregiver or family member who knows basic health concepts but not clinical terminology. Today's date is ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}.
+
+Explain clinical terms, specialist abbreviations, drug names, and lab values. Skip truly basic terms like "blood pressure" or "infection." For medications, explain the drug class and purpose. For abnormal lab values, explain the clinical significance.
+
+RULE 1  --  CLINICAL TERMS get inline parentheticals.
+Examples: "HFpEF (heart failure with preserved ejection fraction  --  a type of heart failure where the heart muscle contracts normally but the ventricles are stiff, making it harder to fill with blood)"
+"hyponatremia (low sodium levels in the blood  --  can cause confusion, fatigue, and in severe cases seizures)"
+
+RULE 2  --  ABBREVIATIONS that aren't widely known get expanded inline.
+
+RULE 3  --  LAB VALUES outside normal range get a brief note on what the abnormality means clinically.
+
+RULE 4  --  PRESERVE all original structure and numbers.
+
+RULE 5  --  MARKDOWN OUTPUT: You MUST use markdown formatting throughout. Every clinical term must be **bolded** and every explanation must be in *italics*. This is not optional.
+
+Format every annotation exactly like this:
+**HFpEF** *(heart failure with preserved ejection fraction  --  the heart squeezes normally but the walls are stiff, so it can't fill with enough blood)*
+**hyponatremia** *(low sodium in the blood  --  can cause fatigue, confusion, and muscle weakness)*
+
+Use > blockquotes for 📚 Notes. Use --- to separate sections.
+
+Tone: informative and collegial  --  treating the caregiver as an intelligent advocate for the patient.`,
+
+  professional: `You are MedeXplainr Pro from XplainrHub. You are annotating medical text for a healthcare professional from a different specialty who may be unfamiliar with specific terminology, medications, or protocols outside their area. Today's date is ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}.
+
+Only explain genuinely specialty-specific terms, newer medications, niche abbreviations, or cross-specialty references that a competent clinician outside this specialty might not know. Skip all standard medical terminology.
+
+RULE 1  --  SPECIALTY-SPECIFIC TERMS get brief inline parentheticals.
+RULE 2  --  NEWER OR NICHE MEDICATIONS get drug class and primary indication.
+RULE 3  --  CROSS-SPECIALTY PROTOCOLS get a one-sentence note.
+RULE 4  --  PRESERVE all original structure.
+RULE 5  --  MARKDOWN OUTPUT: You MUST use markdown formatting. **Bold** every term and use *italics* for every explanation. Example: **spironolactone** *(aldosterone antagonist  --  used here for its cardioprotective effects in heart failure)*
+
+Use > blockquotes for Notes. Use --- to separate.
+
+Tone: concise, peer-to-peer.
+
+IMPORTANT: You are a medical LITERACY and INFORMATION tool. You explain medical terms, define conditions, and share general medical information. ALLOWED: Explaining what a condition is, what symptoms mean, how treatments generally work, what tests measure, and general information about medical topics -- even when the user describes their own situation. NOT ALLOWED: Telling the user what they personally should do, recommending specific treatments for their case, giving dosage instructions, or making clinical judgments about their specific situation. The test is simple: are you explaining what something IS (allowed) or telling someone what to DO about their personal situation (not allowed)? If someone asks "What can you tell me about pregnancy?" or "What is gestational diabetes?" -- answer fully with annotated information. REDIRECT RULES -- these override everything else:
+
+1. EXCEPTION: If the user has pasted a medical document such as lab results, a discharge summary, or a medication list -- ALWAYS annotate and explain it fully. This is exactly what you are designed for. Do NOT redirect document annotation requests. ONLY redirect when someone is asking for personal medical advice WITHOUT having pasted a document -- for example "I have diabetes, what should I do?" with no document attached.
+
+2. If anyone asks about symptoms -- their own, a friend's, a family member's -- or asks what symptoms might indicate, respond ONLY with: "I am not able to provide information about symptoms or what they might mean for anyone. It could be harmful. Please talk to a doctor; only he or she should address such questions."
+
+3. IMPORTANT PATTERN TO RECOGNIZE: Questions like "I have [condition], what does that mean?" or "I have [condition X] and [condition Y], what should I know?" or "Someone told me I could have problems -- what were they talking about?" are all requests for personal medical guidance regardless of how they are worded. Always redirect these to a doctor.
+
+4. You MAY explain what a standalone medical term or condition means in general (e.g. "What is HbA1c?" or "What does pre-eclampsia mean?") -- but ONLY when asked about the term itself, not in the context of someone's personal situation.`
+};
+
+function renderMarkdown(text) {
+  let html = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  html = html.replace(/^### (.+)$/gm,'<h3>$1</h3>').replace(/^## (.+)$/gm,'<h2>$1</h2>').replace(/^# (.+)$/gm,'<h1>$1</h1>');
+  html = html.replace(/^---$/gm,'<hr class="notes-divider">');
+  html = html.replace(/^&gt; (.+)$/gm,'<blockquote>$1</blockquote>').replace(/<\/blockquote>\n<blockquote>/g,'\n');
+  html = html.replace(/\*\*\*(.+?)\*\*\*/g,'<strong><em>$1</em></strong>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*([^*\n]+?)\*/g,'<em>$1</em>');
+  html = html.replace(/^[-\-\*] (.+)$/gm,'<li>$1</li>').replace(/(<li>.*<\/li>\n?)+/gs,'<ul>$&</ul>');
+  html = html.split(/\n{2,}/).map(b => { b=b.trim(); if(!b)return''; if(/^<(h[1-3]|ul|blockquote|hr)/.test(b))return b; return `<p>${b.replace(/\n/g,'<br>')}</p>`; }).join('\n');
+  return html;
+}
+
+// Conversation history
+let conversationHistory = [];
+const MAX_HISTORY_TURNS = 10;
+
+async function clearConversation() {
+  conversationHistory = [];
+  document.getElementById('output-wrap').classList.remove('visible');
+  document.getElementById('output-body').innerHTML = '';
+  document.getElementById('input-area').value = '';
+  const err = document.getElementById('error-msg');
+  if (err) err.classList.remove('visible');
+}
+
+async function runXplainr() {
+  const apiKey = document.getElementById('api-key-input').value.trim();
+  const inputText = document.getElementById('input-area').value.trim();
+  const depth = document.getElementById('depth-select').value;
+  const errorEl = document.getElementById('error-msg');
+  const loadingEl = document.getElementById('loading');
+  const outputWrap = document.getElementById('output-wrap');
+  const outputBody = document.getElementById('output-body');
+  const goBtn = document.getElementById('go-btn');
+  errorEl.classList.remove('visible');
+  if (!apiKey) { errorEl.textContent = 'Please enter your AI Health Plus Paid community password above. / Por favor ingrese su contraseña de la comunidad de pago de AI Health Plus.'; errorEl.classList.add('visible'); return; }
+  if (!inputText) { errorEl.textContent = 'Please paste some medical text first, or click a sample above. / Por favor pegue texto médico primero, o haga clic en una muestra.'; errorEl.classList.add('visible'); return; }
+  goBtn.disabled = true; loadingEl.classList.add('visible'); outputWrap.classList.remove('visible'); outputBody.innerHTML = '';
+  try {
+    const response = await fetch('/api/proxy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: apiKey, model: 'claude-sonnet-4-20250514', max_tokens: 4000, system: DEPTH_PROMPTS[depth] + '\n\nBegin your response directly with the annotated text. No preamble.', messages: (() => {
+          conversationHistory.push({ role: 'user', content: `Please annotate this medical text:\n\n${inputText}` });
+          if (conversationHistory.length > MAX_HISTORY_TURNS * 2)
+            conversationHistory = conversationHistory.slice(-MAX_HISTORY_TURNS * 2);
+          return conversationHistory;
+        })() })
+    });
+    const data = await response.json();
+    if (data.error) throw new Error(data.error.message || 'API error');
+    const resultText = (data.content||[]).map(b=>b.text||'').join('');
+    outputBody.innerHTML = renderMarkdown(resultText);
+    outputWrap.classList.add('visible');
+    document.getElementById('med-disclaimer').style.display = 'block';
+    outputWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (err) { errorEl.textContent = 'Something went wrong: ' + err.message; errorEl.classList.add('visible'); }
+  finally { goBtn.disabled = false; loadingEl.classList.remove('visible'); }
+}
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('input-area').addEventListener('keydown', e => { if ((e.ctrlKey||e.metaKey) && e.key==='Enter') runXplainr(); });
+
+  // Drag-and-drop onto textarea
+  const textarea = document.getElementById('input-area');
+  const status = document.getElementById('upload-status');
+  textarea.addEventListener('dragover', (e) => { e.preventDefault(); textarea.style.borderColor = '#059669'; });
+  textarea.addEventListener('dragleave', () => { textarea.style.borderColor = ''; });
+  textarea.addEventListener('drop', async (e) => {
+    e.preventDefault();
+    textarea.style.borderColor = '';
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+    const fakeInput = { files: [file] };
+    await handleFileUpload(fakeInput);
+  });
+});
+
+// --- Microphone / Speech Recognition ---
+let recognition = null;
+let isListening = false;
+
+function toggleMic() {
+  const micBtn = document.getElementById('mic-btn');
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  
+  if (!SpeechRecognition) {
+    alert('Speech recognition is not supported in this browser. Try Chrome or Safari.');
+    return;
+  }
+  
+  if (isListening) {
+    recognition.stop();
+    return;
+  }
+  
+  recognition = new SpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+  
+  recognition.onstart = () => {
+    isListening = true;
+    micBtn.classList.add('listening');
+    micBtn.title = 'Listening... click to stop';
+  };
+  
+  recognition.onresult = (e) => {
+    const transcript = e.results[0][0].transcript;
+    const textarea = document.getElementById('input-area');
+    textarea.value = (textarea.value ? textarea.value + ' ' : '') + transcript;
+  };
+  
+  recognition.onerror = (e) => {
+    if (e.error !== 'aborted') alert('Microphone error: ' + e.error);
+  };
+  
+  recognition.onend = () => {
+    isListening = false;
+    micBtn.classList.remove('listening');
+    micBtn.title = 'Click to speak';
+  };
+  
+  recognition.start();
+}
+
+// --- Share ---
+async function shareResult() {
+  const outputEl = document.getElementById('output-body');
+  if (!outputEl || !outputEl.innerText.trim()) return;
+  
+  const text = outputEl.innerText.trim();
+  const title = document.title;
+  
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: title, text: text });
+    } catch(e) {
+      if (e.name !== 'AbortError') {
+        // Fall back to clipboard
+        copyToClipboard(text);
+      }
+    }
+  } else {
+    // Desktop fallback - copy to clipboard
+    copyToClipboard(text);
+  }
+}
+
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('share-btn');
+    if (btn) { btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Share', 1500); }
+  });
+}
+
+
+// File upload handler
+function triggerUpload() {
+  document.getElementById('file-input').click();
+}
+
+async function handleFileUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  const statusEl = document.getElementById('upload-status');
+  const textarea = document.getElementById('input-area');
+
+  statusEl.textContent = 'Reading file...';
+
+  try {
+    if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+      // PDF extraction using PDF.js
+      if (!window.pdfjsLib) {
+        statusEl.textContent = 'PDF library not loaded. Check your internet connection.';
+        return;
+      }
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      let fullText = '';
+      const numPages = pdf.numPages;
+      statusEl.textContent = `Extracting text from ${numPages} page${numPages > 1 ? 's' : ''}...`;
+
+      for (let i = 1; i <= numPages; i++) {
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        const pageText = content.items.map(item => item.str).join(' ');
+        fullText += pageText + '\n\n';
+      }
+
+      if (fullText.trim().length < 50) {
+        statusEl.textContent = 'Could not extract text. This may be a scanned PDF (image-only). Try copying and pasting the text instead.';
+        return;
+      }
+
+      textarea.value = fullText.trim();
+      statusEl.textContent = `Loaded: ${file.name} (${numPages} page${numPages > 1 ? 's' : ''})`;
+
+    } else if (file.type === 'text/plain' || file.name.endsWith('.txt') || file.name.endsWith('.rtf')) {
+      // Plain text
+      const text = await file.text();
+      textarea.value = text;
+      statusEl.textContent = `Loaded: ${file.name}`;
+
+    } else {
+      statusEl.textContent = 'Unsupported file type. Please use PDF or TXT files.';
+      return;
+    }
+
+    // Clear the input so the same file can be re-uploaded if needed
+    input.value = '';
+
+  } catch (err) {
+    statusEl.textContent = 'Error reading file: ' + err.message;
+    console.error('File upload error:', err);
+  }
+}
+
+
+// Drag and drop support
+(function() {
+  const textarea = document.getElementById('input-area');
+  const wrap = textarea ? textarea.closest('.textarea-wrap') || textarea.parentElement : null;
+  if (!wrap) return;
+
+  wrap.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    wrap.classList.add('dragover');
+  });
+
+  wrap.addEventListener('dragleave', () => {
+    wrap.classList.remove('dragover');
+  });
+
+  wrap.addEventListener('drop', async (e) => {
+    e.preventDefault();
+    wrap.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+    // Reuse the existing file handler
+    const fakeInput = { files: [file] };
+    await handleFileUpload(fakeInput);
+  });
+})();
+
+</script>
+</body>
+</html>
