@@ -1,0 +1,70 @@
+{
+  "redirects": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "medexplainr.com"
+        }
+      ],
+      "destination": "/apps/medexplainr-pro",
+      "permanent": false
+    },
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.medexplainr.com"
+        }
+      ],
+      "destination": "/apps/medexplainr-pro",
+      "permanent": false
+    },
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "legalexplainr.com"
+        }
+      ],
+      "destination": "/apps/legalexplainr-pro",
+      "permanent": false
+    },
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.legalexplainr.com"
+        }
+      ],
+      "destination": "/apps/legalexplainr-pro",
+      "permanent": false
+    },
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "languagexplainr.com"
+        }
+      ],
+      "destination": "/apps/languagexplainr-pro",
+      "permanent": false
+    },
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.languagexplainr.com"
+        }
+      ],
+      "destination": "/apps/languagexplainr-pro",
+      "permanent": false
+    }
+  ]
+}
