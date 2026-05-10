@@ -256,7 +256,7 @@ Triglycerides: 190 mg/dL (<150) HIGH *
 HbA1c: 7.2% (<5.7%)   --  Diabetic range`;
 
 function loadSample(type) { document.getElementById('input-area').value = type === 'discharge' ? SAMPLE_DISCHARGE : SAMPLE_LABS; }
-function clearInput() { document.getElementById('input-area').value = ''; document.getElementById('output-wrap').classList.remove('visible'); document.getElementById('error-msg').classList.remove('visible'); const st = document.getElementById('upload-status'); if (st) st.textContent = ''; }
+function clearInput() { conversationHistory = []; document.getElementById('input-area').value = ''; document.getElementById('output-wrap').classList.remove('visible'); document.getElementById('error-msg').classList.remove('visible'); const st = document.getElementById('upload-status'); if (st) st.textContent = ''; }
 
 function copyOriginal(event) {
   const text = document.getElementById('input-area').value;
