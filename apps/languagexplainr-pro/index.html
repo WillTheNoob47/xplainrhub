@@ -282,7 +282,7 @@ const SAMPLES = {
 };
 
 function loadSample(type) { document.getElementById('input-area').value = SAMPLES[type] || ''; }
-function clearInput() { document.getElementById('input-area').value = ''; document.getElementById('output-wrap').classList.remove('visible'); document.getElementById('error-msg').classList.remove('visible'); const st = document.getElementById('upload-status'); if (st) st.textContent = ''; const ob = document.getElementById('output-body'); if (ob) ob.innerHTML = ''; const sb = document.getElementById('summary-body'); if (sb) sb.innerHTML = ''; const sw = document.getElementById('summary-wrap'); if (sw) sw.style.display = 'none'; const discEn = document.getElementById('lang-medical-disclaimer'); if (discEn) discEn.style.display = 'none'; const discEs = document.getElementById('lang-medical-disclaimer-es'); if (discEs) discEs.style.display = 'none'; }
+function clearInput() { conversationHistory = []; document.getElementById('input-area').value = ''; document.getElementById('output-wrap').classList.remove('visible'); document.getElementById('error-msg').classList.remove('visible'); const st = document.getElementById('upload-status'); if (st) st.textContent = ''; const ob = document.getElementById('output-body'); if (ob) ob.innerHTML = ''; const sb = document.getElementById('summary-body'); if (sb) sb.innerHTML = ''; const sw = document.getElementById('summary-wrap'); if (sw) sw.style.display = 'none'; const discEn = document.getElementById('lang-medical-disclaimer'); if (discEn) discEn.style.display = 'none'; const discEs = document.getElementById('lang-medical-disclaimer-es'); if (discEs) discEs.style.display = 'none'; }
 
 // UI text for each direction
 const UI_TEXT = {
@@ -951,3 +951,4 @@ async function handleFileUpload(input) {
 </script>
 </body>
 </html>
+
