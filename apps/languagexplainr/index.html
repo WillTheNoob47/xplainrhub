@@ -646,6 +646,12 @@ footer {
       <textarea id="language-input" spellcheck="false" placeholder="Type or paste English or Spanish text here... / Escriba o pegue texto en inglés o español aquí..."></textarea>
     </section>
 
+    <div style="border: 2px solid #1e3a8a; border-radius: 8px; background: #f3f4f6; padding: 0.75rem 1rem; text-align: center;">
+      <p style="margin: 0 0 0.25rem 0; font-size: 0.95rem; font-weight: 700; color: #111;">Note: This app is best at defining individual words. Sentence translation will not be perfect.</p>
+      <p style="margin: 0 0 0.5rem 0; font-size: 0.9rem; font-weight: 400; font-style: italic; color: #111;">Nota: Esta aplicación es mejor para definir palabras individuales. La traducción de oraciones no será perfecta.</p>
+      <p style="margin: 0; font-size: 0.95rem; font-weight: 700; font-style: italic; color: #1e3a8a;">For perfect translations of longer texts, try out LanguageXplainr Pro.</p>
+    </div>
+
     <section class="output">
       <label style="font-size:16px;font-weight:700;color:#111;">Clickable view / <em style="font-weight:400;font-style:italic;color:#6b7280;">Vista interactiva</em></label>
       <p style="font-size:15px;font-weight:600;color:#111;margin:4px 0 2px;">Green = word definition + translation. Blue = phrase. Click any highlighted term.</p>
@@ -1708,6 +1714,28 @@ const bilingualDictionary = {
     part_of_speech: "interjection",
     difficulty: "basic",
     usage: "Se usa como saludo amigable"
+  },
+
+  "please": {
+    spanish: "por favor",
+    english_pronunciation: "PLEEZ",
+    spanish_pronunciation: "por fah-VOR",
+    definition_english: "Polite word used when making a request or asking for something.",
+    definition_spanish: "Palabra cortés usada al hacer una petición.",
+    part_of_speech: "adverb",
+    difficulty: "basic",
+    usage: "Please pass the salt. / Por favor, pasa la sal."
+  },
+
+  "por favor": {
+    english: "please",
+    english_pronunciation: "PLEEZ",
+    spanish_pronunciation: "por fah-VOR",
+    definition_english: "Polite phrase used when making a request.",
+    definition_spanish: "Frase cortés usada al hacer una petición.",
+    part_of_speech: "adverb",
+    difficulty: "basic",
+    usage: "¿Me puedes ayudar, por favor? / Can you help me, please?"
   },
 
   "house": {
@@ -5323,17 +5351,6 @@ const commonPhrases = {
     usage: "Medical questions: 'Where is the doctor?', 'When will the doctor arrive?'"
   },
 
-  "doctor": {
-    english: "doctor",
-    english_pronunciation: "DAHK-tur",
-    spanish_pronunciation: "dok-TOR",
-    definition_english: "Medical professional - person who treats illnesses",
-    definition_spanish: "Profesional médico - persona que trata enfermedades",
-    part_of_speech: "noun",
-    difficulty: "basic",
-    usage: "Preguntas médicas: '¿Dónde está el doctor?', '¿Cuándo llega el doctor?'"
-  },
-
   // Personal Items
   "car": {
     spanish: "coche/carro",
@@ -6013,15 +6030,75 @@ function foldAccents(s){
   try { return s.normalize('NFD').replace(/\p{Diacritic}/gu,''); } catch { return s; }
 }
 
+// Spanish conjugated form → infinitive map for translateToken lookups
+const ES_VERB_FORMS = {
+  // llegar
+  'llego':'llegar','llegas':'llegar','llega':'llegar','llegamos':'llegar','llegáis':'llegar','llegan':'llegar',
+  'llegué':'llegar','llegaste':'llegar','llegó':'llegar','llegamos':'llegar','llegasteis':'llegar','llegaron':'llegar',
+  // estar
+  'estoy':'estar','estás':'estar','está':'estar','estamos':'estar','estáis':'estar','están':'estar',
+  'estuve':'estar','estuviste':'estar','estuvo':'estar','estuvimos':'estar','estuvisteis':'estar','estuvieron':'estar',
+  // ser
+  'soy':'ser','eres':'ser','es':'ser','somos':'ser','sois':'ser','son':'ser',
+  'fui':'ser','fuiste':'ser','fue':'ser','fuimos':'ser','fuisteis':'ser','fueron':'ser',
+  'era':'ser','eras':'ser','éramos':'ser','eran':'ser',
+  // ir
+  'voy':'ir','vas':'ir','va':'ir','vamos':'ir','vais':'ir','van':'ir',
+  'fui':'ir','fuiste':'ir','fue':'ir','fuimos':'ir','fuisteis':'ir','fueron':'ir',
+  'iba':'ir','ibas':'ir','íbamos':'ir','iban':'ir',
+  // tener
+  'tengo':'tener','tienes':'tener','tiene':'tener','tenemos':'tener','tenéis':'tener','tienen':'tener',
+  'tuve':'tener','tuviste':'tener','tuvo':'tener','tuvimos':'tener','tuvisteis':'tener','tuvieron':'tener',
+  // poder
+  'puedo':'poder','puedes':'poder','puede':'poder','podemos':'poder','podéis':'poder','pueden':'poder',
+  'pude':'poder','pudiste':'poder','pudo':'poder','pudimos':'poder','pudisteis':'poder','pudieron':'poder',
+  // hacer
+  'hago':'hacer','haces':'hacer','hace':'hacer','hacemos':'hacer','hacéis':'hacer','hacen':'hacer',
+  'hice':'hacer','hiciste':'hacer','hizo':'hacer','hicimos':'hacer','hicisteis':'hacer','hicieron':'hacer',
+  // querer
+  'quiero':'querer','quieres':'querer','quiere':'querer','queremos':'querer','queréis':'querer','quieren':'querer',
+  'quise':'querer','quisiste':'querer','quiso':'querer','quisimos':'querer','quisisteis':'querer','quisieron':'querer',
+  // saber
+  'sé':'saber','sabes':'saber','sabe':'saber','sabemos':'saber','sabéis':'saber','saben':'saber',
+  // venir
+  'vengo':'venir','vienes':'venir','viene':'venir','venimos':'venir','venís':'venir','vienen':'venir',
+  'vine':'venir','viniste':'venir','vino':'venir','vinimos':'venir','vinisteis':'venir','vinieron':'venir',
+  // hablar
+  'hablo':'hablar','hablas':'hablar','habla':'hablar','hablamos':'hablar','habláis':'hablar','hablan':'hablar',
+  'hablé':'hablar','hablaste':'hablar','habló':'hablar','hablaron':'hablar',
+  // entrar
+  'entro':'entrar','entras':'entrar','entra':'entrar','entramos':'entrar','entráis':'entrar','entran':'entrar',
+  // salir
+  'salgo':'salir','sales':'salir','sale':'salir','salimos':'salir','salís':'salir','salen':'salir',
+  'salí':'salir','saliste':'salir','salió':'salir','salieron':'salir',
+  // quedar
+  'quedo':'quedar','quedas':'quedar','queda':'quedar','quedamos':'quedar','quedáis':'quedar','quedan':'quedar',
+  'quedé':'quedar','quedaste':'quedar','quedó':'quedar','quedaron':'quedar',
+  // haber
+  'he':'haber','has':'haber','ha':'haber','hemos':'haber','habéis':'haber','han':'haber','hay':'haber',
+  // necesitar
+  'necesito':'necesitar','necesitas':'necesitar','necesita':'necesitar','necesitamos':'necesitar','necesitan':'necesitar',
+  // trabajar
+  'trabajo':'trabajar','trabajas':'trabajar','trabaja':'trabajar','trabajamos':'trabajar','trabajan':'trabajar',
+  // vivir
+  'vivo':'vivir','vives':'vivir','vive':'vivir','vivimos':'vivir','vivís':'vivir','viven':'vivir',
+};
+
 function smartDictionaryKey(token){
   if(!token) return null;
-  const k = token.toLowerCase();
+  // Strip leading/trailing punctuation like ¿ ¡ ? ! before lookup
+  const stripped = token.replace(/^[¿¡\s]+|[\s?!]+$/g, '');
+  const k = stripped.toLowerCase();
+  if (!k) return null;
   if (bilingualDictionary[k]) return k;
   const folded = foldAccents(k);
   if (bilingualDictionary[folded]) return folded;
   // Try English plural → singular lemmatization
   const singular = englishSingularize(folded);
   if (singular && bilingualDictionary[singular]) return singular;
+  // Try Spanish verb conjugation → infinitive
+  const inf = ES_VERB_FORMS[k] || ES_VERB_FORMS[folded];
+  if (inf && bilingualDictionary[inf]) return inf;
   return null;
 }
 
@@ -6228,22 +6305,43 @@ function detectLanguageByDict(text){
     const k = smartDictionaryKey(t);
     if (!k) return;
     const entry = bilingualDictionary[k];
-    if (entry && entry.spanish) en++; // English headword has spanish field
-    else if (entry && entry.english) es++;
+    if (entry && entry.spanish) en++;      // English headword has a spanish field
+    else if (entry && entry.english) es++; // Spanish headword has an english field
   });
   if (en>es) return 'en';
   if (es>en) return 'es';
-  return null;
+  // On a tie, look for Spanish-specific characters or words as a tiebreaker
+  if (en>0 || es>0) {
+    // Presence of accented vowels, ñ, or ¿/¡ leans Spanish
+    if (/[áéíóúüñÁÉÍÓÚÜÑ¿¡]/.test(text)) return 'es';
+    // Otherwise lean English
+    return 'en';
+  }
+  // No recognized words at all — try character-set hint
+  if (/[áéíóúüñÁÉÍÓÚÜÑ¿¡]/.test(text)) return 'es';
+  return 'en'; // default to English rather than giving up
 }
 
 function translateToken(tok, dir){
   const lower = tok.toLowerCase();
+  // First try the full bilingual dictionary
   const k = smartDictionaryKey(lower);
-  if (!k) return tok;
-  const entry = bilingualDictionary[k];
-  if (!entry) return tok;
-  if (dir==='en->es' && entry.spanish) return preserveCase(tok, entry.spanish);
-  if (dir==='es->en' && entry.english) return preserveCase(tok, entry.english);
+  if (k) {
+    const entry = bilingualDictionary[k];
+    if (entry) {
+      if (dir==='en->es' && entry.spanish) {
+        const primary = entry.spanish.split('/')[0].trim();
+        return preserveCase(tok, primary);
+      }
+      if (dir==='es->en' && entry.english) {
+        const primary = entry.english.split('/')[0].trim();
+        return preserveCase(tok, primary);
+      }
+    }
+  }
+  // Fallback: translation-only table for common words without full entries
+  const fallback = TRANSLATE_ONLY[dir];
+  if (fallback && fallback[lower]) return preserveCase(tok, fallback[lower]);
   return tok;
 }
 
@@ -6253,13 +6351,95 @@ function preserveCase(src, out){
   return out;
 }
 
+// Translation-only table for very common words that lack full dictionary entries.
+// Used as a fallback in translateToken so sentence translation works even without
+// a full definition card for these words.
+const TRANSLATE_ONLY = {
+  'en->es': {
+    'please':'por favor','the':'el','a':'un','an':'un','is':'es','are':'están',
+    'was':'era','were':'eran','have':'tener','has':'tiene','had':'tenía',
+    'must':'debe','this':'este','that':'ese','these':'estos','those':'esos',
+    'with':'con','from':'de','for':'para','at':'en','by':'por','about':'sobre',
+    'up':'arriba','out':'fuera','in':'en','on':'en','of':'de','and':'y',
+    'or':'o','but':'pero','not':'no','all':'todo','some':'algunos','any':'algún',
+    'its':'su','our':'nuestro','their':'su','him':'él','her':'ella','us':'nos',
+    'them':'ellos','it':'ello','here':'aquí','there':'allí','now':'ahora',
+    'then':'entonces','also':'también','very':'muy','so':'así','just':'solo',
+    'only':'solo','still':'todavía','already':'ya','never':'nunca',
+    'always':'siempre','again':'otra vez','back':'atrás','more':'más',
+    'less':'menos','most':'más','too':'también','as':'como','than':'que',
+    'if':'si','when':'cuando','while':'mientras','because':'porque',
+    'before':'antes','after':'después','near':'cerca','far':'lejos',
+    'between':'entre','into':'en','through':'a través de','during':'durante',
+    'without':'sin','around':'alrededor',
+  },
+  'es->en': {
+    'por':'for','favor':'please','el':'the','la':'the','los':'the','las':'the',
+    'un':'a','una':'a','con':'with','sin':'without','sobre':'about',
+    'desde':'from','hasta':'until','entre':'between','durante':'during',
+    'porque':'because','pero':'but','también':'also','muy':'very','más':'more',
+    'menos':'less','ya':'already','nunca':'never','siempre':'always',
+    'ahora':'now','aquí':'here','allí':'there','antes':'before','después':'after',
+    'cerca':'near','lejos':'far',
+  }
+};
+
+// Multi-word English→Spanish phrase substitutions applied before token-by-token translation.
+// These handle common combos that token-level lookup can't get right on its own.
+const EN_ES_PHRASES = [
+  // Modal + pronoun combos
+  [/\bcan you\b/gi,       'puedes'],
+  [/\bcould you\b/gi,     'podrías'],
+  [/\bdo you\b/gi,        '¿tú'],
+  [/\bare you\b/gi,       'estás'],
+  [/\bwould you\b/gi,     'te gustaría'],
+  // "to the" contractions
+  [/\bto the\b/gi,        'al'],
+  // "how to" → "cómo"
+  [/\bhow to\b/gi,        'cómo'],
+  // "get to" → "llegar a"
+  [/\bget to\b/gi,        'llegar a'],
+  // common auxiliaries that map poorly token-by-token
+  [/\bi am\b/gi,          'yo estoy'],
+  [/\bwe are\b/gi,        'nosotros estamos'],
+  [/\bthey are\b/gi,      'ellos están'],
+  [/\bit is\b/gi,         'es'],
+  [/\bthere is\b/gi,      'hay'],
+  [/\bthere are\b/gi,     'hay'],
+  [/\bI can\b/gi,         'puedo'],
+  [/\bhe can\b/gi,        'él puede'],
+  [/\bshe can\b/gi,       'ella puede'],
+  [/\bwe can\b/gi,        'podemos'],
+  [/\bthey can\b/gi,      'ellos pueden'],
+];
+
+// Multi-word Spanish→English phrase substitutions
+const ES_EN_PHRASES = [
+  [/\bpuedes\b/gi,           'you can'],
+  [/\bpuedo\b/gi,            'I can'],
+  [/\bpodemos\b/gi,          'we can'],
+  [/\bcómo llegar\b/gi,      'how to get to'],
+  [/\bhay\b/gi,              'there is/are'],
+];
+
+function applyPhraseSubs(text, dir){
+  const subs = dir === 'en->es' ? EN_ES_PHRASES : ES_EN_PHRASES;
+  let out = text;
+  for (const [re, replacement] of subs) {
+    out = out.replace(re, replacement);
+  }
+  return out;
+}
+
 function autoTranslateSentence(text){
-  if (!text || text.split(/\s+/).length < 2) return null;
+  if (!text || !text.trim()) return null;
   const lang = detectLanguageByDict(text);
   if (!lang) return null;
   const dir = lang==='en' ? 'en->es' : 'es->en';
-  // Tokenize preserving punctuation
-  const parts = text.match(/[\p{L}ÁÉÍÓÚÜÑáéíóúüñ']+|[^\p{L}ÁÉÍÓÚÜÑáéíóúüñ']+/gu) || [text];
+  // Apply multi-word phrase substitutions first
+  const phraseApplied = applyPhraseSubs(text, dir);
+  // Then tokenize and translate remaining words
+  const parts = phraseApplied.match(/[\p{L}ÁÉÍÓÚÜÑáéíóúüñ']+|[^\p{L}ÁÉÍÓÚÜÑáéíóúüñ']+/gu) || [phraseApplied];
   const out = parts.map(p => /[\p{L}ÁÉÍÓÚÜÑáéíóúüñ']+/u.test(p) ? translateToken(p, dir) : p).join('');
   return { dir, source: lang, translated: out };
 }
