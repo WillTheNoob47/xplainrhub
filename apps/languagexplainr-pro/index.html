@@ -456,11 +456,11 @@ function setUILanguage(dir) {
 
   // API key label
   const keyLabel = document.querySelector('.key-label');
-  if (keyLabel) keyLabel.textContent = dir === 'es-en' ? 'CLAVE API DE ANTHROPIC' : 'ANTHROPIC API KEY';
+  if (keyLabel) keyLabel.textContent = dir === 'es-en' ? 'CONTRASEÑA DE LA COMUNIDAD / COMMUNITY PASSWORD' : 'COMMUNITY PASSWORD / CONTRASEÑA DE LA COMUNIDAD';
   const keyNote = document.querySelector('.key-note');
-  if (keyNote) keyNote.textContent = dir === 'es-en' 
-    ? 'Su clave permanece solo en esta pestana del navegador -- nunca se almacena, nunca se envia a ningun lugar excepto a la API de Anthropic.'
-    : "Your key stays in this browser tab only -- never stored, never sent anywhere except Anthropic's API.";
+  if (keyNote) keyNote.textContent = dir === 'es-en'
+    ? 'Ingrese la contraseña del área de miembros de pago de AI Health Plus. Solo permanece en esta pestaña del navegador.'
+    : 'Enter the password from your AI Health Plus Paid members area. It stays in this browser tab only.';
 }
 
 function setDirection(dir) {
@@ -951,4 +951,5 @@ async function handleFileUpload(input) {
 </script>
 </body>
 </html>
+
 
