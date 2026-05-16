@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LanguageXplainr Pro — XplainrHub</title>
+<title>LanguageXplainr Pro — XplainrHub | Spanish · French · German</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
@@ -118,84 +118,63 @@
 </nav>
 
 <header>
-  <div class="logo">LanguageXplainr <span style="font-style:italic;color:var(--text);font-weight:500;">Pro</span><span class="subject-tag">ENGLISH · MEXICAN SPANISH</span></div>
+  <div class="logo">LanguageXplainr <span style="font-style:italic;color:var(--text);font-weight:500;">Pro</span><span class="subject-tag">SPANISH · FRENCH · GERMAN</span></div>
   <div class="header-right">PRO &nbsp;·&nbsp; POWERED BY CLAUDE</div>
 </header>
 
 <main>
-  <p class="tagline">Spanish to English or English to Spanish — pronunciations, idioms,<br>Mexican usage, and cultural context explained at your level.<br><span style="font-size:0.85em;color:var(--text-faint);font-style:italic;">Español a inglés o inglés a español — pronunciaciones, modismos, uso mexicano y contexto cultural explicados a su nivel.</span></p>
+  <p class="tagline" id="tagline">Translate and understand Spanish, French, or German — pronunciations, idioms,<br>cultural context, and usage explained at your level.</p>
 
-  <div class="direction-row">
-    <button class="dir-btn active" id="btn-es-en" onclick="setDirection('es-en')">
-      🇲🇽 Spanish &rarr; English
-    </button>
-    <span class="dir-arrow">&harr;</span>
-    <button class="dir-btn" id="btn-en-es" onclick="setDirection('en-es')">
-      English &rarr; Spanish 🇲🇽
-    </button>
+  <div class="direction-row" style="max-width:640px;flex-direction:column;gap:10px;padding:12px;">
+    <div style="display:flex;align-items:center;gap:10px;width:100%;flex-wrap:wrap;">
+      <span style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.08em;color:var(--text-faint);white-space:nowrap;">FROM</span>
+      <select id="lang-from" onchange="updatePairFromSelects()" style="flex:1;min-width:140px;padding:9px 12px;border:1.5px solid var(--border-strong);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;color:var(--text);background:var(--surface);outline:none;cursor:pointer;">
+        <option value="en">🇺🇸 English</option>
+        <option value="es">🇲🇽 Spanish (Mexican)</option>
+        <option value="fr">🇫🇷 French</option>
+        <option value="de">🇩🇪 German</option>
+      </select>
+      <button onclick="swapLanguages()" style="padding:8px 12px;border:1.5px solid var(--border-strong);border-radius:8px;background:var(--surface);cursor:pointer;font-size:16px;color:var(--text-muted);transition:all 0.15s;" title="Swap languages">⇄</button>
+      <span style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.08em;color:var(--text-faint);white-space:nowrap;">TO</span>
+      <select id="lang-to" onchange="updatePairFromSelects()" style="flex:1;min-width:140px;padding:9px 12px;border:1.5px solid var(--border-strong);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;color:var(--text);background:var(--surface);outline:none;cursor:pointer;">
+        <option value="en">🇺🇸 English</option>
+        <option value="es" selected>🇲🇽 Spanish (Mexican)</option>
+        <option value="fr">🇫🇷 French</option>
+        <option value="de">🇩🇪 German</option>
+      </select>
+    </div>
+    <div id="pair-label" style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.06em;color:var(--accent-dark);text-align:center;padding:2px 0 0;"></div>
   </div>
 
   <div class="key-section">
-    <span class="key-label">COMMUNITY PASSWORD / CONTRASEÑA DE LA COMUNIDAD</span>
-    <input type="password" id="api-key-input" placeholder="Enter your AI Health Plus Paid members password… / Ingrese su contraseña de miembro de pago…" autocomplete="off" />
-    <span class="key-hint">Enter the password from your AI Health Plus Paid members area. It stays in this browser tab only.<br><em>Ingrese la contraseña del área de miembros de pago de AI Health Plus. Solo permanece en esta pestaña del navegador.</em></span>
+    <span class="key-label" id="key-label">COMMUNITY PASSWORD</span>
+    <input type="password" id="api-key-input" placeholder="Enter your AI Health Plus Paid members password…" autocomplete="off" />
+    <span class="key-hint" id="key-hint">Enter the password from your AI Health Plus Paid members area. It stays in this browser tab only.</span>
   </div>
 
   <div class="card">
     <div class="section-label" id="input-label">Your Spanish text</div>
 
-    <div class="sample-btns" id="sample-btns-es-en">
-      <button class="sample-btn" onclick="loadSample('letter')" style="display:flex;flex-direction:column;align-items:center;line-height:1.3;">
-        <span>See Sample Spanish Letter</span>
-        <em style="font-size:11px;font-weight:400;">Ver Carta de Muestra en Español</em>
-      </button>
-      <button class="sample-btn" onclick="loadSample('mixed')" style="display:flex;flex-direction:column;align-items:center;line-height:1.3;">
-        <span>See Mixed English/Spanish Sample</span>
-        <em style="font-size:11px;font-weight:400;">Ver Muestra Mixta Inglés/Español</em>
-      </button>
-      <button class="sample-btn" onclick="clearInput()" style="display:flex;flex-direction:column;align-items:center;line-height:1.3;">
-        <span>Clear</span>
-        <em style="font-size:11px;font-weight:400;">Borrar</em>
-      </button>
+    <div class="sample-btns" id="sample-btns">
+      <button class="sample-btn" id="sample-btn-1" onclick="loadSample(1)">Sample 1</button>
+      <button class="sample-btn" id="sample-btn-2" onclick="loadSample(2)">Sample 2</button>
+      <button class="sample-btn" onclick="clearInput()">Clear</button>
       <button class="upload-btn" onclick="triggerUpload()">&#128206; Upload PDF or TXT</button>
       <input type="file" id="file-input" accept=".pdf,.txt,.rtf" onchange="handleFileUpload(this)">
       <span class="upload-status" id="upload-status"></span>
-      <p style="font-size:13px;color:#161612;margin:6px 0 0;font-weight:500;">Anthropic Corp., the AI company that processes this information, does not use your data for AI training.<br><em style="font-weight:400;color:#524e45;">Anthropic Corp. no usa sus datos para entrenar IA.</em></p>
-    </div>
-    <div class="sample-btns" id="sample-btns-en-es" style="display:none;">
-      <button class="sample-btn" onclick="loadSample('travel')" style="display:flex;flex-direction:column;align-items:center;line-height:1.3;">
-        <span>See Sample Travel Phrases</span>
-        <em style="font-size:11px;font-weight:400;">Ver Frases de Viaje de Muestra</em>
-      </button>
-      <button class="sample-btn" onclick="loadSample('workplace')" style="display:flex;flex-direction:column;align-items:center;line-height:1.3;">
-        <span>See Sample Workplace Scenario</span>
-        <em style="font-size:11px;font-weight:400;">Ver Escenario Laboral de Muestra</em>
-      </button>
-      <button class="sample-btn" onclick="clearInput()" style="display:flex;flex-direction:column;align-items:center;line-height:1.3;">
-        <span>Clear</span>
-        <em style="font-size:11px;font-weight:400;">Borrar</em>
-      </button>
-      <button class="upload-btn" onclick="triggerUpload()">&#128206; Upload PDF or TXT</button>
-      <input type="file" id="file-input" accept=".pdf,.txt,.rtf" onchange="handleFileUpload(this)">
-      <span class="upload-status" id="upload-status"></span>
-      <p style="font-size:13px;color:#161612;margin:6px 0 0;font-weight:500;">Anthropic Corp., the AI company that processes this information, does not use your data for AI training.<br><em style="font-weight:400;color:#524e45;">Anthropic Corp. no usa sus datos para entrenar IA.</em></p>
+      <p id="privacy-note" style="font-size:13px;color:#161612;margin:6px 0 0;font-weight:500;">Anthropic Corp., the AI company that processes this information, does not use your data for AI training.</p>
     </div>
 
     <textarea id="input-area" placeholder="Paste Spanish text, or mixed English/Spanish, to get it explained in plain English… / Pegue texto en español, o inglés mezclado con español, para obtener una explicación en inglés sencillo…"></textarea>
-    <p style="font-size:12px;color:#8a8478;margin:4px 0 0;font-style:italic;">You can also drag and drop a PDF or TXT file directly onto the text area above. / También puede arrastrar y soltar un archivo PDF o TXT directamente sobre el área de texto.</p>
+    <p id="drag-note" style="font-size:12px;color:#8a8478;margin:4px 0 0;font-style:italic;">You can also drag and drop a PDF or TXT file directly onto the text area above.</p>
 
     <div class="controls">
       <div class="depth-group">
-        <span class="depth-label">My Level / <em style="font-weight:400;font-style:italic;">Mi Nivel</em></span>
-        <select id="depth-select-es-en">
-          <option value="beginner">Beginner — translate and explain everything / Principiante — traduzca y explique todo</option>
-          <option value="intermediate" selected>Intermediate — explain nuance and idioms / Intermedio — explique matices y modismos</option>
-          <option value="advanced">Advanced — only idioms and cultural context / Avanzado — solo modismos y contexto cultural</option>
-        </select>
-        <select id="depth-select-en-es" style="display:none;">
-          <option value="traveler">Traveler — give me the phrase and pronunciation / Viajero — dame la frase y pronunciación</option>
-          <option value="learner" selected>Learner — explain grammar and usage too / Estudiante — explica gramática y uso también</option>
-          <option value="fluency">Fluency-building — nuance, register, natural phrasing / Fluidez — matices, registro, frases naturales</option>
+        <span class="depth-label">User Level</span>
+        <select id="depth-select">
+          <option value="beginner">Beginner — I know almost no ___</option>
+          <option value="intermediate" selected>Intermediate — I know some ___</option>
+          <option value="advanced">Advanced — I am fluent in ___</option>
         </select>
       </div>
       <button class="go-btn" id="go-btn" onclick="runXplainr()">Explain it</button>
@@ -262,254 +241,508 @@
 
   </div>
 
-  <div style="margin-top:1.5rem;padding:0.75rem 1rem;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;font-size:14px;color:#0c4a6e;line-height:1.6;text-align:center;">
-    This app is from <strong>AI Health Plus</strong> — a free English/Spanish health community on Skool.com.
+  <div id="promo-box" style="margin-top:1.5rem;padding:0.75rem 1rem;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;font-size:14px;color:#0c4a6e;line-height:1.6;text-align:center;">
+    This app is from <strong>AI Health Plus</strong> — a community on Skool.com.
     <br><a href="https://www.skool.com/ai-done-for-you-7410/about" target="_blank" rel="noopener" style="color:#2525C9;font-weight:700;text-decoration:underline;">Click here to join</a>
-    <br><em style="font-size:13px;color:#0369a1;">Esta app es de <strong>AI Health Plus</strong> — una comunidad de salud en inglés y español en Skool.com. <a href="https://www.skool.com/ai-done-for-you-7410/about" target="_blank" rel="noopener" style="color:#2525C9;font-weight:700;text-decoration:underline;">Haz clic aquí para unirte.</a></em>
   </div>
 
   <footer>LanguageXplainr Pro &nbsp;&middot;&nbsp; XplainrHub &nbsp;&middot;&nbsp; powered by Claude</footer>
 </main>
 
 <script>
-let currentDirection = 'es-en';
+// ── Language pair state ──────────────────────────────────────────────
+let currentDirection = 'en-es'; // default: English → Spanish
 
-const SAMPLES = {
-  letter: `Querida mama,\n\nTe escribo desde la Ciudad de Mexico donde llevo ya tres semanas. La ciudad me tiene enamorado - cada colonia tiene su propio sabor. Ayer me perdi por las callejuelas de Coyoacan y me tope con un tianguis precioso lleno de artesanias.\n\nHe conocido a unos cuates muy majos que me han ensenado expresiones que no vienen en ningun libro de texto. Por ejemplo, dicen "esta padrisimo" cuando algo les gusta muchisimo, o "Que chido!" para decir que algo es genial. Tambien usan mucho "guey" entre amigos, aunque hay que tener cuidado con quien lo usas.\n\nUn abrazo fuerte,\nCarlos`,
-  mixed: `Hola, te escribo porque recibi un email del doctor que no entiendo bien. Dice que mis "lab results" salieron con algunos valores "out of range" y que necesito hacer un "follow-up appointment" lo antes posible. Tambien menciona algo de mi "insurance coverage" y que debo llamar al "billing department."\n\nMi jefa tambien me mando un mensaje diciendo que el proyecto tiene un nuevo "deadline" y que necesitamos una "conference call" el viernes. No se si puedo ir porque tengo que llevar a mi mama al "specialist" ese dia.\n\nPor favor ayudame a entender estas palabras en ingles -- no estoy segura de lo que significan en este contexto.`,
-  travel: `I need to ask for directions to the nearest pharmacy. I also want to order food at a restaurant - ask what the daily special is, say I have a shellfish allergy, and ask for the check when I'm done. I also need to apologize politely if I bump into someone on the street, and ask someone to please speak more slowly because I'm still learning Spanish.`,
-  workplace: `I need to navigate my first week at a new job in Mexico City. I need to introduce myself professionally to my new team, ask my manager for clarification on a project deadline, politely decline an invitation to drinks after work without offending anyone, and write a brief professional email saying I will be five minutes late to a meeting.`
-};
+const LANG_NAMES = { en: 'English', es: 'Spanish', fr: 'French', de: 'German' };
+const LANG_FLAGS = { en: '🇺🇸', es: '🇲🇽', fr: '🇫🇷', de: '🇩🇪' };
 
-function loadSample(type) { document.getElementById('input-area').value = SAMPLES[type] || ''; }
-function clearInput() { conversationHistory = []; document.getElementById('input-area').value = ''; document.getElementById('output-wrap').classList.remove('visible'); document.getElementById('error-msg').classList.remove('visible'); const st = document.getElementById('upload-status'); if (st) st.textContent = ''; const ob = document.getElementById('output-body'); if (ob) ob.innerHTML = ''; const sb = document.getElementById('summary-body'); if (sb) sb.innerHTML = ''; const sw = document.getElementById('summary-wrap'); if (sw) sw.style.display = 'none'; const discEn = document.getElementById('lang-medical-disclaimer'); if (discEn) discEn.style.display = 'none'; const discEs = document.getElementById('lang-medical-disclaimer-es'); if (discEs) discEs.style.display = 'none'; }
-
-// UI text for each direction
-const UI_TEXT = {
-  'es-en': {
-    inputLabel:     'Su texto en espanol',
-    goBtn:          'Explicar',
-    clearBtn:       'Borrar',
-    sampleLetter:   'Probar una carta en espanol',
-    sampleMixed:    'Probar ingles y espanol mezclado',
-    levels: {
-      beginner:     'Principiante -- traducir y explicar todo',
-      intermediate: 'Intermedio -- explicar matices y modismos',
-      advanced:     'Avanzado -- solo modismos y contexto cultural',
-    },
-    uploadBtn:      '&#128206; Subir PDF o TXT',
-    depthLabel:     'Mi nivel',
-    newConv:        'Nueva conversacion',
-    copyOrig:       'Copiar original',
-    copyResult:     'Copiar resultado',
-    share:          'Compartir',
-    summarize:      '+ Resumir',
-    resultLabel:    'Resultado anotado',
-    summaryLabel:   'Resumen',
-    copySummary:    'Copiar resumen',
-    downloadBtn:    'Descargar &#9662;',
-    dlTxt:          'Texto simple (.txt)',
-    dlHtml:         'Pagina con formato (.html)',
-    dlPdf:          'Imprimir / Guardar como PDF',
-    dlRtf:          'Documento editable (.rtf)',
-    dlDocx:         'Documento Word (.docx)',
-    loading:        'Procesando su texto...',
-    loadingSummary: 'Generando resumen...',
-    privacyNote:    'Anthropic Corp., la empresa de IA que procesa esta informacion, no usa sus datos para entrenar la IA.',
-    uploadStatus:   '',
-  },
-  'en-es': {
-    inputLabel:     'Your English text',
-    goBtn:          'Explain it',
-    clearBtn:       'Clear',
-    sampleLetter:   'Try a Spanish letter',
-    sampleMixed:    'Try mixed English/Spanish',
-    levels: null,
-    uploadBtn:      '&#128206; Upload PDF or TXT',
-    depthLabel:     'My Level',
-    newConv:        'New conversation',
-    copyOrig:       'Copy original',
-    copyResult:     'Copy result',
-    share:          'Share',
-    summarize:      '+ Summarize',
-    resultLabel:    'Annotated result',
-    summaryLabel:   'Summary',
-    copySummary:    'Copy summary',
-    downloadBtn:    'Download &#9662;',
-    dlTxt:          'Plain text (.txt)',
-    dlHtml:         'Formatted page (.html)',
-    dlPdf:          'Print / Save as PDF',
-    dlRtf:          'Editable document (.rtf)',
-    dlDocx:         'Word document (.docx)',
-    loading:        'Annotating your text...',
-    loadingSummary: 'Generating summary...',
-    privacyNote:    'Anthropic Corp., the AI company that processes this information, does not use your data for AI training.',
-    uploadStatus:   '',
-  }
-};
-
-function setUILanguage(dir) {
-  const t = UI_TEXT[dir];
-  const set = (id, prop, val) => { const el = document.getElementById(id); if (el) el[prop] = val; };
-  const setHTML = (id, val) => { const el = document.getElementById(id); if (el) el.innerHTML = val; };
-  const setAll = (sel, prop, val) => { document.querySelectorAll(sel).forEach(el => el[prop] = val); };
-
-  set('input-label', 'textContent', t.inputLabel);
-  set('go-btn', 'textContent', t.goBtn);
-  set('loading', 'innerHTML', '<div class="dots"><span></span><span></span><span></span></div>' + t.loading);
-
-  // Depth label
-  document.querySelectorAll('.depth-label').forEach(el => el.textContent = t.depthLabel);
-
-  // Output header buttons
-  const btnMap = {
-    'New conversation': t.newConv,
-    'Nueva conversacion': t.newConv,
-    'Copy original': t.copyOrig,
-    'Copiar original': t.copyOrig,
-    'Copy result': t.copyResult,
-    'Copiar resultado': t.copyResult,
-    'Share': t.share,
-    'Compartir': t.share,
-  };
-  document.querySelectorAll('.copy-btn').forEach(btn => {
-    const match = btnMap[btn.textContent.trim()];
-    if (match) btn.textContent = match;
-  });
-
-  // Summary button
-  const summaryBtn = document.getElementById('summary-btn');
-  if (summaryBtn && (summaryBtn.textContent === '+ Summarize' || summaryBtn.textContent === '+ Resumir')) {
-    summaryBtn.textContent = t.summarize;
-  }
-
-  // Section labels
-  document.querySelectorAll('.section-label').forEach(el => {
-    if (el.textContent.trim() === 'Annotated result' || el.textContent.trim() === 'Resultado anotado')
-      el.textContent = t.resultLabel;
-    if (el.textContent.trim() === 'Summary' || el.textContent.trim() === 'Resumen')
-      el.textContent = t.summaryLabel;
-  });
-
-  // Copy summary button
-  document.querySelectorAll('.copy-btn').forEach(btn => {
-    if (btn.textContent === 'Copy summary' || btn.textContent === 'Copiar resumen')
-      btn.textContent = t.copySummary;
-  });
-
-  // Download menu
-  const dlBtn = document.querySelector('.dl-btn');
-  if (dlBtn) dlBtn.innerHTML = t.downloadBtn;
-  document.querySelectorAll('.download-item').forEach(btn => {
-    const txt = btn.textContent.trim();
-    if (txt.includes('.txt')) btn.textContent = t.dlTxt;
-    else if (txt.includes('.html')) btn.textContent = t.dlHtml;
-    else if (txt.includes('PDF') || txt.includes('PDF')) btn.textContent = t.dlPdf;
-    else if (txt.includes('.rtf')) btn.textContent = t.dlRtf;
-    else if (txt.includes('.docx') || txt.includes('.doc')) btn.textContent = t.dlDocx;
-  });
-
-  // Upload buttons
-  document.querySelectorAll('.upload-btn').forEach(btn => btn.innerHTML = t.uploadBtn);
-
-  // Privacy notes
-  document.querySelectorAll('p').forEach(p => {
-    if (p.textContent.includes('Anthropic Corp')) {
-      p.textContent = t.privacyNote;
-    }
-  });
-
-  // Direction button labels
-  const btnEsEn = document.getElementById('btn-es-en');
-  const btnEnEs = document.getElementById('btn-en-es');
-  if (btnEsEn) btnEsEn.innerHTML = dir === 'es-en'
-    ? '&#127474;&#127485; Espa&ntilde;ol &rarr; Ingl&eacute;s'
-    : '&#127474;&#127485; Spanish &rarr; English';
-  if (btnEnEs) btnEnEs.innerHTML = dir === 'es-en'
-    ? 'Ingl&eacute;s &rarr; Espa&ntilde;ol &#127474;&#127485;'
-    : 'English &rarr; Spanish &#127474;&#127485;';
-
-  // Clear buttons and sample buttons in sample-btns
-  document.querySelectorAll('.sample-btn').forEach(btn => {
-    const txt = btn.textContent.trim();
-    if (txt === 'Clear' || txt === 'Borrar') btn.textContent = t.clearBtn;
-    if (txt === 'Try a Spanish letter' || txt === 'Probar una carta en espanol') btn.textContent = t.sampleLetter;
-    if (txt === 'Try mixed English/Spanish' || txt === 'Probar ingles y espanol mezclado') btn.textContent = t.sampleMixed;
-  });
-
-  // Translate ES-EN select options
-  const selEsEn = document.getElementById('depth-select-es-en');
-  if (selEsEn && t.levels) {
-    Array.from(selEsEn.options).forEach(opt => {
-      if (t.levels[opt.value]) opt.text = t.levels[opt.value];
-    });
-  }
-
-  // Summary loading text
-  const sumLoading = document.getElementById('summary-loading');
-  if (sumLoading) {
-    const txt = sumLoading.querySelector('div + *') || sumLoading.lastChild;
-    if (sumLoading.innerHTML.includes('summary') || sumLoading.innerHTML.includes('resumen')) {
-      sumLoading.innerHTML = '<div class="dots"><span></span><span></span><span></span></div>' + t.loadingSummary;
-    }
-  }
-
-  // API key label
-  const keyLabel = document.querySelector('.key-label');
-  if (keyLabel) keyLabel.textContent = dir === 'es-en' ? 'CONTRASEÑA DE LA COMUNIDAD / COMMUNITY PASSWORD' : 'COMMUNITY PASSWORD / CONTRASEÑA DE LA COMUNIDAD';
-  const keyNote = document.querySelector('.key-note');
-  if (keyNote) keyNote.textContent = dir === 'es-en'
-    ? 'Ingrese la contraseña del área de miembros de pago de AI Health Plus. Solo permanece en esta pestaña del navegador.'
-    : 'Enter the password from your AI Health Plus Paid members area. It stays in this browser tab only.';
+function getCurrentPair() {
+  const from = document.getElementById('lang-from').value;
+  const to   = document.getElementById('lang-to').value;
+  return { from, to, key: from + '-' + to };
 }
 
-function setDirection(dir) {
-  currentDirection = dir;
-  const isEsEn = dir === 'es-en';
-  document.getElementById('btn-es-en').classList.toggle('active', isEsEn);
-  document.getElementById('btn-en-es').classList.toggle('active', !isEsEn);
-  document.getElementById('sample-btns-es-en').style.display = isEsEn ? 'flex' : 'none';
-  document.getElementById('sample-btns-en-es').style.display = isEsEn ? 'none' : 'flex';
-  document.getElementById('depth-select-es-en').style.display = isEsEn ? '' : 'none';
-  document.getElementById('depth-select-en-es').style.display = isEsEn ? 'none' : '';
-  document.getElementById('input-label').textContent = isEsEn ? 'Su texto en espanol' : 'Your English text';
-  const ta = document.getElementById('input-area');
-  ta.value = '';
-  ta.placeholder = isEsEn
-    ? 'Pegue su texto en espanol, o ingles mezclado con espanol, para obtener una explicacion en ingles...'
-    : 'Describe what you need to say, or paste English text to translate into natural Mexican Spanish...';
+function updatePairFromSelects() {
+  const { from, to, key } = getCurrentPair();
+  // Prevent same-language selection
+  if (from === to) {
+    const toSel = document.getElementById('lang-to');
+    const opts = Array.from(toSel.options).filter(o => o.value !== from);
+    if (opts.length) toSel.value = opts[0].value;
+  }
+  const { from: f, to: t, key: k } = getCurrentPair();
+  currentDirection = k;
+  updateDepthLabels();
+  updateSampleButtons();
+  updatePlaceholder();
+  updatePairLabel();
+  document.getElementById('input-area').value = '';
   document.getElementById('output-wrap').classList.remove('visible');
   document.getElementById('error-msg').classList.remove('visible');
-  setUILanguage(dir);
 }
 
-function copyOriginal(event) {
-  const text = document.getElementById('input-area').value;
-  if (!text.trim()) return;
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = event.target; btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy original', 1800);
+function swapLanguages() {
+  const fromSel = document.getElementById('lang-from');
+  const toSel   = document.getElementById('lang-to');
+  const tmp = fromSel.value;
+  fromSel.value = toSel.value;
+  toSel.value = tmp;
+  updatePairFromSelects();
+}
+
+function updatePairLabel() {
+  const { from, to } = getCurrentPair();
+  const lbl = document.getElementById('pair-label');
+  if (lbl) lbl.textContent = LANG_FLAGS[from] + ' ' + LANG_NAMES[from] + ' → ' + LANG_FLAGS[to] + ' ' + LANG_NAMES[to];
+}
+
+// Localized UI strings per source language
+const UI_LOCALE = {
+  en: {
+    depthLabel:    'User Level',
+    goBtn:         'Explain it',
+    clearBtn:      'Clear',
+    uploadBtn:     '&#128206; Upload PDF or TXT',
+    tagline:       'Translate and understand Spanish, French, or German — pronunciations, idioms,<br>cultural context, and usage explained at your level.',
+    dragNote:      'You can also drag and drop a PDF or TXT file onto the text area above.',
+    privacyNote:   'Anthropic Corp., the AI company that processes this information, does not use your data for AI training.',
+    loading:       'Annotating your text\u2026',
+    loadingSummary:'Generating summary\u2026',
+    keyLabel:      'COMMUNITY PASSWORD',
+    keyPlaceholder:'Enter your AI Health Plus Paid members password\u2026',
+    keyHint:       'Enter the password from your AI Health Plus Paid members area. It stays in this browser tab only.',
+    promoBox:      'This app is from <strong>AI Health Plus</strong> — a <strong>free</strong> community on Skool.com.<br><a href="https://www.skool.com/ai-done-for-you-7410/about" target="_blank" rel="noopener" style="color:#2525C9;font-weight:700;text-decoration:underline;">Click here to join</a>',
+  },
+  es: {
+    depthLabel:    'Nivel del usuario',
+    goBtn:         'Explicar',
+    clearBtn:      'Borrar',
+    uploadBtn:     '&#128206; Subir PDF o TXT',
+    tagline:       'Traduzca y comprenda inglés, francés o alemán — pronunciaciones, modismos,<br>contexto cultural y uso explicados a su nivel.',
+    dragNote:      'También puede arrastrar y soltar un archivo PDF o TXT directamente sobre el área de texto.',
+    privacyNote:   'Anthropic Corp., la empresa de IA que procesa esta información, no usa sus datos para entrenar la IA.',
+    loading:       'Procesando su texto\u2026',
+    loadingSummary:'Generando resumen\u2026',
+    keyLabel:      'CONTRASEÑA DE LA COMUNIDAD',
+    keyPlaceholder:'Ingrese su contraseña de miembro de pago de AI Health Plus\u2026',
+    keyHint:       'Ingrese la contraseña del área de miembros de pago de AI Health Plus. Solo permanece en esta pestaña del navegador.',
+    promoBox:      'Esta app es de <strong>AI Health Plus</strong> — una comunidad <strong>gratuita</strong> en Skool.com.<br><a href="https://www.skool.com/ai-done-for-you-7410/about" target="_blank" rel="noopener" style="color:#2525C9;font-weight:700;text-decoration:underline;">Haz clic aquí para unirte</a>',
+  },
+  fr: {
+    depthLabel:    'Niveau de l\'utilisateur',
+    goBtn:         'Expliquer',
+    clearBtn:      'Effacer',
+    uploadBtn:     '&#128206; Télécharger PDF ou TXT',
+    tagline:       'Traduisez et comprenez l\'espagnol, l\'anglais ou l\'allemand — prononciations, expressions,<br>contexte culturel et usage expliqués à votre niveau.',
+    dragNote:      'Vous pouvez aussi glisser-déposer un fichier PDF ou TXT directement sur la zone de texte.',
+    privacyNote:   'Anthropic Corp., la société d\'IA qui traite ces informations, n\'utilise pas vos données pour entraîner l\'IA.',
+    loading:       'Annotation de votre texte\u2026',
+    loadingSummary:'Génération du résumé\u2026',
+    keyLabel:      'MOT DE PASSE COMMUNAUTÉ',
+    keyPlaceholder:'Entrez votre mot de passe membre payant AI Health Plus\u2026',
+    keyHint:       'Entrez le mot de passe de votre espace membres payants AI Health Plus. Il reste uniquement dans cet onglet.',
+    promoBox:      'Cette application est d\'<strong>AI Health Plus</strong> — une communauté <strong>gratuite</strong> sur Skool.com.<br><a href="https://www.skool.com/ai-done-for-you-7410/about" target="_blank" rel="noopener" style="color:#2525C9;font-weight:700;text-decoration:underline;">Cliquez ici pour rejoindre</a>',
+  },
+  de: {
+    depthLabel:    'Benutzerebene',
+    goBtn:         'Erklären',
+    clearBtn:      'Löschen',
+    uploadBtn:     '&#128206; PDF oder TXT hochladen',
+    tagline:       'Übersetzen und verstehen Sie Spanisch, Englisch oder Französisch — Aussprache, Redewendungen,<br>kultureller Kontext und Sprachgebrauch auf Ihrem Niveau erklärt.',
+    dragNote:      'Sie können auch eine PDF- oder TXT-Datei direkt auf das Textfeld ziehen und ablegen.',
+    privacyNote:   'Anthropic Corp., das KI-Unternehmen, das diese Informationen verarbeitet, verwendet Ihre Daten nicht für das Training von KI.',
+    loading:       'Text wird kommentiert\u2026',
+    loadingSummary:'Zusammenfassung wird erstellt\u2026',
+    keyLabel:      'GEMEINSCHAFTS-PASSWORT',
+    keyPlaceholder:'Geben Sie Ihr AI Health Plus Mitglieder-Passwort ein\u2026',
+    keyHint:       'Geben Sie das Passwort aus Ihrem AI Health Plus Mitgliederbereich ein. Es bleibt nur in diesem Browser-Tab.',
+    promoBox:      'Diese App stammt von <strong>AI Health Plus</strong> — einer <strong>kostenlosen</strong> Community auf Skool.com.<br><a href="https://www.skool.com/ai-done-for-you-7410/about" target="_blank" rel="noopener" style="color:#2525C9;font-weight:700;text-decoration:underline;">Hier klicken zum Beitreten</a>',
+  }
+};
+
+// Localized depth option text — blank fills with target language name
+const DEPTH_LOCALE = {
+  en: { b: 'Beginner — I know almost no', i: 'Intermediate — I know some', a: 'Advanced — I am fluent in' },
+  es: { b: 'Principiante — casi no sé', i: 'Intermedio — sé algo de', a: 'Avanzado — hablo con fluidez' },
+  fr: { b: 'Débutant — je ne connais presque pas le', i: 'Intermédiaire — je connais un peu le', a: 'Avancé — je parle couramment le' },
+  de: { b: 'Anfänger — ich kenne kaum', i: 'Mittelstufe — ich kenne etwas', a: 'Fortgeschritten — ich spreche fließend' },
+};
+
+// Target language name in source language
+const TARGET_NAME_IN_LANG = {
+  // from-to: name of "to" in "from" language
+  'en-es': 'Spanish', 'en-fr': 'French',   'en-de': 'German',
+  'es-en': 'inglés',  'es-fr': 'francés',  'es-de': 'alemán',
+  'fr-en': 'anglais', 'fr-es': 'espagnol', 'fr-de': 'allemand',
+  'de-en': 'Englisch','de-es': 'Spanisch', 'de-fr': 'Französisch',
+};
+
+function updateDepthLabels() {
+  const { from, to, key } = getCurrentPair();
+  const targetName = TARGET_NAME_IN_LANG[key] || LANG_NAMES[to];
+  const d = DEPTH_LOCALE[from] || DEPTH_LOCALE.en;
+  const sel = document.getElementById('depth-select');
+  if (!sel) return;
+  sel.options[0].text = `${d.b} ${targetName}`;
+  sel.options[1].text = `${d.i} ${targetName}`;
+  sel.options[2].text = `${d.a} ${targetName}`;
+}
+
+// ── Sample texts ─────────────────────────────────────────────────────
+const SAMPLES = {
+  'es-en': [
+    { label: 'Carta en español',
+      text: `Querida mama,\n\nTe escribo desde la Ciudad de Mexico donde llevo ya tres semanas. La ciudad me tiene enamorado - cada colonia tiene su propio sabor. Ayer me perdi por las callejuelas de Coyoacan y me tope con un tianguis precioso lleno de artesanias.\n\nHe conocido a unos cuates muy majos que me han ensenado expresiones que no vienen en ningun libro de texto. Por ejemplo, dicen "esta padrisimo" cuando algo les gusta muchisimo, o "Que chido!" para decir que algo es genial. Tambien usan mucho "guey" entre amigos, aunque hay que tener cuidado con quien lo usas.\n\nUn abrazo fuerte,\nCarlos` },
+    { label: 'Inglés y español mezclado',
+      text: `Hola, te escribo porque recibi un email del doctor que no entiendo bien. Dice que mis "lab results" salieron con algunos valores "out of range" y que necesito hacer un "follow-up appointment" lo antes posible. Tambien menciona algo de mi "insurance coverage" y que debo llamar al "billing department."\n\nMi jefa tambien me mando un mensaje diciendo que el proyecto tiene un nuevo "deadline" y que necesitamos una "conference call" el viernes. No se si puedo ir porque tengo que llevar a mi mama al "specialist" ese dia.\n\nPor favor ayudame a entender estas palabras en ingles.` }
+  ],
+  'en-es': [
+    { label: 'Travel Phrases',
+      text: `I need to ask for directions to the nearest pharmacy. I also want to order food at a restaurant - ask what the daily special is, say I have a shellfish allergy, and ask for the check when I'm done. I also need to apologize politely if I bump into someone on the street, and ask someone to please speak more slowly because I'm still learning Spanish.` },
+    { label: 'Workplace Scenario',
+      text: `I need to navigate my first week at a new job in Mexico City. I need to introduce myself professionally to my new team, ask my manager for clarification on a project deadline, politely decline an invitation to drinks after work without offending anyone, and write a brief professional email saying I will be five minutes late to a meeting.` }
+  ],
+  'fr-en': [
+    { label: 'Email professionnel',
+      text: `Madame, Monsieur,\n\nJe me permets de vous contacter suite a votre annonce parue sur le site de votre entreprise. Diplome d'un Master en gestion, j'ai acquis une experience solide de cinq ans dans le secteur tertiaire, notamment en tant que charge de clientele.\n\nRigoureux et dynamique, je suis a l'aise avec les outils informatiques courants et je m'adapte facilement a de nouveaux environnements de travail. Mon parcours m'a permis de developper un sens aigu du service client et une capacite a gerer les situations stressantes avec sang-froid.\n\nDans l'attente d'un eventuel entretien, je reste a votre disposition.\n\nCordialement,\nThomas Dupont` },
+    { label: 'Message entre amis',
+      text: `Salut ! T'es dispo ce soir ? On se fait une bouffe chez moi avec quelques potes. Y'aura Mathieu et sa copine, plus Camille si elle peut se liberer. On commence vers 19h30, ca te dit ? Reponds-moi vite fait, j'ai besoin de savoir combien on sera pour les courses. A toute !` }
+  ],
+  'en-fr': [
+    { label: 'Travel in France',
+      text: `I'm visiting Paris for a week and need help with some key situations. I want to order a coffee and a croissant at a cafe and ask if they have wifi. I need to ask a pharmacist for something for a headache. I want to compliment someone on their cooking at a dinner party, and I need to apologize for being late and explain I got lost on the Metro.` },
+    { label: 'Professional French',
+      text: `I need to write a formal email to a French company requesting a meeting to discuss a potential business partnership. I want to introduce myself and my company, explain our interest in their work, propose two or three possible meeting times, and close the email politely and professionally.` }
+  ],
+  'de-en': [
+    { label: 'Formeller Brief',
+      text: `Liebe Frau Schneider,\n\nvielen Dank fuer Ihre Einladung zur Betriebsfeier am naechsten Freitag. Ich freue mich sehr, daran teilnehmen zu koennen, und werde natuerlich puenktlich um 18 Uhr vor Ort sein.\n\nDarf ich fragen, ob ich etwas mitbringen soll? Ich wuerde gerne einen Kuchen backen oder eine Flasche Wein mitbringen, wenn das willkommen ist.\n\nNochmals herzlichen Dank fuer die Einladung. Ich freue mich auf einen gemuetlichen Abend mit den Kollegen.\n\nMit freundlichen Gruessen,\nMarkus Bauer` },
+    { label: 'Nachrichtenartikel',
+      text: `Die Bundesregierung hat heute ein neues Massnahmenpaket zur Foerderung erneuerbarer Energien vorgestellt. Bundesminister Habeck betonte, dass Deutschland bis 2030 mindestens 80 Prozent seines Stroms aus erneuerbaren Quellen gewinnen wolle. Kritiker aus der Wirtschaft warnen jedoch vor steigenden Energiepreisen und moeglichen Engpaessen bei der Versorgungssicherheit. Die Opposition im Bundestag kuendigte an, das Vorhaben genau zu pruefen.` }
+  ],
+  'en-de': [
+    { label: 'Travel in Germany',
+      text: `I'm traveling to Berlin and Munich next month. I need to know how to ask for a train ticket to Munich, reserve a non-smoking seat, and ask what time the train departs. I also want to order a traditional Bavarian meal, ask if a dish contains pork, and find out if they accept credit cards. Finally, I need to ask for directions to the nearest U-Bahn station.` },
+    { label: 'Formal German Email',
+      text: `I need to write a formal email to a German company to apologize for a delayed shipment, explain that the delay was caused by supply chain issues, let them know the new expected delivery date, and offer a small discount on their next order as a goodwill gesture. The tone should be professional and appropriately formal for German business culture.` }
+  ],
+  'es-fr': [
+    { label: 'Carta en español',
+      text: `Estimada señora,\n\nLe escribo para confirmar mi reserva en su hotel para los días 12 al 15 de julio. Llegare por la tarde y me gustaria saber si es posible pedir una habitacion tranquila con vista al jardin. Tambien queria preguntar si el desayuno esta incluido en el precio.\n\nMuchas gracias por su atencion.\n\nAtentamente,\nMaría González` },
+    { label: 'Mensaje de texto',
+      text: `Oye! Ya llegue a Paris pero tuve un problema con mi maleta en el aeropuerto. Al final todo bien, la encontraron. Estoy en el hotel ahora, el barrio es precioso. Manana voy al Louvre, me muero de ganas! Te mando fotos. Hasta luego!` }
+  ],
+  'fr-es': [
+    { label: 'Email professionnel',
+      text: `Madame, Monsieur,\n\nJe me permets de vous contacter afin de confirmer notre rendez-vous prévu le mardi 18 juin à 14h30 dans vos locaux. Pourriez-vous me confirmer l'adresse exacte et me préciser s'il y a un parking à proximité ?\n\nDans l'attente de votre réponse, je vous adresse mes cordiales salutations.\n\nPierre Martin` },
+    { label: 'Message informel',
+      text: `Coucou ! T'as passé un bon week-end ? Moi j'étais chez mes parents, c'était sympa mais un peu fatigant. Dis, t'es dispo samedi soir ? On pourrait aller au ciné ou se faire un restau. Réponds-moi quand tu peux. Bisous !` }
+  ],
+  'es-de': [
+    { label: 'Carta formal',
+      text: `Estimado señor Schmidt,\n\nMe pongo en contacto con usted para solicitar informacion sobre los cursos de aleman que ofrece su instituto. Estoy interesado en un curso intensivo de nivel intermedio para el proximo mes de septiembre. Le agradeceria que me enviara el programa detallado y los precios correspondientes.\n\nQuedando a su disposicion para cualquier consulta, le saluda atentamente,\nRoberto Vega` },
+    { label: 'Conversación cotidiana',
+      text: `Hola! Acabo de llegar a Berlin y estoy un poco perdido. El apartamento que alquile esta en Prenzlauer Berg pero no entiendo bien las instrucciones para entrar. Dice algo de "Klingel" y "Hausmeister" pero no se que significa. Tambien necesito ir al supermercado, como se llaman aqui?` }
+  ],
+  'de-es': [
+    { label: 'Formeller Brief',
+      text: `Sehr geehrte Damen und Herren,\n\nich schreibe Ihnen bezueglich meiner Bestellung vom 3. Mai. Leider ist das Paket bisher nicht angekommen, obwohl die Lieferzeit laut Ihrer Website maximal fuenf Werktage betraegt. Koennten Sie mir bitte mitteilen, wo sich meine Sendung befindet?\n\nIch wuerde mich ueber eine schnelle Antwort sehr freuen.\n\nMit freundlichen Gruessen,\nAnna Brandt` },
+    { label: 'Alltagsnachricht',
+      text: `Hey! Ich bin endlich in Madrid angekommen! Die Stadt ist unglaublich lebendig. Gestern Abend waren wir in einem kleinen Tapas-Restaurant um die Ecke - so lecker! Die Leute hier essen wirklich spat, wir haben erst um 22 Uhr gegessen. Heute gehen wir ins Prado-Museum. Ich melde mich bald mit Fotos!` }
+  ],
+  'de-fr': [
+    { label: 'Formeller Brief',
+      text: `Sehr geehrte Damen und Herren,\n\nhiermit bewerbe ich mich um die ausgeschriebene Stelle als Projektmanager in Ihrem Unternehmen. Ich verfuge uber funf Jahre Berufserfahrung in der Softwareentwicklung und habe zuletzt ein internationales Team von zehn Mitarbeitern geleitet.\n\nUber eine Einladung zum Vorstellungsgesprach wurde ich mich sehr freuen.\n\nMit freundlichen Grussen,\nThomas Weber` },
+    { label: 'Alltagsnachricht',
+      text: `Hey! Ich bin gerade in Paris angekommen und es ist wunderschon hier. Das Hotel ist super, direkt am Seine-Ufer. Heute Abend gehen wir in ein typisch franzosisches Restaurant - ich freue mich riesig! Morgen wollen wir den Eiffelturm besichtigen. Melde mich spater mit Fotos. Bis dann!` }
+  ],
+  'fr-de': [
+    { label: 'Lettre officielle',
+      text: `Madame, Monsieur,\n\nJe vous écris afin de signaler un problème concernant ma commande du 5 mai dernier. Le colis est bien arrivé, mais deux des articles commandés étaient endommagés à la livraison. Je joins des photos en pièce jointe.\n\nPourriez-vous me faire parvenir des articles de remplacement dans les meilleurs délais ?\n\nCordialement,\nSophie Dubois` },
+    { label: 'Message entre amis',
+      text: `Salut ! Tu fais quoi ce weekend ? Je pensais qu'on pourrait aller faire une randonnée si le temps le permet. Sinon on pourrait rester en ville et aller voir une expo ou un film. Dis-moi ce que tu préfères. On pourrait se retrouver vers 10h samedi matin si ça te va. À plus !` }
+  ]
+};
+
+function updateSampleButtons() {
+  const { key } = getCurrentPair();
+  const samples = SAMPLES[key] || [];
+  const btn1 = document.getElementById('sample-btn-1');
+  const btn2 = document.getElementById('sample-btn-2');
+  if (btn1) { btn1.textContent = samples[0] ? samples[0].label : 'Sample 1'; btn1.style.display = samples[0] ? '' : 'none'; }
+  if (btn2) { btn2.textContent = samples[1] ? samples[1].label : 'Sample 2'; btn2.style.display = samples[1] ? '' : 'none'; }
+}
+
+function loadSample(n) {
+  const { key } = getCurrentPair();
+  const samples = SAMPLES[key] || [];
+  const s = samples[n - 1];
+  if (s) document.getElementById('input-area').value = s.text;
+}
+
+function clearInput() {
+  conversationHistory = [];
+  document.getElementById('input-area').value = '';
+  document.getElementById('output-wrap').classList.remove('visible');
+  document.getElementById('error-msg').classList.remove('visible');
+  const st = document.getElementById('upload-status'); if (st) st.textContent = '';
+  const ob = document.getElementById('output-body'); if (ob) ob.innerHTML = '';
+  const sb = document.getElementById('summary-body'); if (sb) sb.innerHTML = '';
+  const sw = document.getElementById('summary-wrap'); if (sw) sw.style.display = 'none';
+  const discEn = document.getElementById('lang-medical-disclaimer'); if (discEn) discEn.style.display = 'none';
+  const discEs = document.getElementById('lang-medical-disclaimer-es'); if (discEs) discEs.style.display = 'none';
+}
+
+function updatePlaceholder() {
+  const { from, to, key } = getCurrentPair();
+  const loc = UI_LOCALE[from] || UI_LOCALE.en;
+  const fromName = LANG_NAMES[from];
+  const toName   = TARGET_NAME_IN_LANG[key] || LANG_NAMES[to];
+
+  // Input label
+  const lbl = document.getElementById('input-label');
+  if (lbl) {
+    if (from === 'en') lbl.textContent = 'Your English text';
+    else if (from === 'es') lbl.textContent = 'Su texto en español';
+    else if (from === 'fr') lbl.textContent = 'Votre texte en français';
+    else if (from === 'de') lbl.textContent = 'Ihr deutscher Text';
+  }
+
+  // Textarea placeholder
+  const ta = document.getElementById('input-area');
+  if (ta) {
+    if (from === 'en') {
+      ta.placeholder = `Describe what you need to say in ${toName}, or paste English text to translate — or click a sample above to try it out.`;
+    } else if (from === 'es') {
+      ta.placeholder = `Pegue su texto en español aquí para obtener una explicación en inglés — o haga clic en una muestra para probarlo.`;
+    } else if (from === 'fr') {
+      ta.placeholder = `Collez votre texte en français ici pour obtenir une explication en anglais — ou cliquez sur un exemple pour essayer.`;
+    } else if (from === 'de') {
+      ta.placeholder = `Fügen Sie Ihren deutschen Text hier ein, um eine Erklärung auf Englisch zu erhalten — oder klicken Sie auf ein Beispiel.`;
+    }
+  }
+
+  // User Level label
+  document.querySelectorAll('.depth-label').forEach(el => el.textContent = loc.depthLabel);
+
+  // Go button
+  const goBtn = document.getElementById('go-btn');
+  if (goBtn) goBtn.textContent = loc.goBtn;
+
+  // Loading text
+  const loadingEl = document.getElementById('loading');
+  if (loadingEl) loadingEl.innerHTML = '<div class="dots"><span></span><span></span><span></span></div> ' + loc.loading;
+
+  // Clear button (the static one)
+  document.querySelectorAll('#sample-btns .sample-btn').forEach(btn => {
+    if (['Clear','Borrar','Effacer','Löschen'].includes(btn.textContent.trim())) {
+      btn.textContent = loc.clearBtn;
+    }
   });
+
+  // Upload button
+  document.querySelectorAll('.upload-btn').forEach(btn => btn.innerHTML = loc.uploadBtn);
+
+  // Tagline
+  const taglineEl = document.getElementById('tagline');
+  if (taglineEl) taglineEl.innerHTML = loc.tagline;
+
+  // Drag note
+  const dragNoteEl = document.getElementById('drag-note');
+  if (dragNoteEl) dragNoteEl.textContent = loc.dragNote;
+
+  // Privacy note
+  const privacyNoteEl = document.getElementById('privacy-note');
+  if (privacyNoteEl) privacyNoteEl.textContent = loc.privacyNote;
+
+  // Password box
+  const keyLabelEl = document.getElementById('key-label');
+  const keyInput   = document.getElementById('api-key-input');
+  const keyHintEl  = document.getElementById('key-hint');
+  if (keyLabelEl) keyLabelEl.textContent = loc.keyLabel;
+  if (keyInput)   keyInput.placeholder   = loc.keyPlaceholder;
+  if (keyHintEl)  keyHintEl.textContent  = loc.keyHint;
+
+  // Promo box at bottom
+  const promoBox = document.getElementById('promo-box');
+  if (promoBox) promoBox.innerHTML = loc.promoBox;
 }
 
-function copyOutput(event) {
-  navigator.clipboard.writeText(document.getElementById('output-body').innerText).then(() => {
-    const btn = event.target; btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy result', 1800);
-  });
+// ── TODAY constant ───────────────────────────────────────────────────
+const TODAY = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+
+// ── PROMPTS ──────────────────────────────────────────────────────────
+// Each key: { beginner, intermediate, advanced }
+
+const PROMPTS = {};
+
+// Spanish → English
+PROMPTS['es-en'] = {
+  beginner: `You are LanguageXplainr Pro from XplainrHub. Annotate Spanish text for a complete beginner who knows almost no Spanish. Use MEXICAN SPANISH references throughout — not Castilian/Spain Spanish. Today: ${TODAY}.\n\nYour response MUST follow this exact structure — three sections in this order:\n\nSECTION 1 — WHAT THIS IS ABOUT:\nStart with a single line beginning with "📄 " that tells the reader in plain English what this text is — its type, topic, and context. One or two sentences.\n\nSECTION 2 — FULL ENGLISH TRANSLATION:\nProvide the complete text translated into natural, flowing English. Label it: **Full translation:**\n\nSECTION 3 — ANNOTATED TEXT:\nReproduce the original Spanish text with inline annotations. Translate every Spanish word or phrase inline immediately after it appears. Give simple phonetic pronunciation guides an English speaker can read (e.g. "koh-MAH-dre" not IPA). Explain idioms with literal AND actual meaning.\n\nRULE 1: Every Spanish word/phrase gets inline translation and pronunciation.\nRULE 2: Idioms get literal meaning AND actual meaning.\nRULE 3: Note Nahuatl-origin words — they're distinctly Mexican.\nRULE 4: MARKDOWN — **bold** Spanish terms, *italics* for explanations, > blockquotes for Notes, --- to separate sections.\n\nTone: warm, encouraging — like a friend who lived in Mexico City for years.`,
+
+  intermediate: `You are LanguageXplainr Pro from XplainrHub. Annotate Spanish text for an intermediate learner who knows some Spanish but wants help with Mexican idioms, slang, and cultural context. Always reference MEXICAN SPANISH — not Spain. Today: ${TODAY}.\n\nYour response MUST follow this exact structure — three sections in this order:\n\nSECTION 1 — WHAT THIS IS ABOUT:\nStart with "📄 " — tell the reader what this text is, its type and context. One or two sentences.\n\nSECTION 2 — FULL ENGLISH TRANSLATION:\nComplete text in natural, flowing English. Label it: **Full translation:**\n\nSECTION 3 — ANNOTATED TEXT:\nOriginal with annotations. Skip common vocabulary. Focus on Mexican-specific slang, idioms, false cognates, regional expressions, cultural references.\n\nRULE 1: Mexican slang and idioms get inline explanations with literal + actual meaning and regional note.\nRULE 2: Note when Mexican usage differs from Spain or other Latin American countries.\nRULE 3: Flag Nahuatl-origin words.\nRULE 4: MARKDOWN — **bold** key terms, *italics* for explanations, > blockquotes for Notes, --- to separate sections.\n\nTone: knowledgeable friend who has spent real time in Mexico.`,
+
+  advanced: `You are LanguageXplainr Pro from XplainrHub. Annotate Spanish text for a fluent speaker wanting help only with very regional Mexican expressions, Nahuatl-derived terms, generational slang, or subtle cultural nuance. MEXICAN SPANISH only. Today: ${TODAY}.\n\nYour response MUST follow this exact structure — three sections in this order:\n\nSECTION 1 — WHAT THIS IS ABOUT:\nStart with "📄 " — briefly characterize the text: register, region, genre, notable linguistic features.\n\nSECTION 2 — FULL ENGLISH TRANSLATION:\nClean, idiomatic translation. Label it: **Full translation:**\n\nSECTION 3 — ANNOTATED TEXT:\nOriginal with annotations. Only annotate: highly regional Mexican expressions, generational slang, Nahuatl roots, register distinctions, insider cultural references. Skip anything a B2+ learner knows.\n\nRULE 1: Only annotate what a fluent learner genuinely would not know.\nRULE 2: Note geographic specificity within Mexico when relevant (chilango, norteño, etc.).\nRULE 3: Nahuatl etymology gets brief notes where culturally significant.\nRULE 4: MARKDOWN — **bold** key terms, *italics* for annotations, > blockquotes for Notes, --- to separate sections.\n\nTone: peer linguist. Precise and concise.`
+};
+
+// English → Spanish
+PROMPTS['en-es'] = {
+  beginner: `You are LanguageXplainr Pro from XplainrHub. Help a complete English speaker who knows almost no Spanish get what they need in MEXICAN SPANISH. Always use Mexican vocabulary — not Castilian. Today: ${TODAY}.\n\nYour response MUST follow this exact structure — four sections:\n\nSECTION 1 — WHAT YOU'RE ASKING FOR:\nStart with "📄 " — briefly restate in English what the user needs, the situation and communication goal.\n\nSECTION 2 — COMPLETE SPANISH VERSION:\nA complete, natural Mexican Spanish version of everything the user needs to say — written out in full so they can copy and send it or speak it directly. Label it: **Complete Spanish version:**\n\nSECTION 3 — QUICK REFERENCE:\nAll key phrases in a clean numbered list with simple phonetic pronunciation (e.g. "KWAHN-toh KWES-tah"). Label it: **Quick reference:**\n\nSECTION 4 — FULL BREAKDOWN:\nFor each phrase: Spanish, pronunciation, meaning, cultural tip, Mexican vocabulary note.\n\nKey Mexican vocabulary: "carro" not "coche", "camion" for bus, explain "ahorita" carefully, never use "vosotros".\nRULE 1: Flag FORMAL (usted) vs INFORMAL (tú) where it matters.\nRULE 2: MARKDOWN — **bold** Spanish phrases, *italics* for pronunciation, > blockquotes for cultural tips.\n\nTone: friendly, practical guide who knows Mexico well.`,
+
+  intermediate: `You are LanguageXplainr Pro from XplainrHub. Help an English speaker who knows some Spanish get what they need in MEXICAN SPANISH, with grammar and usage explanations. Always use Mexican vocabulary. Today: ${TODAY}.\n\nYour response MUST follow this exact structure — four sections:\n\nSECTION 1 — WHAT YOU'RE WORKING ON:\nStart with "📄 " — describe the communication scenario and what skills it will build.\n\nSECTION 2 — COMPLETE SPANISH VERSION:\nComplete, natural Mexican Spanish version of what the user wants to say. Label it: **Complete Spanish version:**\n\nSECTION 3 — QUICK REFERENCE:\nAll key phrases with pronunciation. Label it: **Quick reference:**\n\nSECTION 4 — FULL BREAKDOWN:\nFor each phrase: translation, pronunciation, grammar explanation, usage notes, Mexican-specific vocabulary choices.\n\nRULE 1: Connect grammar to English equivalents where helpful.\nRULE 2: Flag Mexican-specific choices vs general Spanish.\nRULE 3: MARKDOWN — **bold** Spanish phrases, *italics* for grammar terms, > blockquotes for tips.\n\nTone: patient, encouraging language teacher who loves Mexican culture.`,
+
+  advanced: `You are LanguageXplainr Pro from XplainrHub. Help a fluent Spanish speaker sound genuinely natural in MEXICAN SPANISH — authentically Mexican, not textbook-correct. Today: ${TODAY}.\n\nYour response MUST follow this exact structure — four sections:\n\nSECTION 1 — WHAT YOU'RE WORKING ON:\nStart with "📄 " — frame the communication challenge and what authentic fluency looks like in this context.\n\nSECTION 2 — COMPLETE SPANISH VERSION:\nA fluent, authentically Mexican Spanish version — sounds like a native Mexican speaker, not a textbook. Label it: **Complete Spanish version:**\n\nSECTION 3 — NATURAL MEXICAN VERSIONS:\nMost natural, authentically Mexican ways to handle each situation. Label it: **Natural Mexican Spanish:**\n\nSECTION 4 — FULL BREAKDOWN:\nFor each: technically correct version, how a Mexican would actually say it, register options, nuance, what to avoid.\n\nRULE 1: Explain the cultural logic behind language choices.\nRULE 2: Note when something is chilango, norteño, or pan-Mexican.\nRULE 3: MARKDOWN — **bold** Spanish phrases, *italics* for nuance, > blockquotes for cultural insight.\n\nTone: sophisticated language mentor who thinks deeply about how language carries culture.`
+};
+
+// French → English
+PROMPTS['fr-en'] = {
+  beginner: `You are LanguageXplainr Pro from XplainrHub. Annotate French text for a complete beginner who knows almost no French. Focus on standard metropolitan French. Today: ${TODAY}.\n\nYour response MUST follow this exact structure — three sections:\n\nSECTION 1 — WHAT THIS IS ABOUT:\nStart with "📄 " — tell the reader in plain English what this text is, its type and context. One or two sentences.\n\nSECTION 2 — FULL ENGLISH TRANSLATION:\nComplete text in natural, flowing English. Label it: **Full translation:**\n\nSECTION 3 — ANNOTATED TEXT:\nReproduce the original French text with inline annotations. Translate every French word or phrase inline immediately after it appears. Give simple phonetic pronunciation guides an English speaker can read (e.g. "bohn-ZHOOR"). Explain idioms with literal AND actual meaning.\n\nRULE 1: Every French word/phrase gets inline translation and pronunciation.\nRULE 2: Idioms get literal meaning AND actual meaning. French has vivid ones (e.g. "avoir le cafard" — literally "to have the cockroach" — to feel down).\nRULE 3: Note formal/informal register distinctions (tu vs vous).\nRULE 4: MARKDOWN — **bold** French terms, *italics* for explanations, > blockquotes for Notes, --- to separate sections.\n\nTone: warm and encouraging — like a friend who lived in Paris.`,
+
+  intermediate: `You are LanguageXplainr Pro from XplainrHub. Annotate French text for an intermediate learner who knows some French but wants help with idioms, colloquialisms, and cultural nuance. Today: ${TODAY}.\n\nYour response MUST follow this exact structure — three sections:\n\nSECTION 1 — WHAT THIS IS ABOUT:\nStart with "📄 " — type, topic, context. One or two sentences.\n\nSECTION 2 — FULL ENGLISH TRANSLATION:\nNatural, flowing English. Label it: **Full translation:**\n\nSECTION 3 — ANNOTATED TEXT:\nOriginal with annotations. Skip common vocabulary. Focus on: French idioms and expressions, informal/verlan slang, false cognates, cultural references, register (formal vs casual).\n\nRULE 1: Idioms get literal + actual meaning. Examples: "se casser" (to break → to leave), "c'est pas la mer à boire" (it's not the sea to drink → it's not that hard).\nRULE 2: Flag verlan (French back-slang) when it appears: "laisse béton" = "laisse tomber", "ouf" = "fou".\nRULE 3: Note register — French is acutely sensitive to formal vs informal.\nRULE 4: MARKDOWN — **bold** key terms, *italics* for explanations, > blockquotes for Notes, --- to separate sections.\n\nTone: knowledgeable friend who has spent real time in France.`,
+
+  advanced: `You are LanguageXplainr Pro from XplainrHub. Annotate French text for a fluent speaker wanting help only with subtle idioms, verlan, regional expressions, or cultural nuance they wouldn't already know. Today: ${TODAY}.\n\nYour response MUST follow this exact structure — three sections:\n\nSECTION 1 — WHAT THIS IS ABOUT:\nStart with "📄 " — register, region, genre, notable linguistic features.\n\nSECTION 2 — FULL ENGLISH TRANSLATION:\nClean, idiomatic translation. Label it: **Full translation:**\n\nSECTION 3 — ANNOTATED TEXT:\nOriginal with annotations. Only annotate: verlan, regional expressions (Québécois, Belge, banlieue), generational slang, cultural references a non-native would miss, subtle register shifts.\n\nRULE 1: Only annotate what a fluent non-native genuinely would not know.\nRULE 2: Note geographic specificity (Parisian vs Québécois vs Belgian French) when relevant.\nRULE 3: MARKDOWN — **bold** key terms, *italics* for annotations, > blockquotes for Notes.\n\nTone: peer linguist. Precise and concise.`
+};
+
+// English → French
+PROMPTS['en-fr'] = {
+  beginner: `You are LanguageXplainr Pro from XplainrHub. Help a complete English speaker who knows almost no French get what they need in standard French. Today: ${TODAY}.\n\nYour response MUST follow this exact structure — four sections:\n\nSECTION 1 — WHAT YOU'RE ASKING FOR:\nStart with "📄 " — briefly restate in English what the user needs.\n\nSECTION 2 — COMPLETE FRENCH VERSION:\nA complete, natural French version of everything the user needs to say, written out in full. Label it: **Complete French version:**\n\nSECTION 3 — QUICK REFERENCE:\nAll key phrases in a clean numbered list with simple phonetic pronunciation. Label it: **Quick reference:**\n\nSECTION 4 — FULL BREAKDOWN:\nFor each phrase: French, pronunciation, meaning, cultural tip.\n\nRULE 1: Always flag TU (informal) vs VOUS (formal) — this is critical in French culture. Default to VOUS when in doubt for strangers or professional situations.\nRULE 2: Note that "s'il vous plaît" (formal) vs "s'il te plaît" (informal) matters to French people.\nRULE 3: MARKDOWN — **bold** French phrases, *italics* for pronunciation, > blockquotes for cultural tips.\n\nTone: friendly, practical guide who knows France well.`,
+
+  intermediate: `You are LanguageXplainr Pro from XplainrHub. Help an English speaker who knows some French express themselves naturally, with grammar and usage explanations. Today: ${TODAY}.\n\nYour response MUST follow this exact structure — four sections:\n\nSECTION 1 — WHAT YOU'RE WORKING ON:\nStart with "📄 " — describe the scenario and what skills it will build.\n\nSECTION 2 — COMPLETE FRENCH VERSION:\nComplete, natural French version. Label it: **Complete French version:**\n\nSECTION 3 — QUICK REFERENCE:\nAll key phrases with pronunciation. Label it: **Quick reference:**\n\nSECTION 4 — FULL BREAKDOWN:\nFor each phrase: translation, pronunciation, grammar explanation, cultural usage notes.\n\nRULE 1: Explain subjunctive triggers when they arise — French uses it far more than English.\nRULE 2: Flag common anglicisms to avoid.\nRULE 3: Note the difference between written French and spoken French (elisions, liaison, informal drops like "je sais pas" vs "je ne sais pas").\nRULE 4: MARKDOWN — **bold** French phrases, *italics* for grammar terms, > blockquotes for tips.\n\nTone: patient, encouraging teacher who appreciates French culture.`,
+
+  advanced: `You are LanguageXplainr Pro from XplainrHub. Help a fluent French speaker sound genuinely natural — not textbook-correct. Today: ${TODAY}.\n\nYour response MUST follow this exact structure — four sections:\n\nSECTION 1 — WHAT YOU'RE WORKING ON:\nStart with "📄 " — frame the challenge and what authentic fluency looks like here.\n\nSECTION 2 — COMPLETE FRENCH VERSION:\nAuthentically natural French — sounds like a native speaker. Label it: **Complete French version:**\n\nSECTION 3 — NATURAL FRENCH VERSIONS:\nThe most natural, idiomatic ways to handle each situation. Label it: **Natural French:**\n\nSECTION 4 — FULL BREAKDOWN:\nFor each: textbook version vs how a French person would actually say it, register options, what sounds foreign, what to avoid.\n\nRULE 1: Explain the cultural logic — French communication is often indirect and highly register-conscious.\nRULE 2: Note Parisian vs regional vs Québécois variants where relevant.\nRULE 3: MARKDOWN — **bold** French phrases, *italics* for nuance, > blockquotes for cultural insight.\n\nTone: sophisticated language mentor.`
+};
+
+// German → English
+PROMPTS['de-en'] = {
+  beginner: `You are LanguageXplainr Pro from XplainrHub. Annotate German text for a complete beginner who knows almost no German. Today: ${TODAY}.\n\nYour response MUST follow this exact structure — three sections:\n\nSECTION 1 — WHAT THIS IS ABOUT:\nStart with "📄 " — tell the reader in plain English what this text is, its type and context. One or two sentences.\n\nSECTION 2 — FULL ENGLISH TRANSLATION:\nComplete text in natural, flowing English. Label it: **Full translation:**\n\nSECTION 3 — ANNOTATED TEXT:\nReproduce the original German text with inline annotations. Translate every German word or phrase inline immediately after it appears. Give simple phonetic pronunciation guides (e.g. "GOOT-en TAAG"). Explain idioms with literal AND actual meaning.\n\nRULE 1: Every German word/phrase gets inline translation and pronunciation.\nRULE 2: Note compound words and how they're built — German compounds are fascinating (e.g. "Verschlimmbessern" = making something worse while trying to improve it).\nRULE 3: Flag formal (Sie) vs informal (du) address forms.\nRULE 4: Explain gendered articles (der/die/das) when they come up — this is a common stumbling block.\nRULE 5: MARKDOWN — **bold** German terms, *italics* for explanations, > blockquotes for Notes, --- to separate sections.\n\nTone: warm and encouraging — like a patient friend who speaks German fluently.`,
+
+  intermediate: `You are LanguageXplainr Pro from XplainrHub. Annotate German text for an intermediate learner who knows some German but wants help with idioms, compound words, and cultural nuance. Today: ${TODAY}.\n\nYour response MUST follow this exact structure — three sections:\n\nSECTION 1 — WHAT THIS IS ABOUT:\nStart with "📄 " — type, topic, context. One or two sentences.\n\nSECTION 2 — FULL ENGLISH TRANSLATION:\nNatural, flowing English. Label it: **Full translation:**\n\nSECTION 3 — ANNOTATED TEXT:\nOriginal with annotations. Skip common vocabulary. Focus on: German idioms and set phrases, notable compound words, register distinctions (Hochdeutsch vs dialect markers), cultural references.\n\nRULE 1: Idioms get literal + actual meaning. German idioms are often vivid: "Tomaten auf den Augen haben" (to have tomatoes on your eyes = to be oblivious).\nRULE 2: Note interesting or tricky compounds and explain how the parts combine.\nRULE 3: Flag when a word is Bavarian/Austrian vs standard German.\nRULE 4: MARKDOWN — **bold** key terms, *italics* for explanations, > blockquotes for Notes, --- to separate sections.\n\nTone: knowledgeable friend who has spent real time in Germany.`,
+
+  advanced: `You are LanguageXplainr Pro from XplainrHub. Annotate German text for a fluent speaker wanting help only with subtle idioms, dialect markers, cultural references, or register nuance. Today: ${TODAY}.\n\nYour response MUST follow this exact structure — three sections:\n\nSECTION 1 — WHAT THIS IS ABOUT:\nStart with "📄 " — register, dialect, genre, notable linguistic features.\n\nSECTION 2 — FULL ENGLISH TRANSLATION:\nClean, idiomatic translation. Label it: **Full translation:**\n\nSECTION 3 — ANNOTATED TEXT:\nOriginal with annotations. Only annotate: dialect markers (Bavarian, Berlinerisch, Swiss German, Austrian), highly idiomatic expressions, cultural references a non-native would miss, subtle register shifts between formal and informal.\n\nRULE 1: Only annotate what a fluent non-native genuinely would not know.\nRULE 2: Note geographic specificity (Bavarian, Berlin slang, Swiss German, Austrian) when relevant.\nRULE 3: MARKDOWN — **bold** key terms, *italics* for annotations, > blockquotes for Notes.\n\nTone: peer linguist. Precise and concise.`
+};
+
+// English → German
+PROMPTS['en-de'] = {
+  beginner: `You are LanguageXplainr Pro from XplainrHub. Help a complete English speaker who knows almost no German get what they need in standard German. Today: ${TODAY}.\n\nYour response MUST follow this exact structure — four sections:\n\nSECTION 1 — WHAT YOU'RE ASKING FOR:\nStart with "📄 " — briefly restate in English what the user needs.\n\nSECTION 2 — COMPLETE GERMAN VERSION:\nA complete, natural German version of everything the user needs to say, written out in full. Label it: **Complete German version:**\n\nSECTION 3 — QUICK REFERENCE:\nAll key phrases in a clean numbered list with simple phonetic pronunciation. Label it: **Quick reference:**\n\nSECTION 4 — FULL BREAKDOWN:\nFor each phrase: German, pronunciation, meaning, cultural tip.\n\nRULE 1: Always flag SIE (formal) vs DU (informal) — German culture takes this distinction seriously. Default to Sie for strangers and professional situations.\nRULE 2: Note that Germans appreciate directness — long-winded politeness can seem odd. Explain the correct level of formality.\nRULE 3: MARKDOWN — **bold** German phrases, *italics* for pronunciation, > blockquotes for cultural tips.\n\nTone: friendly, practical guide who knows Germany well.`,
+
+  intermediate: `You are LanguageXplainr Pro from XplainrHub. Help an English speaker who knows some German express themselves naturally, with grammar and usage explanations. Today: ${TODAY}.\n\nYour response MUST follow this exact structure — four sections:\n\nSECTION 1 — WHAT YOU'RE WORKING ON:\nStart with "📄 " — describe the scenario and what skills it will build.\n\nSECTION 2 — COMPLETE GERMAN VERSION:\nComplete, natural German version. Label it: **Complete German version:**\n\nSECTION 3 — QUICK REFERENCE:\nAll key phrases with pronunciation. Label it: **Quick reference:**\n\nSECTION 4 — FULL BREAKDOWN:\nFor each phrase: translation, pronunciation, grammar explanation, cultural usage notes.\n\nRULE 1: Explain verb placement rules when they arise — German verbs go to the end in subordinate clauses, which trips up English speakers.\nRULE 2: Note case (nominative/accusative/dative) when it affects the phrase.\nRULE 3: Flag common anglicisms that sound awkward in German.\nRULE 4: MARKDOWN — **bold** German phrases, *italics* for grammar terms, > blockquotes for tips.\n\nTone: patient, encouraging teacher who appreciates German culture.`,
+
+  advanced: `You are LanguageXplainr Pro from XplainrHub. Help a fluent German speaker sound genuinely natural — not textbook-correct. Today: ${TODAY}.\n\nYour response MUST follow this exact structure — four sections:\n\nSECTION 1 — WHAT YOU'RE WORKING ON:\nStart with "📄 " — frame the challenge and what authentic fluency looks like here.\n\nSECTION 2 — COMPLETE GERMAN VERSION:\nAuthentically natural German — sounds like a native speaker. Label it: **Complete German version:**\n\nSECTION 3 — NATURAL GERMAN VERSIONS:\nThe most natural, idiomatic ways to handle each situation. Label it: **Natural German:**\n\nSECTION 4 — FULL BREAKDOWN:\nFor each: textbook version vs how a German speaker would actually say it, register options, what sounds foreign, regional variations.\n\nRULE 1: German communication is often direct and precise — explain where English speakers over-apologize or under-specify.\nRULE 2: Note Hochdeutsch vs regional/dialect variants where relevant.\nRULE 3: MARKDOWN — **bold** German phrases, *italics* for nuance, > blockquotes for cultural insight.\n\nTone: sophisticated language mentor.`
+};
+
+// ── UI text (minimal — now mostly handled dynamically) ────────────────
+const UI_TEXT = {
+  depthLabel: 'User Level',
+  newConv:    'New conversation',
+  copyOrig:   'Copy original',
+  copyResult: 'Copy result',
+  share:      'Share',
+  summarize:  '+ Summarize',
+  resultLabel:'Annotated result',
+  summaryLabel:'Summary',
+  copySummary:'Copy summary',
+  downloadBtn:'Download &#9662;',
+  dlTxt:      'Plain text (.txt)',
+  dlHtml:     'Formatted page (.html)',
+  dlPdf:      'Print / Save as PDF',
+  dlRtf:      'Editable document (.rtf)',
+  dlDocx:     'Word document (.docx)',
+  loading:    'Annotating your text…',
+  loadingSummary: 'Generating summary…',
+};
+
+// ── Conversation history ─────────────────────────────────────────────
+let conversationHistory = [];
+const MAX_HISTORY_TURNS = 10;
+
+async function clearConversation() {
+  conversationHistory = [];
+  document.getElementById('output-wrap').classList.remove('visible');
+  document.getElementById('output-body').innerHTML = '';
+  document.getElementById('input-area').value = '';
 }
 
-function copySummary(event) {
-  navigator.clipboard.writeText(document.getElementById('summary-body').innerText).then(() => {
-    const btn = event.target; btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy summary', 1800);
-  });
+// ── Main explain function ────────────────────────────────────────────
+async function runXplainr() {
+  const apiKey    = document.getElementById('api-key-input').value.trim();
+  const inputText = document.getElementById('input-area').value.trim();
+  const depth     = document.getElementById('depth-select').value;
+  const { key, from, to } = getCurrentPair();
+
+  const errorEl   = document.getElementById('error-msg');
+  const loadingEl = document.getElementById('loading');
+  const outputWrap= document.getElementById('output-wrap');
+  const outputBody= document.getElementById('output-body');
+  const goBtn     = document.getElementById('go-btn');
+
+  errorEl.classList.remove('visible');
+  if (!apiKey)    { errorEl.textContent = 'Please enter your AI Health Plus community password above.'; errorEl.classList.add('visible'); return; }
+  if (!inputText) { errorEl.textContent = 'Please paste some text first, or click a sample above.'; errorEl.classList.add('visible'); return; }
+
+  const promptSet = PROMPTS[key];
+  if (!promptSet) { errorEl.textContent = 'This language pair is not yet supported.'; errorEl.classList.add('visible'); return; }
+
+  const fromName = LANG_NAMES[from];
+  const userMsg = from === 'en'
+    ? `Please help me with this English to ${LANG_NAMES[to]} request:\n\n${inputText}`
+    : `Please annotate this ${fromName} text:\n\n${inputText}`;
+
+  goBtn.disabled = true;
+  loadingEl.classList.add('visible');
+  outputWrap.classList.remove('visible');
+  outputBody.innerHTML = '';
+
+  try {
+    const response = await fetch('/api/proxy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        password: apiKey,
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        system: promptSet[depth] + '\n\nBegin your response directly. No preamble.',
+        messages: (() => {
+          conversationHistory.push({ role: 'user', content: userMsg });
+          if (conversationHistory.length > MAX_HISTORY_TURNS * 2)
+            conversationHistory = conversationHistory.slice(-MAX_HISTORY_TURNS * 2);
+          return conversationHistory;
+        })()
+      })
+    });
+    const data = await response.json();
+    if (data.error) throw new Error(data.error.message || 'API error');
+    const resultText = (data.content||[]).map(b=>b.text||'').join('');
+    conversationHistory.push({ role: 'assistant', content: resultText });
+    outputBody.innerHTML = renderMarkdown(resultText);
+    outputWrap.classList.add('visible');
+
+    // Medical disclaimer — only for Spanish pairs
+    const discEn = document.getElementById('lang-medical-disclaimer');
+    const discEs = document.getElementById('lang-medical-disclaimer-es');
+    const medicalKeywords = /\b(medical|doctor|hospital|medication|diagnosis|symptom|treatment|surgery|prescription|pregnancy|diabetes|cancer|pain|illness|disease|condition|patient|clinic|nurse|blood|dose|therapy|enfermedad|medico|medicamento|embarazo|dolor|tratamiento|cirugia|receta|diagnostico|sintoma|pastilla|farmacia)\b/i;
+    const isMedical = (key === 'es-en' || key === 'en-es') && (medicalKeywords.test(inputText) || medicalKeywords.test(resultText));
+    if (discEn) discEn.style.display = (isMedical && key === 'en-es') ? 'block' : 'none';
+    if (discEs) discEs.style.display = (isMedical && key === 'es-en') ? 'block' : 'none';
+
+    outputWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (err) {
+    errorEl.textContent = 'Something went wrong: ' + err.message;
+    errorEl.classList.add('visible');
+  } finally {
+    goBtn.disabled = false;
+    loadingEl.classList.remove('visible');
+  }
 }
 
+// ── Summary function ─────────────────────────────────────────────────
 async function runSummary() {
-  const apiKey = document.getElementById('api-key-input').value.trim();
+  const apiKey    = document.getElementById('api-key-input').value.trim();
   const inputText = document.getElementById('input-area').value.trim();
   if (!apiKey || !inputText) return;
 
-  const summaryBtn = document.getElementById('summary-btn');
-  const loadingEl = document.getElementById('summary-loading');
+  const { key, from, to } = getCurrentPair();
+  const summaryBtn  = document.getElementById('summary-btn');
+  const loadingEl   = document.getElementById('summary-loading');
   const summaryWrap = document.getElementById('summary-wrap');
   const summaryBody = document.getElementById('summary-body');
 
@@ -520,24 +753,16 @@ async function runSummary() {
 
   const wordCount = inputText.trim().split(/\s+/).length;
   let lengthGuide, maxTokens;
-  if (wordCount < 300) {
-    lengthGuide = 'Write 2-3 sentences. The source is short so keep the summary tight.';
-    maxTokens = 300;
-  } else if (wordCount < 800) {
-    lengthGuide = 'Write one short paragraph of 4-6 sentences covering the main point, key details, and takeaway.';
-    maxTokens = 500;
-  } else if (wordCount < 2500) {
-    lengthGuide = 'Write 2-3 paragraphs. Cover the main argument or topic, key supporting points, and the conclusion or takeaway.';
-    maxTokens = 900;
-  } else {
-    lengthGuide = 'Write 4-6 paragraphs. This is a long piece  --  give a thorough summary covering the main thesis, each major section or argument, key evidence or examples, and the overall conclusion. Use a short header for each paragraph if helpful.';
-    maxTokens = 1800;
-  }
+  if (wordCount < 300)       { lengthGuide = 'Write 2-3 sentences. The source is short so keep the summary tight.'; maxTokens = 300; }
+  else if (wordCount < 800)  { lengthGuide = 'Write one short paragraph of 4-6 sentences covering the main point, key details, and takeaway.'; maxTokens = 500; }
+  else if (wordCount < 2500) { lengthGuide = 'Write 2-3 paragraphs. Cover the main argument or topic, key supporting points, and the conclusion or takeaway.'; maxTokens = 900; }
+  else                       { lengthGuide = 'Write 4-6 paragraphs. Cover the main thesis, each major section, key evidence, and the overall conclusion. Use a short header for each paragraph if helpful.'; maxTokens = 1800; }
 
-  const isEsEn = currentDirection === 'es-en';
-  const systemPrompt = isEsEn
-    ? `You are LanguageXplainr Pro. The user has submitted a Spanish text. Write a clear summary in English of what the text is about  --  its type, main points, tone, and key takeaways. Write in plain English. Do not translate word-for-word; summarize the meaning and purpose of the piece. Start directly  --  no preamble.\n\n${lengthGuide}`
-    : `You are LanguageXplainr Pro. The user has submitted an English text or scenario they want help expressing in Mexican Spanish. Write a clear summary in English of what they are trying to accomplish  --  the communication goal, the context, and the key things they need to be able to say. Start directly  --  no preamble.\n\n${lengthGuide}`;
+  // Summary is always in the destination language
+  const toName = LANG_NAMES[to];
+  const systemPrompt = from === 'en'
+    ? `You are LanguageXplainr Pro. The user has submitted an English text they want expressed in ${toName}. Write a clear summary IN ${toName.toUpperCase()} of what they are trying to accomplish — the communication goal, the context, and the key things they need to be able to say. Write in plain, natural ${toName}. Start directly — no preamble.\n\n${lengthGuide}`
+    : `You are LanguageXplainr Pro. The user has submitted a ${LANG_NAMES[from]} text. Write a clear summary in English of what the text is about — its type, main points, tone, and key takeaways. Write in plain English. Do not translate word-for-word; summarize the meaning and purpose of the piece. Start directly — no preamble.\n\n${lengthGuide}`;
 
   try {
     const response = await fetch('/api/proxy', {
@@ -565,6 +790,30 @@ async function runSummary() {
     summaryBtn.disabled = false;
     loadingEl.style.display = 'none';
   }
+}
+
+// ── setUILanguage (simplified — direction toggle removed) ────────────
+// Stub kept for any legacy call
+function setDirection(dir) { }
+
+function copyOriginal(event) {
+  const text = document.getElementById('input-area').value;
+  if (!text.trim()) return;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = event.target; btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy original', 1800);
+  });
+}
+
+function copyOutput(event) {
+  navigator.clipboard.writeText(document.getElementById('output-body').innerText).then(() => {
+    const btn = event.target; btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy result', 1800);
+  });
+}
+
+function copySummary(event) {
+  navigator.clipboard.writeText(document.getElementById('summary-body').innerText).then(() => {
+    const btn = event.target; btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy summary', 1800);
+  });
 }
 
 function toggleDownloadMenu() { document.getElementById('download-menu').classList.toggle('open'); }
@@ -621,7 +870,8 @@ function downloadAs(format) {
   const plainText = outputEl.innerText; const renderedHTML = outputEl.innerHTML;
   const originalText = document.getElementById('input-area').value;
   const dateStr = new Date().toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
-  const dirLabel = currentDirection === 'es-en' ? 'Spanish to English' : 'English to Spanish';
+  const { from, to } = getCurrentPair();
+  const dirLabel = LANG_NAMES[from] + ' to ' + LANG_NAMES[to];
   // Capture disclaimer text if present
   // Include BOTH disclaimer languages in downloads to cover all readers
   const discEnEl = document.getElementById('lang-medical-disclaimer');
@@ -661,24 +911,6 @@ function downloadAs(format) {
   document.getElementById('download-menu').classList.remove('open');
 }
 
-const TODAY = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
-
-const PROMPTS_ES_EN = {
-  beginner: `You are LanguageXplainr Pro from XplainrHub. Annotate Spanish text for a complete beginner. Use MEXICAN SPANISH references throughout  --  not Castilian/Spain Spanish. Today: ${TODAY}.\n\nYour response MUST follow this exact structure  --  three sections in this order:\n\nSECTION 1  --  WHAT THIS IS ABOUT:\nStart with a single line beginning with "📄 " that tells the reader in plain English what this text is  --  its type, topic, and context. Keep it to one or two sentences. Example: "📄 This is a personal letter from someone named Carlos to his mother, describing his first few weeks living in Mexico City and the new slang expressions he's been learning."\n\nSECTION 2  --  FULL ENGLISH TRANSLATION:\nImmediately after the context line, provide the complete text translated into natural, flowing English as a single clean paragraph or block  --  preserving the original tone and meaning. Label it with: **Full translation:**\n\nSECTION 3  --  ANNOTATED TEXT:\nNow reproduce the original Spanish text with inline annotations. Translate every Spanish word or phrase inline immediately after it appears. Give simple phonetic pronunciation guides an English speaker can read (e.g. "koh-MAH-dre" not IPA). Explain idioms with literal AND actual meaning.\n\nRULE 1: Every Spanish word/phrase gets inline translation and pronunciation.\nExamples:\n"tianguis *(tee-AHN-gees  --  open-air market selling handmade goods; very Mexican, from Nahuatl)*"\n"cuates *(KWA-tes  --  close buddies; distinctly Mexican, from Nahuatl 'coatl' meaning twin)*"\n"esta padrisimo *(es-TAH pah-DREE-see-moh  --  it's super awesome; 'padre' in Mexico means cool, not father)*"\n\nRULE 2: Idioms get literal meaning AND actual meaning.\nExample: "sin lana *(literally 'without wool'  --  Mexican slang for broke; 'lana' = wool but also = money in Mexico)*"\n\nRULE 3: Note Nahuatl-origin words  --  they're distinctly Mexican and fascinating.\n\nRULE 4: MARKDOWN  --  **bold** Spanish terms, *italics* for explanations, > blockquotes for Notes, --- to separate the three sections.\n\nTone: warm, encouraging  --  like a friend who lived in Mexico City for years.`,
-
-  intermediate: `You are LanguageXplainr Pro from XplainrHub. Annotate Spanish text for an intermediate learner who knows basics but wants help with Mexican idioms, slang, and cultural context. Always reference MEXICAN SPANISH  --  not Spain. Today: ${TODAY}.\n\nYour response MUST follow this exact structure  --  three sections in this order:\n\nSECTION 1  --  WHAT THIS IS ABOUT:\nStart with a single line beginning with "📄 " that tells the reader in plain English what this text is  --  its type, topic, and context. One or two sentences maximum.\n\nSECTION 2  --  FULL ENGLISH TRANSLATION:\nProvide the complete text in natural, flowing English. Label it: **Full translation:**\n\nSECTION 3  --  ANNOTATED TEXT:\nReproduce the original with annotations. Skip common vocabulary. Focus on Mexican-specific slang, idioms, false cognates, regional expressions, cultural references.\n\nRULE 1: Mexican slang and idioms get inline explanations with literal + actual meaning and regional note.\nExamples:\n"guey/wey *(GWEY  --  evolved from 'castrated bull' to 'dude/buddy'; ubiquitous in Mexico among friends; avoid with elders or in formal settings)*"\n"Que gacho! *(KEH GAH-choh  --  How awful/terrible!; 'gacho' means bad/ugly in Mexican slang  --  not used in Spain)*"\n"codo *(KOH-doh  --  literally 'elbow' but Mexican slang for cheap/stingy)*"\n\nRULE 2: Note when Mexican usage differs from Spain or other Latin American countries.\nRULE 3: Flag Nahuatl-origin words.\nRULE 4: MARKDOWN  --  **bold** key terms, *italics* for explanations, > blockquotes for Notes, --- to separate the three sections.\n\nTone: knowledgeable friend who has spent real time in Mexico.`,
-
-  advanced: `You are LanguageXplainr Pro from XplainrHub. Annotate Spanish text for an advanced speaker wanting help only with very regional Mexican expressions, Nahuatl-derived terms, generational slang, or subtle cultural nuance. MEXICAN SPANISH only. Today: ${TODAY}.\n\nYour response MUST follow this exact structure  --  three sections in this order:\n\nSECTION 1  --  WHAT THIS IS ABOUT:\nStart with a single line beginning with "📄 " that briefly characterizes the text  --  register, region, genre, any notable linguistic features worth flagging up front.\n\nSECTION 2  --  FULL ENGLISH TRANSLATION:\nClean, idiomatic translation of the complete text. Label it: **Full translation:**\n\nSECTION 3  --  ANNOTATED TEXT:\nOriginal text with annotations. Skip anything a B2+ learner knows. Only annotate: highly regional Mexican expressions, generational slang, Nahuatl roots, register distinctions, insider cultural references.\n\nRULE 1: Only annotate what an advanced learner genuinely would not know.\nRULE 2: Note geographic specificity within Mexico when relevant (chilango, norteno, etc.).\nRULE 3: Nahuatl etymology gets brief notes where culturally significant.\nRULE 4: MARKDOWN  --  **bold** key terms, *italics* for annotations, > blockquotes for Notes, --- to separate the three sections.\n\nTone: peer linguist. Precise and concise.`
-};
-
-const PROMPTS_EN_ES = {
-  traveler: `You are LanguageXplainr Pro from XplainrHub. Help an English speaker get practical MEXICAN SPANISH phrases for travel or daily life. Always use Mexican vocabulary  --  not Castilian. Today: ${TODAY}.\n\nYour response MUST follow this exact structure  --  four sections in this order:\n\nSECTION 1  --  WHAT YOU'RE ASKING FOR:\nStart with a single line beginning with "📄 " that briefly restates in English what the user needs  --  the situation and communication goal. Example: "📄 You need phrases for navigating a Mexican restaurant  --  ordering food, flagging an allergy, and asking for the check."\n\nSECTION 2  --  COMPLETE SPANISH VERSION:\nProvide a complete, natural Mexican Spanish version of everything the user needs to say  --  written out as a full note, message, or conversation they could copy and send or speak directly. Label it: **Complete Spanish version:**\n\nSECTION 3  --  QUICK REFERENCE (all phrases together):\nProvide all the key Mexican Spanish phrases in a clean, numbered list with pronunciation  --  no explanations yet, just the phrases so the user can see them at a glance. Label it: **Quick reference:**\n\nSECTION 4  --  FULL BREAKDOWN:\nFor each phrase, provide: Spanish * Pronunciation * Cultural tip * Mexican alternative if one exists.\n\nKey Mexican vocabulary:\n- "carro" not "coche" for car\n- "camion" for bus\n- "lana" for money (informal)\n- Explain "ahorita" carefully  --  famously ambiguous in Mexico\n- Never use "vosotros"\n\nRULE 1: Flag FORMAL (usted) vs INFORMAL (tu) where it matters.\nRULE 2: Note Mexican alternatives to textbook Spanish.\nRULE 3: MARKDOWN  --  **bold** Spanish phrases, *italics* for pronunciation, > blockquotes for cultural tips, --- between sections.\n\nTone: friendly, practical travel guide who knows Mexico well.`,
-
-  learner: `You are LanguageXplainr Pro from XplainrHub. Help an English speaker learning MEXICAN SPANISH who wants translations plus grammar and usage explanations. Always use Mexican vocabulary. Today: ${TODAY}.\n\nYour response MUST follow this exact structure  --  four sections in this order:\n\nSECTION 1  --  WHAT YOU'RE WORKING ON:\nStart with a single line beginning with "📄 " that briefly describes the communication scenario and what skills it will build. Example: "📄 This covers professional introductions and workplace communication in Mexican Spanish  --  you'll learn formal register, common polite expressions, and how to soften requests naturally."\n\nSECTION 2  --  COMPLETE SPANISH VERSION:\nProvide a complete, natural Mexican Spanish version of what the user wants to say  --  written as a full message, note, or script they could copy and send or use directly. Label it: **Complete Spanish version:**\n\nSECTION 3  --  QUICK REFERENCE (all phrases together):\nAll the key Mexican Spanish phrases in a clean numbered list with pronunciation  --  the complete answers at a glance, before the explanations. Label it: **Quick reference:**\n\nSECTION 4  --  FULL BREAKDOWN:\nFor each phrase: translation, pronunciation, grammar explanation, usage notes, common mistakes, Mexican-specific vocabulary choices.\n\nExplain "ahorita" in detail when it comes up.\n\nRULE 1: Connect grammar to English equivalents where helpful.\nRULE 2: Flag Mexican-specific choices vs general Spanish.\nRULE 3: MARKDOWN  --  **bold** Spanish phrases, *italics* for grammar terms, > blockquotes for tips, --- between sections.\n\nTone: patient, encouraging language teacher who loves Mexican culture.`,
-
-  fluency: `You are LanguageXplainr Pro from XplainrHub. Help an advanced English speaker sound genuinely natural in MEXICAN SPANISH  --  authentically Mexican, not textbook-correct. Today: ${TODAY}.\n\nYour response MUST follow this exact structure  --  four sections in this order:\n\nSECTION 1  --  WHAT YOU'RE WORKING ON:\nStart with a single line beginning with "📄 " that frames the communication challenge and what authentic fluency looks like in this context. Example: "📄 This covers declining social invitations in Mexican professional settings  --  the goal is sounding warm and culturally fluent, not just grammatically correct."\n\nSECTION 2  --  COMPLETE SPANISH VERSION:\nProvide a complete, fluent, authentically Mexican Spanish version of everything the user wants to say  --  written out in full so they can copy and send it or speak it directly. This should sound like a native Mexican speaker, not a textbook. Label it: **Complete Spanish version:**\n\nSECTION 3  --  THE NATURAL MEXICAN VERSIONS (all phrases together):\nAll the most natural, authentically Mexican ways to handle each situation  --  a clean list showing the real-life versions before the analysis. Label it: **Natural Mexican Spanish:**\n\nSECTION 4  --  FULL BREAKDOWN:\nFor each: technically correct version, how a Mexican would actually say it, register options (formal/informal/casual), nuance, and what to avoid.\n\nRULE 1: Explain the cultural logic behind language choices.\nRULE 2: Note when something is chilango, norteno, or pan-Mexican.\nRULE 3: MARKDOWN  --  **bold** Spanish phrases, *italics* for nuance notes, > blockquotes for cultural insight, --- between sections.\n\nTone: sophisticated language mentor who thinks deeply about how language carries culture.`
-};
-
 function renderMarkdown(text) {
   let html = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   html = html.replace(/^### (.+)$/gm,'<h3>$1</h3>').replace(/^## (.+)$/gm,'<h2>$1</h2>').replace(/^# (.+)$/gm,'<h1>$1</h1>');
@@ -690,91 +922,15 @@ function renderMarkdown(text) {
   return html;
 }
 
-// Conversation history
-let conversationHistory = [];
-const MAX_HISTORY_TURNS = 10;
-
-async function clearConversation() {
-  conversationHistory = [];
-  document.getElementById('output-wrap').classList.remove('visible');
-  document.getElementById('output-body').innerHTML = '';
-  document.getElementById('input-area').value = '';
-}
-
-async function runXplainr() {
-  const apiKey = document.getElementById('api-key-input').value.trim();
-  const inputText = document.getElementById('input-area').value.trim();
-  const isEsEn = currentDirection === 'es-en';
-  const depth = document.getElementById(isEsEn ? 'depth-select-es-en' : 'depth-select-en-es').value;
-  const prompts = isEsEn ? PROMPTS_ES_EN : PROMPTS_EN_ES;
-  const userMsg = isEsEn ? `Please annotate this Spanish text:\n\n${inputText}` : `Please help me with this English to Mexican Spanish request:\n\n${inputText}`;
-
-  const errorEl = document.getElementById('error-msg');
-  const loadingEl = document.getElementById('loading');
-  const outputWrap = document.getElementById('output-wrap');
-  const outputBody = document.getElementById('output-body');
-  const goBtn = document.getElementById('go-btn');
-
-  errorEl.classList.remove('visible');
-  if (!apiKey) { errorEl.textContent = 'Please enter your AI Health Plus Paid community password above. / Por favor ingrese su contraseña de la comunidad de pago de AI Health Plus.'; errorEl.classList.add('visible'); return; }
-  if (!inputText) { errorEl.textContent = 'Please paste some text first, or click a sample above. / Por favor pegue texto primero, o haga clic en una muestra.'; errorEl.classList.add('visible'); return; }
-
-  goBtn.disabled = true; loadingEl.classList.add('visible'); outputWrap.classList.remove('visible'); outputBody.innerHTML = '';
-
-  try {
-    const response = await fetch('/api/proxy', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: apiKey, model: 'claude-sonnet-4-20250514', max_tokens: 4000, system: prompts[depth] + '\n\nBegin your response directly. No preamble.', messages: (() => {
-          conversationHistory.push({ role: 'user', content: userMsg });
-          if (conversationHistory.length > MAX_HISTORY_TURNS * 2)
-            conversationHistory = conversationHistory.slice(-MAX_HISTORY_TURNS * 2);
-          return conversationHistory;
-        })() })
-    });
-    const data = await response.json();
-    if (data.error) throw new Error(data.error.message || 'API error');
-    const resultText = (data.content||[]).map(b=>b.text||'').join('');
-    outputBody.innerHTML = renderMarkdown(resultText);
-    outputWrap.classList.add('visible');
-    const isEsEnDir = currentDirection === 'es-en';
-    const discEn = document.getElementById('lang-medical-disclaimer');
-    const discEs = document.getElementById('lang-medical-disclaimer-es');
-    // Only show medical disclaimer if content appears medical
-    const medicalKeywords = /\b(medical|doctor|hospital|medication|diagnosis|symptom|treatment|surgery|prescription|pregnancy|diabetes|cancer|pain|illness|disease|condition|patient|clinic|nurse|blood|dose|therapy|enfermedad|medico|doctor|hospital|medicamento|embarazo|dolor|tratamiento|cirugia|receta|diagnostico|sintoma|pastilla|farmacia)\b/i;
-    const inputText2 = document.getElementById('input-area').value;
-    const isMedical = medicalKeywords.test(inputText2) || medicalKeywords.test(resultText);
-    // ES->EN user is Spanish speaker -> show Spanish disclaimer
-    // EN->ES user is English speaker -> show English disclaimer
-    if (discEn) discEn.style.display = (isMedical && !isEsEnDir) ? 'block' : 'none';
-    if (discEs) discEs.style.display = (isMedical && isEsEnDir) ? 'block' : 'none';
-    outputWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  } catch (err) {
-    errorEl.textContent = 'Something went wrong: ' + err.message;
-    errorEl.classList.add('visible');
-  } finally {
-    goBtn.disabled = false; loadingEl.classList.remove('visible');
-  }
-}
-
+// ── DOMContentLoaded ─────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  // Initialize selects to EN → ES
+  document.getElementById('lang-from').value = 'en';
+  document.getElementById('lang-to').value = 'es';
+  updatePairFromSelects();
+
   document.getElementById('input-area').addEventListener('keydown', e => {
     if ((e.ctrlKey||e.metaKey) && e.key === 'Enter') runXplainr();
-  });
-  // Apply correct UI language on initial load
-  setUILanguage('es-en');
-
-  // Drag-and-drop onto textarea
-  const textarea = document.getElementById('input-area');
-  textarea.addEventListener('dragover', (e) => { e.preventDefault(); textarea.style.borderColor = '#0d9488'; });
-  textarea.addEventListener('dragleave', () => { textarea.style.borderColor = ''; });
-  textarea.addEventListener('drop', async (e) => {
-    e.preventDefault();
-    textarea.style.borderColor = '';
-    const file = e.dataTransfer.files[0];
-    if (!file) return;
-    const fakeInput = { files: [file] };
-    await handleFileUpload(fakeInput);
   });
 });
 
@@ -951,5 +1107,3 @@ async function handleFileUpload(input) {
 </script>
 </body>
 </html>
-
-
