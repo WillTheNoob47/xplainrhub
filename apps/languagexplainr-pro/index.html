@@ -818,9 +818,8 @@ async function runSummary() {
 
   // Summary is always in the destination language
   const toName = LANG_NAMES[to];
-  const systemPrompt = from === 'en'
-    ? `You are LanguageXplainr Pro. The user has submitted an English text they want expressed in ${toName}. Write a clear summary IN ${toName.toUpperCase()} of what they are trying to accomplish — the communication goal, the context, and the key things they need to be able to say. Write in plain, natural ${toName}. Start directly — no preamble.\n\n${lengthGuide}`
-    : `You are LanguageXplainr Pro. The user has submitted a ${LANG_NAMES[from]} text. Write a clear summary in English of what the text is about — its type, main points, tone, and key takeaways. Write in plain English. Do not translate word-for-word; summarize the meaning and purpose of the piece. Start directly — no preamble.\n\n${lengthGuide}`;
+  const fromName = LANG_NAMES[from];
+  const systemPrompt = `You are LanguageXplainr Pro. The user has submitted a ${fromName} text. Write a clear summary IN ${toName.toUpperCase()} of what the text is about — its type, main points, tone, and key takeaways. Write in plain, natural ${toName}. Do not translate word-for-word; summarize the meaning and purpose of the piece. Start directly — no preamble.\n\n${lengthGuide}`;
 
   try {
     const response = await fetch('/api/proxy', {
